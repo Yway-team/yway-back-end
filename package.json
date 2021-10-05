@@ -1,0 +1,14 @@
+{
+  "name": "yway_sample_be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/neon-yellow/Yway_sample_BE",
+  "author": "fletcher.ramee@stonybrook.edu",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^3.3.0",
+    "dotenv": "^10.0.0",
+    "graphql": "^15.6.0",
+    "mongoose": "^6.0.9"
+  }
+}

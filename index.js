@@ -1,0 +1,22 @@
+const { ApolloServer } = require('apollo-server');
+const mongoose = require('mongoose');
+require('dotenv').config();  // Loads environment variables from .env into process.env
+const { MONGO_URI } = process.env;  // Loads environment variables
+
+const { typeDefs } = require('./typedefs/root-def');
+const resolvers = require('./resolvers/root-resolvers');
+
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    dataSources: () => ({
+        users: new Users(User)
+    })
+});
+
+mongoose.connect(MONGO_URI).then(() => {
+    const { url } = server.listen();
+    console.log(`Server ready at ${url}`);
+}).catch((error) => {
+    console.log(error);
+});
