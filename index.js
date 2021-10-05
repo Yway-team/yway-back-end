@@ -15,8 +15,9 @@ const server = new ApolloServer({
 });
 
 mongoose.connect(MONGO_URI).then(() => {
-    const { url } = server.listen();
-    console.log(`Server ready at ${url}`);
+    server.listen().then(({ url }) => {
+        console.log(`Server ready at ${url}`);
+    });
 }).catch((error) => {
     console.log(error);
 });
