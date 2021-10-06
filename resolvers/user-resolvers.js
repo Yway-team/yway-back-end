@@ -2,6 +2,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
+const client = OAuth2Client(CLIENT_ID);
 
 // resolver arguments: (parent, args, context, info)
 // See https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-arguments
