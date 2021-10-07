@@ -10,7 +10,7 @@ const typeDefs = gql`
         getNumber(_id: String): Int
     }
     extend type Mutation {
-        login(googleId: String!): User
+        login(idToken: String!): User
         logout: Boolean
         incrementNumber(_id: String!): Int
         decrementNumber(_id: String!): Int
