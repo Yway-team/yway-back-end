@@ -9,7 +9,11 @@ const client = new OAuth2Client(CLIENT_ID);
 // See https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-arguments
 module.exports = {
     Query: {
-        getNumber: () => { return -1; }
+        getNumber: async(_, {_id}) => {
+            const id = ObjectId(_id);
+            const {number} = await User.findById(id);
+            return number;
+        }
     },
     Mutation: {
         login: async (_, { idToken }, context) => {
@@ -29,7 +33,19 @@ module.exports = {
             return user;
         },
         logout: () => {},
-        incrementNumber: () => {},
-        decrementNumber: () => {}
+        incrementNumber: async(_, { _id }) => {
+            const id = ObjectId(_id);
+            const user = await User.findById(id);
+            user.number++;
+            await user.save();
+            return user.number;
+        },
+        decrementNumber: async(_, { _id }) => {
+            const id = ObjectId(_id);
+            const user = await User.findById(id);
+            user.number--;
+            await user.save();
+            return user.number;
+        }
     }
 };
