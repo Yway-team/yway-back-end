@@ -24,7 +24,7 @@ module.exports = {
                 audience: CLIENT_ID
             });
             const { sub: googleId } = ticket.getPayload();
-            const user = await User.findUserByGoogleId(googleId);  // should be null if no document found
+            const user = await User.findOne({ googleId: googleId });  // should be null if no document found
             if (!user) {
                 // new user -> create user document and login.
                 user = await User.createNewUser(googleId);
