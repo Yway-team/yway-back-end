@@ -9,8 +9,11 @@
     "apollo-datasource-mongodb": "^0.5.2",
     "apollo-server": "^3.3.0",
     "dotenv": "^10.0.0",
+    "express-mongo-sanitize": "^2.1.0",
     "google-auth-library": "^7.10.0",
     "graphql": "^15.6.0",
-    "mongoose": "^6.0.9"
+    "helmet": "^4.6.0",
+    "mongoose": "^6.0.9",
+    "xss-clean": "^0.1.1"
   }
 }

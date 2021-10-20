@@ -1,20 +1,41 @@
-const { ApolloServer } = require('apollo-server');
 const mongoose = require('mongoose');
 require('dotenv').config();  // Loads environment variables from .env into process.env
-const { MONGO_URI } = process.env;  // Loads environment variables
-const { typeDefs } = require('./typedefs/root-def');
-const resolvers = require('./resolvers/root-resolvers');
+const { MONGO_URI, BACKEND_PORT } = process.env;  // Loads environment variables
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    introspection: true
-});
-
-mongoose.connect(MONGO_URI).then(() => {
-    server.listen().then(({ url }) => {
-        console.log(`Server ready at ${url}`);
+async function startServer() {
+    const { ApolloServer } = require('apollo-server-express');
+    const express = require('express');
+    
+    const helmet = require('helmet');
+    const mongoSanitize = require('express-mongo-sanitize');
+    const xssClean = require('xss-clean');
+    
+    const { typeDefs } = require('./typedefs/root-def');
+    const resolvers = require('./resolvers/root-resolvers');
+    
+    const app = express();
+    const server = new ApolloServer({
+        typeDefs,
+        resolvers
     });
-}).catch((error) => {
-    console.log(error);
-});
+
+    await server.start();
+
+    app.use(helmet({ contentSecurityPolicy: false }));  // may be insecure
+    app.use(express.json());  // parses JSON
+    app.use(express.urlencoded({ extended: false }));
+    app.use(mongoSanitize());
+    app.use(xssClean());
+
+    server.applyMiddleware({ app });
+
+    await new Promise(resolve => app.listen({ port: BACKEND_PORT }, resolve));
+
+    console.log(`🚀 Server ready at http://localhost:${BACKEND_PORT}${server.graphqlPath}`);
+}
+
+mongoose.connect(MONGO_URI)
+    .then(startServer)
+    .catch((error) => {
+        console.log(error);
+    });
