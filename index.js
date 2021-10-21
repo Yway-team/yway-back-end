@@ -6,7 +6,7 @@ async function startServer() {
     const { ApolloServer } = require('apollo-server-express');
     const express = require('express');
     
-    // const cors = require('cors');
+    const cors = require('cors');
     const helmet = require('helmet');
     const mongoSanitize = require('express-mongo-sanitize');
     const xssClean = require('xss-clean');
@@ -22,7 +22,7 @@ async function startServer() {
 
     await server.start();
 
-    // app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));  // Doesn't currently work - blocks Apollo Studio
+    app.use(cors({ origin: [CLIENT_ORIGIN, 'http://localhost:3000', 'https://studio.apollographql.com'], credentials: true }));
     app.use(helmet({ contentSecurityPolicy: false }));  // may be insecure
     app.use(express.json());  // parses JSON
     app.use(express.urlencoded({ extended: false }));
