@@ -9,10 +9,13 @@ const client = new OAuth2Client(CLIENT_ID);
 // See https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-arguments
 module.exports = {
     Query: {
-        getNumber: async(_, {_id}) => {
+        getNumbers: async(_, {_id}) => {
             const id = ObjectId(_id);
-            const {number} = await User.findById(id);
-            return number;
+            const user = await User.findById(id);
+            if (user) {
+                return user.numbers;
+            }
+            return null;
         }
     },
     Mutation: {
@@ -39,19 +42,43 @@ module.exports = {
             return user;
         },
         logout: () => {},
-        incrementNumber: async(_, { _id }) => {
+        incrementNumber: async(_, { _id, index }) => {
             const id = ObjectId(_id);
             const user = await User.findById(id);
-            user.number++;
+            user.numbers[index]++;
             await user.save();
-            return user.number;
+            return user.numbers;
         },
-        decrementNumber: async(_, { _id }) => {
+        decrementNumber: async(_, { _id, index }) => {
             const id = ObjectId(_id);
             const user = await User.findById(id);
-            user.number--;
+            user.numbers[index]--;
             await user.save();
-            return user.number;
+            return user.numbers;
+        },
+        appendNumber: async (_, { _id }) => {
+            _id = ObjectId(_id);
+            const user = await User.findById(_id);
+            if (user) {
+                user.numbers.push(0);
+                await user.save();
+                return user.numbers;
+            }
+            return null;
+        },
+        deleteNumber: async (_, { _id, index }) => {
+            _id = ObjectId(_id);
+            const user = await User.findById(_id);
+            if (user) {
+                if (user.numbers.length === 0) {
+                    return user.numbers;
+                } else {
+                    user.numbers.splice(index, 1);
+                    await user.save();
+                    return user.numbers;
+                }
+            }
+            return null;
         }
     }
 };

@@ -4,16 +4,18 @@ const typeDefs = gql`
     type User {
         _id: String
         googleId: String
-        number: Int
+        numbers: [Int]
     }
     extend type Query {
-        getNumber(_id: String): Int
+        getNumbers(_id: String): [Int]
     }
     extend type Mutation {
         login(idToken: String!): User
         logout: Boolean
-        incrementNumber(_id: String!): Int
-        decrementNumber(_id: String!): Int
+        incrementNumber(_id: String!, index: Int!): [Int]
+        decrementNumber(_id: String!, index: Int!): [Int]
+        appendNumber(_id: String!): [Int]
+        deleteNumber(_id: String!, index: Int!): [Int]
     }
 `;
 

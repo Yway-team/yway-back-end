@@ -6,8 +6,8 @@ const userSchema = new Schema(
             type: String,
             required: true
         },
-        number: {
-            type: Number,
+        numbers: {
+            type: [Number],
             required: true
         }
     }
