@@ -22,7 +22,7 @@ async function startServer() {
 
     await server.start();
 
-    app.use(cors({ origin: [CLIENT_ORIGIN, 'http://localhost:3000', 'https://studio.apollographql.com'], credentials: true }));
+    app.use(cors({ origin: [CLIENT_ORIGIN, 'http://yway.app.s3-website.us-east-2.amazonaws.com', 'http://localhost:3000', 'https://studio.apollographql.com'], credentials: true }));
     app.use(helmet({ contentSecurityPolicy: false }));  // may be insecure
     app.use(express.json());  // parses JSON
     app.use(express.urlencoded({ extended: false }));
