@@ -9,7 +9,7 @@ const client = new OAuth2Client(CLIENT_ID);
 // See https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-arguments
 module.exports = {
     Query: {
-        getNumbers: async(_, {_id}) => {
+        getNumbers: async (_, { _id }) => {
             const id = ObjectId(_id);
             const user = await User.findById(id);
             if (user) {
@@ -41,15 +41,15 @@ module.exports = {
             context.googleId = googleId;
             return user;
         },
-        logout: () => {},
-        incrementNumber: async(_, { _id, index }) => {
+        logout: () => { },
+        incrementNumber: async (_, { _id, index }) => {
             const id = ObjectId(_id);
             const user = await User.findById(id);
             user.numbers[index]++;
             await user.save();
             return user.numbers;
         },
-        decrementNumber: async(_, { _id, index }) => {
+        decrementNumber: async (_, { _id, index }) => {
             const id = ObjectId(_id);
             const user = await User.findById(id);
             user.numbers[index]--;
