@@ -1,8 +1,8 @@
 {
-  "name": "yway_sample_be",
+  "name": "yway-back-end",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/neon-yellow/Yway_sample_BE",
+  "repository": "https://github.com/Yway-team/yway-back-end",
   "author": "fletcher.ramee@stonybrook.edu",
   "license": "MIT",
   "dependencies": {
