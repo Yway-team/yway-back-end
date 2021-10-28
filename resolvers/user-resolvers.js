@@ -1,21 +1,28 @@
-
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model.js');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 
-// resolver arguments: (parent, args, context, info)
-// See https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-arguments
 module.exports = {
     Query: {
-        getNumbers: async (_, { _id }) => {
-            const id = ObjectId(_id);
-            const user = await User.findById(id);
+        getUser: async (_, { _id }) => {
+            // @todo: Verify that the requested user is logged in
+            // If a user wants information of other users, use getUserInfo
+            const user = await User.findOne({ _id: _id });
             if (user) {
-                return user.numbers;
+                return user;
             }
             return null;
+        },
+        getUserPublicInfo: async (_, { _id }) => {
+
+        },
+        getUserInfo: async (_, { _id }) => {
+
+        },
+        getUserAttributes: async (_, { _id, operations }) => {
+
         }
     },
     Mutation: {
@@ -41,44 +48,23 @@ module.exports = {
             context.googleId = googleId;
             return user;
         },
-        logout: () => { },
-        incrementNumber: async (_, { _id, index }) => {
-            const id = ObjectId(_id);
-            const user = await User.findById(id);
-            user.numbers[index]++;
-            await user.save();
-            return user.numbers;
+        logout: async (_, __, context) => {
+            context.googleId = null;
         },
-        decrementNumber: async (_, { _id, index }) => {
-            const id = ObjectId(_id);
-            const user = await User.findById(id);
-            user.numbers[index]--;
-            await user.save();
-            return user.numbers;
+        updateUser: async (_, args) => {
+
         },
-        appendNumber: async (_, { _id }) => {
-            _id = ObjectId(_id);
-            const user = await User.findById(_id);
-            if (user) {
-                user.numbers.push(0);
-                await user.save();
-                return user.numbers;
-            }
-            return null;
+        favoritePlatform: async (_, { _id, platformId }) => {
+
         },
-        deleteNumber: async (_, { _id, index }) => {
-            _id = ObjectId(_id);
-            const user = await User.findById(_id);
-            if (user) {
-                if (user.numbers.length === 0) {
-                    return user.numbers;
-                } else {
-                    user.numbers.splice(index, 1);
-                    await user.save();
-                    return user.numbers;
-                }
-            }
-            return null;
+        sendFriendRequest: async (_, { senderId, receiverId }) => {
+
+        },
+        addFriend: async (_, { _id, friendId }) => {
+
+        },
+        removeFriend: (_, { _id, friendId }) => {
+
         }
     }
 };
