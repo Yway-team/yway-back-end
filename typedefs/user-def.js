@@ -54,15 +54,10 @@ const typeDefs = gql`
     union UserAttribute = Quizzes | Platforms | Points | Notifications | Achievements | Histories
     union UserInfo = UserPublicInfo | UserPrivateInfo
     input UpdateUserInput {
-        # attributes and values are assumed to be in order
-        attributes: [UserQueryOperation]
-        values: UpdateUserInput
-    }
-    input UpdateUserInput {
         attributes: [UserQueryOperation]
         quizzes: [UpdateQuizInput]
         platforms: [UpdatePlatformInput]
-        points: [UpdatePointsInput]
+        points: [Int]  # increments, not set values
         notifications: [UpdateNotificationsInput]
         achievements: [UpdateAchievementsInput]
         history: [UpdateHistoryInput]
@@ -72,9 +67,6 @@ const typeDefs = gql`
     }
     input UpdatePlatformInput {
         name: String!
-    }
-    input UpdatePointsInput {
-        values: [Int]  # increments, not set values
     }
     input UpdateNotificationsInput {
         name: String!
