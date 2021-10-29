@@ -123,31 +123,31 @@ module.exports = {
         logout: async (_, __, context) => {
             context.googleId = null;
         },
-        updateUser: async (_, { _id, args }) => {
+        updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);
             if (!user) {
                 return null;
             }
-            const attributesToUpdate = args.attributes;
-            const updates = {}
-            if (attributesToUpdate.includes(QUIZZES)) {
-                user.quizzes.push(...args.quizzes);
+            if (updates.quizzes) {
+                user.quizzes.push(...updates.quizzes);
             }
-            if (attributesToUpdate.includes(PLATFORMS)) {
-                user.platforms.push(...args.platforms);
+            if (updates.platforms) {
+                user.platforms.push(...updates.platforms);
             }
-            if (attributesToUpdate.includes(POINTS)) {
-                user.playPoints += args.points[0];
-                user.creatorPoints += args.points[1];
+            if (updates.playPoints) {
+                user.playPoints += updates.playPoints;
             }
-            if (attributesToUpdate.includes(NOTIFICATIONS)) {
-                user.notifications.push(...args.notifications);
+            if (updates.creatorPoints) {
+                user.creatorPoints += updates.creatorPoints;
             }
-            if (attributesToUpdate.includes(ACHIEVEMENTS)) {
-                user.achievements.push(...args.achievements);
+            if (updates.notifications) {
+                user.notifications.push(...updates.notifications);
             }
-            if (attributesToUpdate.includes(HISTORY)) {
-                user.history.push(...args.history);
+            if (updates.achievements) {
+                user.achievements.push(...updates.achievements);
+            }
+            if (updates.history) {
+                user.history.push(...updates.history);
             }
             await user.save();
             return user;

@@ -31,7 +31,7 @@ const typeDefs = gql`
         login(idToken: String!): User
         logout: Boolean
         favoritePlatform(_id: String!, platformId: String!): Boolean
-        updateUser(_id: String!, args: UpdateUserInput!): User
+        updateUser(_id: String!, updates: UpdateUserInput!): User
         sendFriendRequest(senderId: String!, receiverId: String!): Boolean
         addFriend(_id: String!, friendId: String!): Boolean
         removeFriend(_id: String!, friendId: String!): Boolean
@@ -57,7 +57,8 @@ const typeDefs = gql`
         attributes: [UserQueryOperation]
         quizzes: [UpdateQuizInput]
         platforms: [UpdatePlatformInput]
-        points: [Int]  # increments, not set values
+        playPoints: Int  # increments values
+        creatorPoints: Int  # increments values
         notifications: [UpdateNotificationsInput]
         achievements: [UpdateAchievementsInput]
         history: [UpdateHistoryInput]
