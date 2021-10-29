@@ -14,6 +14,15 @@ const ACHIEVEMENTS = 'ACHIEVEMENTS';
 const HISTORY = 'HISTORY';
 
 module.exports = {
+    UserInfo: {
+        __resolveType(obj) {
+            // Only UserPrivateInfo has playPoints
+            if (obj.playPoints) {
+                return 'UserPrivateInfo';
+            }
+            return 'UserPublicInfo';
+        }
+    },
     Query: {
         getUser: async (_, { _id }) => {
             // @todo: Verify that the requested user is logged in
