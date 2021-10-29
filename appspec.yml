@@ -12,10 +12,6 @@ files:
 
 hooks:
 
- BeforeInstall:
- 
-  npm install
-
  AfterInstall:
 
   node index.js
