@@ -1,0 +1,21 @@
+version: 0.0
+
+os: linux
+
+files:
+
+ - source: /
+
+  destination: ~/
+
+  overwrite: true
+
+hooks:
+
+ BeforeInstall:
+ 
+  npm install
+
+ AfterInstall:
+
+  node index.js
