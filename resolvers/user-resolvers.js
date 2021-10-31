@@ -1,21 +1,95 @@
-
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model.js');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 
-// resolver arguments: (parent, args, context, info)
-// See https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-arguments
+// enums
+const FRIENDS = 'FRIENDS';
+const QUIZZES = 'QUIZZES';
+const PLATFORMS = 'PLATFORMS';
+const POINTS = 'POINTS';
+const NOTIFICATIONS = 'NOTIFICATIONS';
+const ACHIEVEMENTS = 'ACHIEVEMENTS';
+const HISTORY = 'HISTORY';
+
 module.exports = {
+    UserInfo: {
+        __resolveType(obj) {
+            // Only UserPrivateInfo has playPoints
+            if (obj.playPoints) {
+                return 'UserPrivateInfo';
+            }
+            return 'UserPublicInfo';
+        }
+    },
     Query: {
-        getNumbers: async (_, { _id }) => {
-            const id = ObjectId(_id);
-            const user = await User.findById(id);
+        getUser: async (_, { _id }) => {
+            // @todo: Verify that the requested user is logged in
+            // If a user wants information of other users, use getUserInfo
+            const user = await User.findById(_id);
             if (user) {
-                return user.numbers;
+                return user;
             }
             return null;
+        },
+        getUserPublicInfo: async (_, { _id }) => {
+            const user = await User.findById(_id);
+            if (user) {
+                const publicInfo = {
+                    _id: user._id,
+                    username: user.username,
+                    avatar: user.avatar,
+                    privacySettings: user.privacySettings
+                };
+                return publicInfo;
+            }
+            return null;
+        },
+        getUserInfo: async (_, { _id }) => {
+            // Check relation of user's privacy settings to requesting user
+            // Return info accordingly
+            const user = await User.findById(_id);
+            const publicInfo = {
+                _id: user._id,
+                username: user.username,
+                avatar: user.avatar,
+                privacySettings: user.privacySettings
+            };
+            const privateInfo = {
+                _id: user._id,
+                username: user.username,
+                bio: user.bio,
+                avatar: user.avatar,
+                privacySettings: user.privacySettings,
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints,
+                moderator: user.moderator,
+                achievements: user.achievements,
+                friends: user.friends,
+                notifications: user.notifications,
+                history: user.history,
+                quizzes: user.quizzes,
+                platforms: user.platforms
+            };
+            if (user) {
+                switch (user.privacySettings) {
+                    case 'private':
+                        return publicInfo;
+                    case 'friends':
+                        // @todo: check if friends
+                        // return privateInfo;
+                        break;
+                    case 'public':
+                        return privateInfo;
+                    default:
+                        throw new ValueError('Invalid privacy settings');  // Should this return null? Or change the user's settings (to private) automatically?
+                }
+            }
+            return null;
+        },
+        getUserAttributes: async (_, { _id, operations }) => {
+
         }
     },
     Mutation: {
@@ -26,14 +100,28 @@ module.exports = {
                 idToken: idToken,
                 audience: CLIENT_ID
             });
-            const { sub: googleId } = ticket.getPayload();
+            const { sub: googleId, name, picture } = ticket.getPayload();
             let user = await User.findOne({ googleId: googleId });  // should be null if no document found
             if (!user) {
                 // new user -> create user document and login.
                 const newUser = {
                     _id: new ObjectId(),
                     googleId: googleId,
-                    number: 0
+                    username: name,
+                    bio: '',
+                    avatar: picture,
+                    privacySettings: 'private',
+                    playPoints: 0,
+                    creatorPoints: 0,
+                    moderator: [],
+                    achievements: [],
+                    friends: [],
+                    notifications: [],
+                    history: [],
+                    favorites: [],
+                    quizzes: [],
+                    drafts: [],
+                    platforms: []
                 };
                 user = new User(newUser);
                 await user.save();
@@ -41,44 +129,49 @@ module.exports = {
             context.googleId = googleId;
             return user;
         },
-        logout: () => { },
-        incrementNumber: async (_, { _id, index }) => {
-            const id = ObjectId(_id);
-            const user = await User.findById(id);
-            user.numbers[index]++;
-            await user.save();
-            return user.numbers;
+        logout: async (_, __, context) => {
+            context.googleId = null;
         },
-        decrementNumber: async (_, { _id, index }) => {
-            const id = ObjectId(_id);
-            const user = await User.findById(id);
-            user.numbers[index]--;
-            await user.save();
-            return user.numbers;
-        },
-        appendNumber: async (_, { _id }) => {
-            _id = ObjectId(_id);
+        updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);
-            if (user) {
-                user.numbers.push(0);
-                await user.save();
-                return user.numbers;
+            if (!user) {
+                return null;
             }
-            return null;
+            if (updates.quizzes) {
+                user.quizzes.push(...updates.quizzes);
+            }
+            if (updates.platforms) {
+                user.platforms.push(...updates.platforms);
+            }
+            if (updates.playPoints) {
+                user.playPoints += updates.playPoints;
+            }
+            if (updates.creatorPoints) {
+                user.creatorPoints += updates.creatorPoints;
+            }
+            if (updates.notifications) {
+                user.notifications.push(...updates.notifications);
+            }
+            if (updates.achievements) {
+                user.achievements.push(...updates.achievements);
+            }
+            if (updates.history) {
+                user.history.push(...updates.history);
+            }
+            await user.save();
+            return user;
         },
-        deleteNumber: async (_, { _id, index }) => {
-            _id = ObjectId(_id);
-            const user = await User.findById(_id);
-            if (user) {
-                if (user.numbers.length === 0) {
-                    return user.numbers;
-                } else {
-                    user.numbers.splice(index, 1);
-                    await user.save();
-                    return user.numbers;
-                }
-            }
-            return null;
+        favoritePlatform: async (_, { _id, platformId }) => {
+
+        },
+        sendFriendRequest: async (_, { senderId, receiverId }) => {
+
+        },
+        addFriend: async (_, { _id, friendId }) => {
+
+        },
+        removeFriend: async (_, { _id, friendId }) => {
+
         }
     }
 };
