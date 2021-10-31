@@ -4,15 +4,6 @@ const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 
-// enums
-const FRIENDS = 'FRIENDS';
-const QUIZZES = 'QUIZZES';
-const PLATFORMS = 'PLATFORMS';
-const POINTS = 'POINTS';
-const NOTIFICATIONS = 'NOTIFICATIONS';
-const ACHIEVEMENTS = 'ACHIEVEMENTS';
-const HISTORY = 'HISTORY';
-
 module.exports = {
     UserInfo: {
         __resolveType(obj) {
@@ -108,7 +99,6 @@ module.exports = {
                     _id: new ObjectId(),
                     googleId: googleId,
                     username: name,
-                    bio: '',
                     avatar: picture,
                     privacySettings: 'private',
                     playPoints: 0,

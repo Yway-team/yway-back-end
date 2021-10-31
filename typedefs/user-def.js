@@ -2,23 +2,23 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
     type User {
-        _id: String
-        googleId: String
-        username: String
+        _id: String!
+        googleId: String!
+        username: String!
         bio: String
-        avatar: String
-        privacySettings: String
-        playPoints: Int
-        creatorPoints: Int
-        moderator: [String]
-        achievements: [Achievement]
-        friends: [String]
-        notifications: [Notification]
-        history: [History]
-        favorites: [String]
-        quizzes: [String]
-        drafts: [Quiz]
-        platforms: [String]
+        avatar: String!
+        privacySettings: String!
+        playPoints: Int!
+        creatorPoints: Int!
+        moderator: [String]!
+        achievements: [Achievement]!
+        friends: [String]!
+        notifications: [Notification]!
+        history: [History]!
+        favorites: [String]!
+        quizzes: [String]!
+        drafts: [Quiz]!
+        platforms: [String]!
     }
     extend type Query {
         getUser(_id: String!): User
