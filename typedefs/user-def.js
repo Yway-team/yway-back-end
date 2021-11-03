@@ -105,14 +105,14 @@ const typeDefs = gql`
     type Notification {
         name: String!
     }
-    type Quiz {
-        name: String!
-        # Import this?
-    }
-    type Platform {
-        name: String!
-        # Import this?
-    }
+#    type Quiz {
+#        name: String!
+#        # Import this?
+#    }
+#    type Platform {
+#        name: String!
+#        # Import this?
+#    }
     # Info public no matter what
     type UserPublicInfo {
         _id: String
