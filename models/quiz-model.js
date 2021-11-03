@@ -32,7 +32,6 @@ const quizSchema = new Schema({
     dateCreated: {
         type: Date,
         required: true,
-        default: Date.now()
     },
     questions: {
         type: [Object],

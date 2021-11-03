@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const {gql} = require('apollo-server');
 const userDef = require('./user-def').typeDefs;
 const quizDef = require('./quiz-def').typeDefs;
 const platformDef = require('./platform-def').typeDefs;

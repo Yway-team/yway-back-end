@@ -1,5 +1,5 @@
 const userResolvers = require('./user-resolvers');
 const quizResolvers = require('./quiz-resolvers');
-const platformsResolvers = require('./platforms-resolvers');
+const platformResolvers = require('./platform-resolvers');
 
-module.exports = [userResolvers, quizResolvers, platformsResolvers];
+module.exports = [userResolvers, quizResolvers, platformResolvers];

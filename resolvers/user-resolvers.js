@@ -1,9 +1,9 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model.js');
-const { OAuth2Client } = require('google-auth-library');
-const { CLIENT_ID } = process.env;
+const {OAuth2Client} = require('google-auth-library');
+const {CLIENT_ID} = process.env;
 const client = new OAuth2Client(CLIENT_ID);
-const { MAX_NOTIFICATIONS } = require('../constants');
+const {MAX_NOTIFICATIONS} = require('../constants');
 
 module.exports = {
     UserInfo: {
@@ -16,7 +16,7 @@ module.exports = {
         }
     },
     Query: {
-        getUser: async (_, { _id }) => {
+        getUser: async (_, {_id}) => {
             // @todo: Verify that the requested user is logged in
             // If a user wants information of other users, use getUserInfo
             const user = await User.findById(_id);
@@ -25,7 +25,7 @@ module.exports = {
             }
             return null;
         },
-        getUserPublicInfo: async (_, { _id }) => {
+        getUserPublicInfo: async (_, {_id}) => {
             const user = await User.findById(_id);
             if (user) {
                 const publicInfo = {
@@ -38,7 +38,7 @@ module.exports = {
             }
             return null;
         },
-        getUserInfo: async (_, { _id }) => {
+        getUserInfo: async (_, {_id}) => {
             // Check relation of user's privacy settings to requesting user
             // Return info accordingly
             const user = await User.findById(_id);
@@ -80,20 +80,20 @@ module.exports = {
             }
             return null;
         },
-        getUserAttributes: async (_, { _id, operations }) => {
+        getUserAttributes: async (_, {_id, operations}) => {
 
         }
     },
     Mutation: {
-        login: async (_, { idToken }, context) => {
+        login: async (_, {idToken}, context) => {
             // check if ID is already stored in users
             // if not, create new user with the ID
             const ticket = await client.verifyIdToken({
                 idToken: idToken,
                 audience: CLIENT_ID
             });
-            const { sub: googleId, name, picture } = ticket.getPayload();
-            let user = await User.findOne({ googleId: googleId });  // should be null if no document found
+            const {sub: googleId, name, picture} = ticket.getPayload();
+            let user = await User.findOne({googleId: googleId});  // should be null if no document found
             if (!user) {
                 // new user -> create user document and login.
                 const newUser = {
@@ -128,7 +128,7 @@ module.exports = {
                 notifications: user.notifications
             };
         },
-        incrementPoints: async (_, { points: { playPoints, creatorPoints } }, { _id }) => {
+        incrementPoints: async (_, {points: {playPoints, creatorPoints}}, {_id}) => {
             const user = await User.findById(_id);
             if (playPoints) {
                 user.playPoints += playPoints;
@@ -148,7 +148,7 @@ module.exports = {
                 notifications: user.notifications
             };
         },
-        updateBio: async (_, { bio }, { _id }) => {
+        updateBio: async (_, {bio}, {_id}) => {
             const user = await User.findById(_id);
             user.bio = bio;
             await user.save();
@@ -163,7 +163,7 @@ module.exports = {
                 notifications: user.notifications
             };
         },
-        updatePrivacySettings: async (_, { privacySettings }, { _id }) => {
+        updatePrivacySettings: async (_, {privacySettings}, {_id}) => {
             const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends-only';
             if (!valid) {
                 return null;
@@ -182,7 +182,7 @@ module.exports = {
                 notifications: user.notifications
             };
         },
-        updateUsername: async (_, { username }, { _id }) => {
+        updateUsername: async (_, {username}, {_id}) => {
             if (!username) {
                 return null;
             }
@@ -200,7 +200,7 @@ module.exports = {
                 notifications: user.notifications
             };
         },
-        addNotification: async (_, { notification }, { _id }) => {
+        addNotification: async (_, {notification}, {_id}) => {
             const timestamp = new Date(notification.timestamp);
             if (timestamp === 'Invalid Date') {
                 return false;
@@ -214,7 +214,7 @@ module.exports = {
             await user.save();
             return true;
         },
-        addHistory: async (_, { history }, { _id }) => {
+        addHistory: async (_, {history}, {_id}) => {
             const timestamp = new Date(history.timestamp);
             if (timestamp === 'Invalid Date') {
                 return false;
@@ -228,7 +228,7 @@ module.exports = {
             await user.save();
             return true;
         },
-        updateUser: async (_, { _id, updates }) => {
+        updateUser: async (_, {_id, updates}) => {
             const user = await User.findById(_id);
             if (!user) {
                 return null;
@@ -257,16 +257,16 @@ module.exports = {
             await user.save();
             return user;
         },
-        favoritePlatform: async (_, { _id, platformId }) => {
+        favoritePlatform: async (_, {_id, platformId}) => {
 
         },
-        sendFriendRequest: async (_, { senderId, receiverId }) => {
+        sendFriendRequest: async (_, {senderId, receiverId}) => {
 
         },
-        addFriend: async (_, { _id, friendId }) => {
+        addFriend: async (_, {_id, friendId}) => {
 
         },
-        removeFriend: async (_, { _id, friendId }) => {
+        removeFriend: async (_, {_id, friendId}) => {
 
         }
     }
