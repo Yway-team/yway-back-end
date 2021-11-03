@@ -162,6 +162,25 @@ module.exports = {
                 notifications: user.notifications
             };
         },
+        updatePrivacySettings: async (_, { privacySettings }, { _id }) => {
+            const user = await User.findById(_id);
+            const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends-only';
+            if (valid) {
+                user.privacySettings = privacySettings;
+                await user.save();
+                return {
+                    _id: user._id,
+                    googleId: user.googleId,
+                    username: user.username,
+                    avatar: user.avatar,
+                    playPoints: user.playPoints,
+                    creatorPoints: user.creatorPoints,
+                    favorites: user.favorites,
+                    notifications: user.notifications
+                };
+            }
+            return null;
+        },
         updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);
             if (!user) {

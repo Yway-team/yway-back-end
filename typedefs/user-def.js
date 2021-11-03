@@ -36,6 +36,7 @@ const typeDefs = gql`
         removeFriend(_id: String!, friendId: String!): Boolean
         incrementPoints(points: PointsInput!): User
         updateBio(bio: String!): User
+        updatePrivacySettings(privacySettings: String!): User
     }
     enum UserQueryOperation {
         FRIENDS
