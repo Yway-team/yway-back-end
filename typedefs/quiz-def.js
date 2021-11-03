@@ -1,7 +1,7 @@
 const {gql} = require('apollo-server');
 
 const typeDefs = gql`
-    scalar Date
+#    scalar Date
     type Quiz {
         _id: ID!,
         title: String!,
@@ -10,7 +10,7 @@ const typeDefs = gql`
         owner: ID!,
         bannerImg: String!,
         thumbnailImg: String!,
-        dateCreated: Date,
+        dateCreated: String!,
         questions: [Question]!,
         rating: Float!,
         ratingCount: Int!,
