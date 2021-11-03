@@ -214,6 +214,20 @@ module.exports = {
             await user.save();
             return true;
         },
+        addHistory: async (_, { history }, { _id }) => {
+            const timestamp = new Date(history.timestamp);
+            if (timestamp === 'Invalid Date') {
+                return false;
+            }
+            history.timestamp = timestamp;
+            const user = await User.findById(_id);
+            const length = user.history.push(history);
+            if (length > MAX_HISTORY) {
+                user.history.splice(0, length - MAX_HISTORY);
+            }
+            await user.save();
+            return true;
+        },
         updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);
             if (!user) {
