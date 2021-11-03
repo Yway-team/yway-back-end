@@ -1,12 +1,16 @@
-const { model, Schema } = require('mongoose');
+const {model, Schema, ObjectId} = require('mongoose');
 
 const platformSchema = new Schema({
+    _id: {
+        type: ObjectId,
+        required: true
+    },
     owner: {
-        type: String,
+        type: ObjectId,
         required: true
     },
     moderators: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     followers: {
@@ -31,11 +35,11 @@ const platformSchema = new Schema({
         required: false
     },
     quizzes: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     questions: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     tags: {
@@ -56,7 +60,7 @@ const platformSchema = new Schema({
         required: true
     },
     bannedUsers: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     platformMetrics: {

@@ -1,6 +1,10 @@
-const {model, Schema} = require('mongoose');
+const {model, Schema, ObjectId} = require('mongoose');
 
 const quizSchema = new Schema({
+    _id: {
+        type: ObjectId,
+        required: true
+    },
     title: {
         type: String,
         required: true
@@ -10,11 +14,11 @@ const quizSchema = new Schema({
         required: false
     },
     platform: {
-        type: String,
+        type: ObjectId,
         required: false
     },
     owner: {
-        type: String,
+        type: ObjectId,
         required: true
     },
     bannerImg: {
