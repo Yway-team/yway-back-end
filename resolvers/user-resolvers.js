@@ -8,14 +8,14 @@ const {MAX_NOTIFICATIONS, MAX_HISTORY} = require('../constants');
 const getBasicInfo = (user) => {
     return {
         _id: user._id,
-        googleId: user.googleId,
-        username: user.username,
         avatar: user.avatar,
-        playPoints: user.playPoints,
         creatorPoints: user.creatorPoints,
         favorites: user.favorites,
-        notifications: user.notifications
-    }
+        googleId: user.googleId,
+        notifications: user.notifications,
+        playPoints: user.playPoints,
+        username: user.username
+    };
 };
 
 module.exports = {

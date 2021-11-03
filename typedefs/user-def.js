@@ -3,22 +3,22 @@ const {gql} = require('apollo-server');
 const typeDefs = gql`
     type User {
         _id: String!
-        googleId: String!
-        username: String!
-        bio: String
-        avatar: String!
-        privacySettings: String!
-        playPoints: Int!
-        creatorPoints: Int!
-        moderator: [String]!
         achievements: [Achievement]!
-        friends: [String]!
-        notifications: [Notification]!
-        history: [History]!
-        favorites: [String]!
-        quizzes: [String]!
+        avatar: String!
+        bio: String
+        creatorPoints: Int!
         drafts: [Quiz]!
+        favorites: [String]!
+        friends: [String]!
+        googleId: String!
+        history: [History]!
+        moderator: [String]!
+        notifications: [Notification]!
         platforms: [String]!
+        playPoints: Int!
+        privacySettings: String!
+        quizzes: [String]!
+        username: String!
     }
     extend type Query {
         getUser(_id: String!): User
@@ -104,6 +104,8 @@ const typeDefs = gql`
     }
     type Notification {
         name: String!
+        type: String!
+        timestamp: String!
     }
     # Info public no matter what
     type UserPublicInfo {
