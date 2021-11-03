@@ -116,7 +116,6 @@ module.exports = {
                 user = new User(newUser);
                 await user.save();
             }
-            context.googleId = googleId;
             return {
                 _id: user._id,
                 googleId: user.googleId,
@@ -130,6 +129,20 @@ module.exports = {
         },
         logout: async (_, __, context) => {
             context.googleId = null;
+        },
+        updatePoints: async (_, { points: { playPoints, creatorPoints } }, { _id }) => {
+            const user = await User.findById(_id);
+            if (playPoints) {
+                user.playPoints += playPoints;
+            }
+            if (creatorPoints) {
+                user.creatorPoints += creatorPoints;
+            }
+            await user.save();
+            return {
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints
+            };
         },
         updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);
