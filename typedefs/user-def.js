@@ -30,7 +30,6 @@ const typeDefs = gql`
     extend type Mutation {
         login(idToken: String!): User
         favoritePlatform(_id: String!, platformId: String!): Boolean
-        updateUser(_id: String!, updates: UpdateUserInput!): User
         sendFriendRequest(senderId: String!, receiverId: String!): Boolean
         addFriend(_id: String!, friendId: String!): Boolean
         removeFriend(_id: String!, friendId: String!): Boolean

@@ -200,23 +200,6 @@ module.exports = {
             await user.save();
             return true;
         },
-        updateUser: async (_, {_id, updates}) => {
-            const user = await User.findById(_id);
-            if (!user) {
-                return null;
-            }
-            if (updates.quizzes) {
-                user.quizzes.push(...updates.quizzes);
-            }
-            if (updates.platforms) {
-                user.platforms.push(...updates.platforms);
-            }
-            if (updates.achievements) {
-                user.achievements.push(...updates.achievements);
-            }
-            await user.save();
-            return user;
-        },
         favoritePlatform: async (_, {_id, platformId}) => {
 
         },

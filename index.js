@@ -34,7 +34,7 @@ async function startServer() {
 
     server.applyMiddleware({ app, cors: corsPolicy });
 
-    app.listen({ port: BACKEND_PORT }, () => { console.log(`🚀 Server ready at http://localhost:${BACKEND_PORT}${server.graphqlPath}`); })
+    app.listen({ port: BACKEND_PORT }, () => { console.log(`Server listening on :${BACKEND_PORT}${server.graphqlPath}`); })
 }
 
 mongoose.connect(MONGO_URI)
