@@ -21,11 +21,9 @@ const typeDefs = gql`
         username: String!
     }
     extend type Query {
-        getUser(_id: String!): User
-        getUserPublicInfo(_id: String!): UserPublicInfo
-        getUserInfo(_id: String!): UserInfo
-        # note that howMany is optional (depends on the operation)
-        getUserAttributes(_id: String!, operations: [UserQueryOperation!]!, howMany: [Int]): [UserAttribute]
+        getCurrentUser(_id: String!): User
+        getUserPublicInfo(userId: String!): UserInfo
+        getUserInfo(userId: String!): UserInfo
     }
     extend type Mutation {
         login(idToken: String!): User
@@ -40,14 +38,21 @@ const typeDefs = gql`
         addNotification(notification: NotificationInput!): Boolean
         addHistory(history: HistoryInput!): Boolean
     }
-    enum UserQueryOperation {
-        FRIENDS
-        QUIZZES
-        PLATFORMS
-        POINTS
-        NOTIFICATIONS
-        ACHIEVEMENTS
-        HISTORY
+    type UserInfo {
+        _id: String!
+        avatar: String!
+        privacySettings: String!
+        username: String!
+        bio: String
+        creatorPoints: Int
+        friends: [String]
+        moderator: [String]
+        platforms: [String]
+        playPoints: Int
+        quizzes: [String]
+        achievements: [Achievement]
+        history: [History]
+
     }
     type Quizzes { quizzes: [Quiz] }
     type Platforms { platforms: [Platform] }
@@ -68,18 +73,6 @@ const typeDefs = gql`
     type Notifications { notifications: [Notification] }
     type Achievements { achievements: [Achievement] }
     type Histories { history: [History] }
-    union UserAttribute = Quizzes | Platforms | Notifications | Achievements | Histories
-    union UserInfo = UserPublicInfo | UserPrivateInfo
-    input UpdateUserInput {
-        attributes: [UserQueryOperation]
-        quizzes: [UpdateQuizInput]
-        platforms: [UpdatePlatformInput]
-        playPoints: Int  # increments values
-        creatorPoints: Int  # increments values
-        notifications: [UpdateNotificationsInput]
-        achievements: [UpdateAchievementsInput]
-        history: [UpdateHistoryInput]
-    }
     input UpdateQuizInput {
         name: String!
     }
@@ -96,40 +89,21 @@ const typeDefs = gql`
         name: String!
     }
     type Achievement {
-        name: String!
+        creatorPointValue: Int
+        description: String!
+        playPointValue: Int
+        timestamp: String!
+        type: String!
     }
     type History {
-        name: String!
+        description: String!
+        timestamp: String!
+        type: String!
     }
     type Notification {
         name: String!
         type: String!
         timestamp: String!
-    }
-    # Info public no matter what
-    type UserPublicInfo {
-        _id: String
-        username: String
-        avatar: String
-        privacySettings: String
-    }
-    # Info hidden according to privacy settings (also has everything in UserPublicInfo) - visible to users allowed to see it by privacy settings
-    type UserPrivateInfo {
-        # Note that favorites and drafts are absent
-        _id: String
-        username: String
-        bio: String
-        avatar: String
-        privacySettings: String
-        playPoints: Int
-        creatorPoints: Int
-        moderator: [String]
-        achievements: [Achievement]
-        friends: [String]
-        notifications: [Notification]
-        history: [History]
-        quizzes: [String]
-        platforms: [String]
     }
 `;
 

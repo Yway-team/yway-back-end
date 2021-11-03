@@ -19,17 +19,8 @@ const getBasicInfo = (user) => {
 };
 
 module.exports = {
-    UserInfo: {
-        __resolveType(obj) {
-            // Only UserPrivateInfo has playPoints
-            if (obj.playPoints) {
-                return 'UserPrivateInfo';
-            }
-            return 'UserPublicInfo';
-        }
-    },
     Query: {
-        getUser: async (_, __, { _id }) => {
+        getCurrentUser: async (_, __, { _id }) => {
             // If a user wants information of other users, use getUserInfo
             const user = await User.findById(_id);
             if (user) {
@@ -75,30 +66,27 @@ module.exports = {
                 moderator: user.moderator,
                 achievements: user.achievements,
                 friends: user.friends,
-                notifications: user.notifications,
                 history: user.history,
                 quizzes: user.quizzes,
                 platforms: user.platforms
             };
 
-            if (!context._id) {
-                // requesting user is not logged in
-                return publicInfo;
+            if (context._id === userId) {
+                // logged-in user is requesting own info
+                return privateInfo;
             }
             switch (user.privacySettings) {
                 case 'private':
                     return publicInfo;
                 case 'friends':
-                    if (user.friends.includes(context._id)) {
+                    if (context._id && user.friends.includes(context._id)) {
+                        // requesting user is logged in and friends with the user
                         return privateInfo;
                     }
                     return publicInfo;
                 case 'public':
                     return privateInfo;
             }
-        },
-        getUserAttributes: async (_, {_id, operations}) => {
-
         }
     },
     Mutation: {
