@@ -5,6 +5,19 @@ const {CLIENT_ID} = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 const {MAX_NOTIFICATIONS, MAX_HISTORY} = require('../constants');
 
+const getBasicInfo = (user) => {
+    return {
+        _id: user._id,
+        googleId: user.googleId,
+        username: user.username,
+        avatar: user.avatar,
+        playPoints: user.playPoints,
+        creatorPoints: user.creatorPoints,
+        favorites: user.favorites,
+        notifications: user.notifications
+    }
+};
+
 module.exports = {
     UserInfo: {
         __resolveType(obj) {
@@ -121,16 +134,7 @@ module.exports = {
                 user = new User(newUser);
                 await user.save();
             }
-            return {
-                _id: user._id,
-                googleId: user.googleId,
-                username: user.username,
-                avatar: user.avatar,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                favorites: user.favorites,
-                notifications: user.notifications
-            };
+            return getBasicInfo(user);
         },
         incrementPoints: async (_, {points: {playPoints, creatorPoints}}, {_id}) => {
             const user = await User.findById(_id);
@@ -141,31 +145,13 @@ module.exports = {
                 user.creatorPoints += creatorPoints;
             }
             await user.save();
-            return {
-                _id: user._id,
-                googleId: user.googleId,
-                username: user.username,
-                avatar: user.avatar,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                favorites: user.favorites,
-                notifications: user.notifications
-            };
+            return getBasicInfo(user);
         },
         updateBio: async (_, {bio}, {_id}) => {
             const user = await User.findById(_id);
             user.bio = bio;
             await user.save();
-            return {
-                _id: user._id,
-                googleId: user.googleId,
-                username: user.username,
-                avatar: user.avatar,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                favorites: user.favorites,
-                notifications: user.notifications
-            };
+            return getBasicInfo(user);
         },
         updatePrivacySettings: async (_, {privacySettings}, {_id}) => {
             const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends';
@@ -175,16 +161,7 @@ module.exports = {
             const user = await User.findById(_id);
             user.privacySettings = privacySettings;
             await user.save();
-            return {
-                _id: user._id,
-                googleId: user.googleId,
-                username: user.username,
-                avatar: user.avatar,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                favorites: user.favorites,
-                notifications: user.notifications
-            };
+            return getBasicInfo(user);
         },
         updateUsername: async (_, {username}, {_id}) => {
             if (!username) {
@@ -193,16 +170,7 @@ module.exports = {
             const user = await User.findById(_id);
             user.username = username;
             await user.save();
-            return {
-                _id: user._id,
-                googleId: user.googleId,
-                username: user.username,
-                avatar: user.avatar,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                favorites: user.favorites,
-                notifications: user.notifications
-            };
+            return getBasicInfo(user);
         },
         addNotification: async (_, {notification}, {_id}) => {
             const timestamp = new Date(notification.timestamp);
@@ -243,20 +211,8 @@ module.exports = {
             if (updates.platforms) {
                 user.platforms.push(...updates.platforms);
             }
-            if (updates.playPoints) {
-                user.playPoints += updates.playPoints;
-            }
-            if (updates.creatorPoints) {
-                user.creatorPoints += updates.creatorPoints;
-            }
-            if (updates.notifications) {
-                user.notifications.push(...updates.notifications);
-            }
             if (updates.achievements) {
                 user.achievements.push(...updates.achievements);
-            }
-            if (updates.history) {
-                user.history.push(...updates.history);
             }
             await user.save();
             return user;
