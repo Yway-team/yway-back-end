@@ -163,23 +163,41 @@ module.exports = {
             };
         },
         updatePrivacySettings: async (_, { privacySettings }, { _id }) => {
-            const user = await User.findById(_id);
             const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends-only';
-            if (valid) {
-                user.privacySettings = privacySettings;
-                await user.save();
-                return {
-                    _id: user._id,
-                    googleId: user.googleId,
-                    username: user.username,
-                    avatar: user.avatar,
-                    playPoints: user.playPoints,
-                    creatorPoints: user.creatorPoints,
-                    favorites: user.favorites,
-                    notifications: user.notifications
-                };
+            if (!valid) {
+                return null;
             }
-            return null;
+            const user = await User.findById(_id);
+            user.privacySettings = privacySettings;
+            await user.save();
+            return {
+                _id: user._id,
+                googleId: user.googleId,
+                username: user.username,
+                avatar: user.avatar,
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints,
+                favorites: user.favorites,
+                notifications: user.notifications
+            };
+        },
+        updateUsername: async (_, { username }, { _id }) => {
+            if (!username) {
+                return null;
+            }
+            const user = await User.findById(_id);
+            user.username = username;
+            await user.save();
+            return {
+                _id: user._id,
+                googleId: user.googleId,
+                username: user.username,
+                avatar: user.avatar,
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints,
+                favorites: user.favorites,
+                notifications: user.notifications
+            };
         },
         updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);

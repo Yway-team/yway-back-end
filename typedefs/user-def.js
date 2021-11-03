@@ -37,6 +37,7 @@ const typeDefs = gql`
         incrementPoints(points: PointsInput!): User
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): User
+        updateUsername(username: String!): User
     }
     enum UserQueryOperation {
         FRIENDS
