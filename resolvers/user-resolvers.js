@@ -16,8 +16,7 @@ module.exports = {
         }
     },
     Query: {
-        getUser: async (_, {_id}) => {
-            // @todo: Verify that the requested user is logged in
+        getUser: async (_, __, { _id }) => {
             // If a user wants information of other users, use getUserInfo
             const user = await User.findById(_id);
             if (user) {
@@ -25,23 +24,27 @@ module.exports = {
             }
             return null;
         },
-        getUserPublicInfo: async (_, {_id}) => {
-            const user = await User.findById(_id);
-            if (user) {
-                const publicInfo = {
-                    _id: user._id,
-                    username: user.username,
-                    avatar: user.avatar,
-                    privacySettings: user.privacySettings
-                };
-                return publicInfo;
+        getUserPublicInfo: async (_, { userId }) => {
+            const user = await User.findById(userId);
+            if (!user) {
+                return null;
             }
-            return null;
+            const publicInfo = {
+                _id: user._id,
+                username: user.username,
+                avatar: user.avatar,
+                privacySettings: user.privacySettings
+            };
+            return publicInfo;
         },
-        getUserInfo: async (_, {_id}) => {
+        getUserInfo: async (_, { userId }, context) => {
             // Check relation of user's privacy settings to requesting user
             // Return info accordingly
-            const user = await User.findById(_id);
+            const user = await User.findById(userId);
+            if (!user) {
+                return null;
+            }
+
             const publicInfo = {
                 _id: user._id,
                 username: user.username,
@@ -64,21 +67,22 @@ module.exports = {
                 quizzes: user.quizzes,
                 platforms: user.platforms
             };
-            if (user) {
-                switch (user.privacySettings) {
-                    case 'private':
-                        return publicInfo;
-                    case 'friends':
-                        // @todo: check if friends
-                        // return privateInfo;
-                        break;
-                    case 'public':
-                        return privateInfo;
-                    default:
-                        throw new ValueError('Invalid privacy settings');  // Should this return null? Or change the user's settings (to private) automatically?
-                }
+
+            if (!context._id) {
+                // requesting user is not logged in
+                return publicInfo;
             }
-            return null;
+            switch (user.privacySettings) {
+                case 'private':
+                    return publicInfo;
+                case 'friends':
+                    if (user.friends.includes(context._id)) {
+                        return privateInfo;
+                    }
+                    return publicInfo;
+                case 'public':
+                    return privateInfo;
+            }
         },
         getUserAttributes: async (_, {_id, operations}) => {
 
@@ -164,7 +168,7 @@ module.exports = {
             };
         },
         updatePrivacySettings: async (_, {privacySettings}, {_id}) => {
-            const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends-only';
+            const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends';
             if (!valid) {
                 return null;
             }
