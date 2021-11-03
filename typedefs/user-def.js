@@ -35,7 +35,8 @@ const typeDefs = gql`
         sendFriendRequest(senderId: String!, receiverId: String!): Boolean
         addFriend(_id: String!, friendId: String!): Boolean
         removeFriend(_id: String!, friendId: String!): Boolean
-        updatePoints(points: PointsInput!): Points
+        incrementPoints(points: PointsInput!): User
+        updateBio(bio: String!): User
     }
     enum UserQueryOperation {
         FRIENDS
@@ -52,14 +53,10 @@ const typeDefs = gql`
         playPoints: Int
         creatorPoints: Int
     }
-    type Points {
-        playPoints: Int
-        creatorPoints: Int
-    }
     type Notifications { notifications: [Notification] }
     type Achievements { achievements: [Achievement] }
     type Histories { history: [History] }
-    union UserAttribute = Quizzes | Platforms | Points | Notifications | Achievements | Histories
+    union UserAttribute = Quizzes | Platforms | Notifications | Achievements | Histories
     union UserInfo = UserPublicInfo | UserPrivateInfo
     input UpdateUserInput {
         attributes: [UserQueryOperation]

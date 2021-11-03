@@ -130,7 +130,7 @@ module.exports = {
         logout: async (_, __, context) => {
             context.googleId = null;
         },
-        updatePoints: async (_, { points: { playPoints, creatorPoints } }, { _id }) => {
+        incrementPoints: async (_, { points: { playPoints, creatorPoints } }, { _id }) => {
             const user = await User.findById(_id);
             if (playPoints) {
                 user.playPoints += playPoints;
@@ -140,8 +140,29 @@ module.exports = {
             }
             await user.save();
             return {
+                _id: user._id,
+                googleId: user.googleId,
+                username: user.username,
+                avatar: user.avatar,
                 playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints
+                creatorPoints: user.creatorPoints,
+                favorites: user.favorites,
+                notifications: user.notifications
+            };
+        },
+        updateBio: async (_, { bio }, { _id }) => {
+            const user = await User.findById(_id);
+            user.bio = bio;
+            await user.save();
+            return {
+                _id: user._id,
+                googleId: user.googleId,
+                username: user.username,
+                avatar: user.avatar,
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints,
+                favorites: user.favorites,
+                notifications: user.notifications
             };
         },
         updateUser: async (_, { _id, updates }) => {

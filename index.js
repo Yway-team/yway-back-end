@@ -19,7 +19,7 @@ async function startServer() {
         typeDefs,
         resolvers,
         context: ({ req }) => {
-            const _id = req.headers.authentication._id || '';
+            const _id = req.headers.authorization._id || '';
             return { _id };
         }
     });
