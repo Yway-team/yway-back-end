@@ -117,7 +117,16 @@ module.exports = {
                 await user.save();
             }
             context.googleId = googleId;
-            return user;
+            return {
+                _id: user._id,
+                googleId: user.googleId,
+                username: user.username,
+                avatar: user.avatar,
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints,
+                favorites: user.favorites,
+                notifications: user.notifications
+            };
         },
         logout: async (_, __, context) => {
             context.googleId = null;
