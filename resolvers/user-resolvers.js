@@ -3,7 +3,7 @@ const User = require('../models/user-model.js');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
-const { MAX_NOTIFICATIONS } = require('../constants');
+const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
 
 module.exports = {
     UserInfo: {
