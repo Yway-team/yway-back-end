@@ -127,9 +127,6 @@ module.exports = {
                 notifications: user.notifications
             };
         },
-        logout: async (_, __, context) => {
-            context.googleId = null;
-        },
         incrementPoints: async (_, { points: { playPoints, creatorPoints } }, { _id }) => {
             const user = await User.findById(_id);
             if (playPoints) {
