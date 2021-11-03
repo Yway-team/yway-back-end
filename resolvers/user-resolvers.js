@@ -3,6 +3,7 @@ const User = require('../models/user-model.js');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
+const { MAX_NOTIFICATIONS } = require('../constants');
 
 module.exports = {
     UserInfo: {
@@ -198,6 +199,20 @@ module.exports = {
                 favorites: user.favorites,
                 notifications: user.notifications
             };
+        },
+        addNotification: async (_, { notification }, { _id }) => {
+            const timestamp = new Date(notification.timestamp);
+            if (timestamp === 'Invalid Date') {
+                return false;
+            }
+            notification.timestamp = timestamp;
+            const user = await User.findById(_id);
+            const length = user.notifications.push(notification);
+            if (length > MAX_NOTIFICATIONS) {
+                user.notifications.splice(0, length - MAX_NOTIFICATIONS);
+            }
+            await user.save();
+            return true;
         },
         updateUser: async (_, { _id, updates }) => {
             const user = await User.findById(_id);

@@ -38,6 +38,7 @@ const typeDefs = gql`
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): User
         updateUsername(username: String!): User
+        addNotification(notification: NotificationInput!): Boolean
     }
     enum UserQueryOperation {
         FRIENDS
@@ -53,6 +54,11 @@ const typeDefs = gql`
     input PointsInput {
         playPoints: Int
         creatorPoints: Int
+    }
+    input NotificationInput {
+        description: String!
+        type: String!
+        timestamp: String!
     }
     type Notifications { notifications: [Notification] }
     type Achievements { achievements: [Achievement] }
