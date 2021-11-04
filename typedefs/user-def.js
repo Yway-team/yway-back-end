@@ -2,35 +2,35 @@ const {gql} = require('apollo-server');
 
 const typeDefs = gql`
     type User {
-        _id: String!
+        _id: ID!
         achievements: [Achievement]!
         avatar: String!
         bio: String
         creatorPoints: Int!
         drafts: [Quiz]!
-        favorites: [String]!
-        friends: [String]!
-        googleId: String!
+        favorites: [ID]!
+        friends: [ID]!
+        googleId: ID!
         history: [History]!
-        moderator: [String]!
+        moderator: [ID]!
         notifications: [Notification]!
-        platforms: [String]!
+        platforms: [ID]!
         playPoints: Int!
         privacySettings: String!
-        quizzes: [String]!
+        quizzes: [ID]!
         username: String!
     }
     extend type Query {
-        getCurrentUser(_id: String!): User
-        getUserPublicInfo(userId: String!): UserInfo
-        getUserInfo(userId: String!): UserInfo
+        getCurrentUser(_id: ID!): User
+        getUserPublicInfo(userId: ID!): UserInfo
+        getUserInfo(userId: ID!): UserInfo
     }
     extend type Mutation {
         login(idToken: String!): User
-        favoritePlatform(_id: String!, platformId: String!): Boolean
-        sendFriendRequest(senderId: String!, receiverId: String!): Boolean
-        addFriend(_id: String!, friendId: String!): Boolean
-        removeFriend(_id: String!, friendId: String!): Boolean
+        favoritePlatform(_id: ID!, platformId: ID!): Boolean
+        sendFriendRequest(senderId: ID!, receiverId: ID!): Boolean
+        addFriend(_id: ID!, friendId: ID!): Boolean
+        removeFriend(_id: ID!, friendId: ID!): Boolean
         incrementPoints(points: PointsInput!): User
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): User
@@ -39,53 +39,33 @@ const typeDefs = gql`
         addHistory(history: HistoryInput!): Boolean
     }
     type UserInfo {
-        _id: String!
+        _id: ID!
         avatar: String!
         privacySettings: String!
         username: String!
         bio: String
         creatorPoints: Int
-        friends: [String]
-        moderator: [String]
-        platforms: [String]
+        friends: [ID]
+        moderator: [ID]
+        platforms: [ID]
         playPoints: Int
-        quizzes: [String]
+        quizzes: [ID]
         achievements: [Achievement]
         history: [History]
     }
-    type Quizzes { quizzes: [Quiz] }
-    type Platforms { platforms: [Platform] }
     input PointsInput {
         playPoints: Int
         creatorPoints: Int
     }
     input NotificationInput {
         description: String!
-        type: String!
         timestamp: String!
+        type: String!
     }
     input HistoryInput {
         description: String!
-        type: String!
         timestamp: String!
-    }
-    type Notifications { notifications: [Notification] }
-    type Achievements { achievements: [Achievement] }
-    type Histories { history: [History] }
-    input UpdateQuizInput {
-        name: String!
-    }
-    input UpdatePlatformInput {
-        name: String!
-    }
-    input UpdateNotificationsInput {
-        name: String!
-    }
-    input UpdateAchievementsInput {
-        name: String!
-    }
-    input UpdateHistoryInput {
-        name: String!
+        type: String!
     }
     type Achievement {
         creatorPointValue: Int
@@ -100,9 +80,9 @@ const typeDefs = gql`
         type: String!
     }
     type Notification {
-        name: String!
-        type: String!
+        description: String!
         timestamp: String!
+        type: String!
     }
 `;
 
