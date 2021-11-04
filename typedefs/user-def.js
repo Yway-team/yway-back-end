@@ -52,7 +52,6 @@ const typeDefs = gql`
         quizzes: [String]
         achievements: [Achievement]
         history: [History]
-
     }
     type Quizzes { quizzes: [Quiz] }
     type Platforms { platforms: [Platform] }

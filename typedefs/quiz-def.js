@@ -19,7 +19,7 @@ const typeDefs = gql`
         shuffleQuestions: Boolean!,
         shuffleAnswers: Boolean!,
         color: String,
-        attempts: Int,!
+        attempts: Int!,
         timeToAnswer: Int!
     }
     type Question{
