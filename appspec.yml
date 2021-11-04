@@ -12,6 +12,6 @@ files:
 
 hooks:
   AfterInstall:
-    - location: scripts/setup.sh
+    - location: ./setup.sh
       timeout: 300
       runas: root
