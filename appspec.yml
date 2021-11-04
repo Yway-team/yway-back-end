@@ -5,7 +5,7 @@ files:
     destination: /home/ec2-user/
     overwrite: true
 hooks:
-  AfterInstall:
+  ApplicationStart:
     - location: ./setup.sh
       timeout: 300
       runas: root
