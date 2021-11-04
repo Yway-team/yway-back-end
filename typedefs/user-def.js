@@ -33,7 +33,7 @@ const typeDefs = gql`
         removeFriend(_id: ID!, friendId: ID!): Boolean
         incrementPoints(points: PointsInput!): User
         updateBio(bio: String!): User
-        updatePrivacySettings(privacySettings: String!): User
+        updatePrivacySettings(privacySettings: String!): String
         updateUsername(username: String!): User
         addNotification(notification: NotificationInput!): Boolean
         addHistory(history: HistoryInput!): Boolean

@@ -149,7 +149,7 @@ module.exports = {
             const user = await User.findById(_id);
             user.privacySettings = privacySettings;
             await user.save();
-            return getBasicInfo(user);
+            return user.privacySettings;
         },
         updateUsername: async (_, {username}, {_id}) => {
             if (!username) {
