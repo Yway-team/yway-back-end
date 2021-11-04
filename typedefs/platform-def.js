@@ -26,15 +26,15 @@ const typeDefs = gql`
         points: Int!
     }
     extend type Query {
-        getPlatform(_id: String!): Platform
+        getPlatform(_id: ID!): Platform
         getPlatformByName(name: String!): Platform
-        getMarathon(_id: String!): [String]
-        getLeaderboardEntries(_id: String!, howMany: Int): [LeaderBoardEntry]
+        getMarathon(_id: ID!): [String]
+        getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderBoardEntry]
     }
     extend type Mutation {
-        createNewPlatform(_id: String!): Platform
-        deletePlatform(_id: String!): Boolean
-        updatePlatformSettings(_id: String!): Boolean
+        createNewPlatform(_id: ID!): Platform
+        deletePlatform(_id: ID!): Boolean
+        updatePlatformSettings(_id: ID!): Boolean
     }
 `;
 

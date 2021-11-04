@@ -1,7 +1,7 @@
 const {gql} = require('apollo-server');
 
 const typeDefs = gql`
-#    scalar Date
+    #    scalar Date
     type Quiz {
         _id: ID!,
         title: String!,
@@ -34,17 +34,17 @@ const typeDefs = gql`
     }
 
     extend type Query {
-        getQuiz(_id: String!): Quiz
-        getQuizInfo(_id: String!): Quiz
-        getQuizMetrics(_id: String!): Quiz
-        getQuestion(_id: String!, questionId: String!): Question
+        getQuiz(_id: ID!): Quiz
+        getQuizInfo(_id: ID!): Quiz
+        getQuizMetrics(_id: ID!): Quiz
+        getQuestion(_id: ID!, questionId: ID!): Question
     }
     extend type Mutation {
-        createQuiz(_id: String!): Quiz
-        saveQuizAsDraft(_id: String!): Quiz
-        deleteQuiz(_id: String!): Boolean
-        editPublishedQuiz(_id: String!): Quiz
-        rateQuiz(_id: String!, rating: Int!): Boolean
+        createQuiz(_id: ID!): Quiz
+        saveQuizAsDraft(_id: ID!): Quiz
+        deleteQuiz(_id: ID!): Boolean
+        editPublishedQuiz(_id: ID!): Quiz
+        rateQuiz(_id: ID!, rating: Int!): Boolean
     }
 `;
 
