@@ -1,15 +1,9 @@
 version: 0.0
-
 os: linux
-
 files:
-
- - source: /
-
-  destination: ~/
-
-  overwrite: true
-
+  - source: /
+    destination: /var/www/html/WordPress
+    overwrite: true
 hooks:
   AfterInstall:
     - location: ./setup.sh
