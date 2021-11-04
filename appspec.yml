@@ -1,17 +1,11 @@
 version: 0.0
-
 os: linux
-
 files:
-
- - source: /
-
-  destination: ~/
-
-  overwrite: true
-
+  - source: /
+    destination: /home/ec2-user/
+    overwrite: true
 hooks:
-
- AfterInstall:
-
-  node index.js
+  ApplicationStart:
+    - location: ./setup.sh
+      timeout: 300
+      runas: root
