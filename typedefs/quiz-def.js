@@ -21,13 +21,14 @@ const typeDefs = gql`
         timeToAnswer: Int!
     }
     type Question {
-        platform: ID!
-        quiz: ID!
-        description: String!
-        answerOptions: [String]!
+        _id: ID!
+        answerOptions: [String!]!
         correctAnswer: String!
-        correctAttempts: Int!
-        attemptTotal: Int!
+        description: String!
+        quiz: ID!
+        attemptTotal: Int
+        correctAttempts: Int
+        platform: ID
     }
     extend type Query {
         getQuiz(_id: ID!): Quiz
