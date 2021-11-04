@@ -18,7 +18,7 @@ phases:
 
    - echo Running unit tests
 
-   - yarn test
+   - yarn install
 
  post_build:
 
