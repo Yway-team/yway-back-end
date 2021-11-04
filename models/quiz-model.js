@@ -29,10 +29,6 @@ const quizSchema = new Schema({
         type: String,
         required: false
     },
-    dateCreated: {
-        type: Date,
-        required: true,
-    },
     questions: {
         type: [Object],
         required: true
@@ -77,7 +73,7 @@ const quizSchema = new Schema({
         type: Number,
         required: true
     }
-});
+}, { timestamps: true });
 
 const Quiz = model('Quiz', quizSchema);
 module.exports = Quiz;

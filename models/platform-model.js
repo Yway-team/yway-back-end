@@ -71,7 +71,7 @@ const platformSchema = new Schema({
         type: [Object],
         required: true
     }
-});
+}, { timestamps: true });
 
 const Platform = model('Platform', platformSchema);
 module.exports = Platform;
