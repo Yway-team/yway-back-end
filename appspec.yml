@@ -11,7 +11,7 @@ files:
   overwrite: true
 
 hooks:
-
- AfterInstall:
-  killall node
-  node index.js&
+  AfterInstall:
+    - location: scripts/setup.sh
+      timeout: 300
+      runas: root
