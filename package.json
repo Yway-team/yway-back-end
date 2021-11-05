@@ -13,6 +13,7 @@
     "google-auth-library": "^7.10.0",
     "graphql": "^15.6.0",
     "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.9",
     "xss-clean": "^0.1.1"
   }

@@ -1,9 +1,9 @@
 const ObjectId = require('mongoose').Types.ObjectId;
-const User = require('../models/user-model.js');
-const {OAuth2Client} = require('google-auth-library');
+import User from '../models/user-model.js';
+import { OAuth2Client } from 'google-auth-library';
 const {CLIENT_ID} = process.env;
 const client = new OAuth2Client(CLIENT_ID);
-const {MAX_NOTIFICATIONS, MAX_HISTORY} = require('../constants');
+import { MAX_NOTIFICATIONS, MAX_HISTORY } from '../constants';
 
 const getBasicInfo = (user) => {
     return {
@@ -18,187 +18,181 @@ const getBasicInfo = (user) => {
     };
 };
 
-module.exports = {
-    Query: {
-        getCurrentUser: async (_, __, { _id }) => {
-            // If a user wants information of other users, use getUserInfo
-            const user = await User.findById(_id);
-            if (user) {
-                return user;
-            }
-            return null;
-        },
-        getUserPublicInfo: async (_, { userId }) => {
-            const user = await User.findById(userId);
-            if (!user) {
-                return null;
-            }
-            const publicInfo = {
-                _id: user._id,
-                username: user.username,
-                avatar: user.avatar,
-                privacySettings: user.privacySettings
-            };
-            return publicInfo;
-        },
-        getUserInfo: async (_, { userId }, context) => {
-            // Check relation of user's privacy settings to requesting user
-            // Return info accordingly
-            const user = await User.findById(userId);
-            if (!user) {
-                return null;
-            }
-
-            const publicInfo = {
-                _id: user._id,
-                username: user.username,
-                avatar: user.avatar,
-                privacySettings: user.privacySettings
-            };
-            const privateInfo = {
-                _id: user._id,
-                username: user.username,
-                bio: user.bio,
-                avatar: user.avatar,
-                privacySettings: user.privacySettings,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                moderator: user.moderator,
-                achievements: user.achievements,
-                friends: user.friends,
-                history: user.history,
-                quizzes: user.quizzes,
-                platforms: user.platforms
-            };
-
-            if (context._id === userId) {
-                // logged-in user is requesting own info
-                return privateInfo;
-            }
-            switch (user.privacySettings) {
-                case 'private':
-                    return publicInfo;
-                case 'friends':
-                    if (context._id && user.friends.includes(context._id)) {
-                        // requesting user is logged in and friends with the user
-                        return privateInfo;
-                    }
-                    return publicInfo;
-                case 'public':
-                    return privateInfo;
-            }
+export const Query = {
+    getCurrentUser: async (_, __, { _id }) => {
+        // If a user wants information of other users, use getUserInfo
+        const user = await User.findById(_id);
+        if (user) {
+            return user;
         }
+        return null;
     },
-    Mutation: {
-        login: async (_, {idToken}, context) => {
-            // check if ID is already stored in users
-            // if not, create new user with the ID
-            const ticket = await client.verifyIdToken({
-                idToken: idToken,
-                audience: CLIENT_ID
-            });
-            const {sub: googleId, name, picture} = ticket.getPayload();
-            let user = await User.findOne({googleId: googleId});  // should be null if no document found
-            if (!user) {
-                // new user -> create user document and login.
-                const newUser = {
-                    _id: new ObjectId(),
-                    googleId: googleId,
-                    username: name,
-                    avatar: picture,
-                    privacySettings: 'private',
-                    playPoints: 0,
-                    creatorPoints: 0,
-                    moderator: [],
-                    achievements: [],
-                    friends: [],
-                    notifications: [],
-                    history: [],
-                    favorites: [],
-                    quizzes: [],
-                    drafts: [],
-                    platforms: []
-                };
-                user = new User(newUser);
-                await user.save();
-            }
-            return getBasicInfo(user);
-        },
-        incrementPoints: async (_, {points: {playPoints, creatorPoints}}, {_id}) => {
-            const user = await User.findById(_id);
-            if (playPoints) {
-                user.playPoints += playPoints;
-            }
-            if (creatorPoints) {
-                user.creatorPoints += creatorPoints;
-            }
-            await user.save();
-            return getBasicInfo(user);
-        },
-        updateBio: async (_, {bio}, {_id}) => {
-            const user = await User.findById(_id);
-            user.bio = bio;
-            await user.save();
-            return getBasicInfo(user);
-        },
-        updatePrivacySettings: async (_, {privacySettings}, {_id}) => {
-            const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends';
-            if (!valid) {
-                return null;
-            }
-            const user = await User.findById(_id);
-            user.privacySettings = privacySettings;
-            await user.save();
-            return user.privacySettings;
-        },
-        updateUsername: async (_, {username}, {_id}) => {
-            if (!username) {
-                return null;
-            }
-            const user = await User.findById(_id);
-            user.username = username;
-            await user.save();
-            return getBasicInfo(user);
-        },
-        addNotification: async (_, {notification}, {_id}) => {
-            const timestamp = new Date(notification.timestamp);
-            if (timestamp === 'Invalid Date') {
-                return false;
-            }
-            notification.timestamp = timestamp;
-            const user = await User.findById(_id);
-            const length = user.notifications.push(notification);
-            if (length > MAX_NOTIFICATIONS) {
-                user.notifications.splice(0, length - MAX_NOTIFICATIONS);
-            }
-            await user.save();
-            return true;
-        },
-        addHistory: async (_, {history}, {_id}) => {
-            const timestamp = new Date(history.timestamp);
-            if (timestamp === 'Invalid Date') {
-                return false;
-            }
-            history.timestamp = timestamp;
-            const user = await User.findById(_id);
-            const length = user.history.push(history);
-            if (length > MAX_HISTORY) {
-                user.history.splice(0, length - MAX_HISTORY);
-            }
-            await user.save();
-            return true;
-        },
-        favoritePlatform: async (_, {_id, platformId}) => {
-
-        },
-        sendFriendRequest: async (_, {senderId, receiverId}) => {
-
-        },
-        addFriend: async (_, {_id, friendId}) => {
-
-        },
-        removeFriend: async (_, {_id, friendId}) => {
-
+    getUserPublicInfo: async (_, { userId }) => {
+        const user = await User.findById(userId);
+        if (!user) {
+            return null;
         }
+        const publicInfo = {
+            _id: user._id,
+            username: user.username,
+            avatar: user.avatar,
+            privacySettings: user.privacySettings
+        };
+        return publicInfo;
+    },
+    getUserInfo: async (_, { userId }, context) => {
+        // Check relation of user's privacy settings to requesting user
+        // Return info accordingly
+        const user = await User.findById(userId);
+        if (!user) {
+            return null;
+        }
+
+        const publicInfo = {
+            _id: user._id,
+            username: user.username,
+            avatar: user.avatar,
+            privacySettings: user.privacySettings
+        };
+        const privateInfo = {
+            _id: user._id,
+            username: user.username,
+            bio: user.bio,
+            avatar: user.avatar,
+            privacySettings: user.privacySettings,
+            playPoints: user.playPoints,
+            creatorPoints: user.creatorPoints,
+            moderator: user.moderator,
+            achievements: user.achievements,
+            friends: user.friends,
+            history: user.history,
+            quizzes: user.quizzes,
+            platforms: user.platforms
+        };
+
+        if (context._id === userId) {
+            // logged-in user is requesting own info
+            return privateInfo;
+        }
+        switch (user.privacySettings) {
+            case 'private':
+                return publicInfo;
+            case 'friends':
+                if (context._id && user.friends.includes(context._id)) {
+                    // requesting user is logged in and friends with the user
+                    return privateInfo;
+                }
+                return publicInfo;
+            case 'public':
+                return privateInfo;
+        }
+    }
+};
+export const Mutation = {
+    login: async (_, { idToken }, context) => {
+        // check if ID is already stored in users
+        // if not, create new user with the ID
+        const ticket = await client.verifyIdToken({
+            idToken: idToken,
+            audience: CLIENT_ID
+        });
+        const { sub: googleId, name, picture } = ticket.getPayload();
+        let user = await User.findOne({ googleId: googleId }); // should be null if no document found
+        if (!user) {
+            // new user -> create user document and login.
+            const newUser = {
+                _id: new ObjectId(),
+                googleId: googleId,
+                username: name,
+                avatar: picture,
+                privacySettings: 'private',
+                playPoints: 0,
+                creatorPoints: 0,
+                moderator: [],
+                achievements: [],
+                friends: [],
+                notifications: [],
+                history: [],
+                favorites: [],
+                quizzes: [],
+                drafts: [],
+                platforms: []
+            };
+            user = new User(newUser);
+            await user.save();
+        }
+        return getBasicInfo(user);
+    },
+    incrementPoints: async (_, { points: { playPoints, creatorPoints } }, { _id }) => {
+        const user = await User.findById(_id);
+        if (playPoints) {
+            user.playPoints += playPoints;
+        }
+        if (creatorPoints) {
+            user.creatorPoints += creatorPoints;
+        }
+        await user.save();
+        return getBasicInfo(user);
+    },
+    updateBio: async (_, { bio }, { _id }) => {
+        const user = await User.findById(_id);
+        user.bio = bio;
+        await user.save();
+        return getBasicInfo(user);
+    },
+    updatePrivacySettings: async (_, { privacySettings }, { _id }) => {
+        const valid = privacySettings === 'public' || privacySettings === 'private' || privacySettings === 'friends';
+        if (!valid) {
+            return null;
+        }
+        const user = await User.findById(_id);
+        user.privacySettings = privacySettings;
+        await user.save();
+        return user.privacySettings;
+    },
+    updateUsername: async (_, { username }, { _id }) => {
+        if (!username) {
+            return null;
+        }
+        const user = await User.findById(_id);
+        user.username = username;
+        await user.save();
+        return getBasicInfo(user);
+    },
+    addNotification: async (_, { notification }, { _id }) => {
+        const timestamp = new Date(notification.timestamp);
+        if (timestamp === 'Invalid Date') {
+            return false;
+        }
+        notification.timestamp = timestamp;
+        const user = await User.findById(_id);
+        const length = user.notifications.push(notification);
+        if (length > MAX_NOTIFICATIONS) {
+            user.notifications.splice(0, length - MAX_NOTIFICATIONS);
+        }
+        await user.save();
+        return true;
+    },
+    addHistory: async (_, { history }, { _id }) => {
+        const timestamp = new Date(history.timestamp);
+        if (timestamp === 'Invalid Date') {
+            return false;
+        }
+        history.timestamp = timestamp;
+        const user = await User.findById(_id);
+        const length = user.history.push(history);
+        if (length > MAX_HISTORY) {
+            user.history.splice(0, length - MAX_HISTORY);
+        }
+        await user.save();
+        return true;
+    },
+    favoritePlatform: async (_, { _id, platformId }) => {
+    },
+    sendFriendRequest: async (_, { senderId, receiverId }) => {
+    },
+    addFriend: async (_, { _id, friendId }) => {
+    },
+    removeFriend: async (_, { _id, friendId }) => {
     }
 };

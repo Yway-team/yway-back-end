@@ -1,4 +1,4 @@
-const {model, Schema, ObjectId} = require('mongoose');
+import { model, Schema, ObjectId } from 'mongoose';
 
 const quizSchema = new Schema({
     _id: {
@@ -76,4 +76,4 @@ const quizSchema = new Schema({
 }, { timestamps: true });
 
 const Quiz = model('Quiz', quizSchema);
-module.exports = Quiz;
+export default Quiz;

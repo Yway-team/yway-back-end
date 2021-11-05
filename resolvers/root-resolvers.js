@@ -1,5 +1,5 @@
-const userResolvers = require('./user-resolvers');
-const quizResolvers = require('./quiz-resolvers');
-const platformResolvers = require('./platform-resolvers');
+import userResolvers from './user-resolvers';
+import quizResolvers from './quiz-resolvers';
+import platformResolvers from './platform-resolvers';
 
-module.exports = [userResolvers, quizResolvers, platformResolvers];
+export default [userResolvers, quizResolvers, platformResolvers];
