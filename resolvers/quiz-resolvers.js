@@ -54,11 +54,46 @@ module.exports = {
                 ownerUsername: quizOwner.username,
                 platformId: quiz.platform,
                 platformName: 'Generic Platform Name',
-                platformThumbnail: null,
+                platformThumbnail: 'https://picsum.photos/1000',
                 rating: quiz.rating,
                 title: quiz.title
             };
             return quizInfo;
+        },
+        getQuizHighlights: async (_, { howMany }) => {
+            const quizzes = await Quiz.find().limit(howMany);
+            const quizInfos = [];
+            for (let i = 0; i < quizzes.length; i++) {
+                // Mostly copy-pasted from getQuizInfo
+                const quiz = quizzes[i];
+                if (!quiz) {
+                    // the provided quizId does not exist
+                    return null;
+                }
+                const quizOwner = await User.findById(quiz.owner);  // there ought to be a faster way to do this - can we get all owners simultaneously?
+                if (!quizOwner) {
+                    // Weird situation - not sure what should happen here. Can ownerless quizzes exist?
+                    return null;
+                }
+                // const platform = await Platform.findById(quiz.platform);  // platforms have not yet been implemented
+                // When platforms have been implemented, change platformId to platform._id, platformName to platform.title, and platformThumbnail to platform.thumbnailImg.
+                const quizInfo = {
+                    bannerImg: quiz.bannerImg,
+                    createdAt: quiz.createdAt,
+                    description: quiz.description,
+                    numQuestions: quiz.questions.length,
+                    ownerAvatar: quizOwner.avatar,
+                    ownerId: quizOwner._id,
+                    ownerUsername: quizOwner.username,
+                    platformId: quiz.platform,
+                    platformName: `Generic Platform Name ${i}`,
+                    platformThumbnail: 'https://picsum.photos/1000',
+                    rating: quiz.rating,
+                    title: quiz.title
+                };
+                quizInfos.push(quizInfo);
+            }
+            return quizInfos;
         },
         getQuizMetrics: async (_, {_id}) => {
         }
