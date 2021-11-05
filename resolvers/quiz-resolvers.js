@@ -79,7 +79,6 @@ module.exports = {
                 await Question.create(question);
             }
             const result = await Quiz.create(quiz);
-            console.log(result)
             if (!result) {
                 return null;
             }
