@@ -17,12 +17,13 @@ const typeDefs = gql`
         averageScore: Float
         bannerImg: String
         color: String
+        createdAt: String
         description: String
         thumbnailImg: String
     }
     extend type Query {
         getQuiz(_id: ID!): Quiz
-        getQuizInfo(_id: ID!): Quiz
+        getQuizInfo(quizId: ID!): QuizInfo
         getQuizMetrics(_id: ID!): Quiz
     }
     extend type Mutation {
@@ -31,6 +32,20 @@ const typeDefs = gql`
         deleteQuiz(_id: ID!): Boolean
         editPublishedQuiz(_id: ID!): Quiz
         rateQuiz(_id: ID!, rating: Int!): Boolean
+    }
+    type QuizInfo {
+        bannerImg: String
+        createdAt: String!
+        description: String
+        numQuestions: Int!
+        ownerAvatar: String
+        ownerId: String!
+        ownerUsername: String!
+        platformId: String!
+        platformName: String!
+        platformThumbnail: String
+        rating: Float!
+        title: String!
     }
     input QuizInput {
         questions: [QuestionInput!]!

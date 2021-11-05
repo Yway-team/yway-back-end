@@ -1,6 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
+const User = require('../models/user-model');
 const { DEFAULT_TIME_TO_ANSWER } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -30,7 +31,34 @@ module.exports = {
             }
             return null;
         },
-        getQuizInfo: async (_, {_id}) => {
+        getQuizInfo: async (_, { quizId }, { _id }) => {
+            const quiz = await Quiz.findById(quizId);
+            if (!quiz) {
+                // the provided quizId does not exist
+                return null;
+            }
+            const quizOwner = await User.findById(quiz.owner);
+            if (!quizOwner) {
+                // Weird situation - not sure what should happen here. Can ownerless quizzes exist?
+                return null;
+            }
+            // const platform = await Platform.findById(quiz.platform);  // platforms have not yet been implemented
+            // When platforms have been implemented, change platformId to platform._id, platformName to platform.title, and platformThumbnail to platform.thumbnailImg.
+            const quizInfo = {
+                bannerImg: quiz.bannerImg,
+                createdAt: quiz.createdAt,
+                description: quiz.description,
+                numQuestions: quiz.questions.length,
+                ownerAvatar: quizOwner.avatar,
+                ownerId: quizOwner._id,
+                ownerUsername: quizOwner.username,
+                platformId: quiz.platform,
+                platformName: 'Generic Platform Name',
+                platformThumbnail: null,
+                rating: quiz.rating,
+                title: quiz.title
+            };
+            return quizInfo;
         },
         getQuizMetrics: async (_, {_id}) => {
         }
