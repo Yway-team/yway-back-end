@@ -11,7 +11,7 @@ async function startServer() {
     const xssClean = require('xss-clean');
     
     const { typeDefs } = require('./typedefs/root-def');
-    const resolvers = require('./resolvers/root-resolvers').default;
+    const resolvers = require('./resolvers/root-resolvers');
     const corsPolicy = { origin: [CLIENT_ORIGIN, 'http://yway.app.s3-website.us-east-2.amazonaws.com', 'http://localhost:3000', 'https://studio.apollographql.com'], credentials: true };
     
     const app = express();

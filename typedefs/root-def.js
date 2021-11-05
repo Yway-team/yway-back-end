@@ -1,7 +1,7 @@
-import { gql } from 'apollo-server';
-import { typeDefs as userDef } from './user-def';
-import { typeDefs as quizDef } from './quiz-def';
-import { typeDefs as platformDef } from './platform-def';
+const { gql } = require('apollo-server');
+const userDef = require('./user-def').typeDefs;
+const quizDef = require('./quiz-def').typeDefs;
+const platformDef = require('./platform-def').typeDefs;
 
 const rootDef = gql`
     type Query {
@@ -13,4 +13,6 @@ const rootDef = gql`
     }
 `;
 
-export const typeDefs = [rootDef, userDef, quizDef, platformDef];
+module.exports = {
+    typeDefs: [rootDef, userDef, quizDef, platformDef]
+};

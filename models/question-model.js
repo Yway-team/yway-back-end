@@ -1,4 +1,4 @@
-import { model, Schema, ObjectId } from 'mongoose';
+const { model, Schema, ObjectId } = require('mongoose');
 
 const questionSchema = new Schema({
     answerOptions: {
@@ -31,4 +31,4 @@ const questionSchema = new Schema({
 }, { timestamps: true });
 
 const Question = model('Question', questionSchema);
-export default Question;
+module.exports = Question;

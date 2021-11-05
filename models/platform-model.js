@@ -1,4 +1,4 @@
-import { model, Schema, ObjectId } from 'mongoose';
+const { model, Schema, ObjectId } = require('mongoose');
 
 const platformSchema = new Schema({
     _id: {
@@ -74,4 +74,4 @@ const platformSchema = new Schema({
 }, { timestamps: true });
 
 const Platform = model('Platform', platformSchema);
-export default Platform;
+module.exports = Platform;
