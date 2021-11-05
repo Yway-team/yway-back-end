@@ -78,7 +78,8 @@ module.exports = {
                 // const platform = await Platform.findById(quiz.platform);  // platforms have not yet been implemented
                 // When platforms have been implemented, change platformId to platform._id, platformName to platform.title, and platformThumbnail to platform.thumbnailImg.
                 const quizInfo = {
-                    bannerImg: quiz.bannerImg,
+                    _id: quiz._id,
+                    bannerImg: quiz.bannerImg ? quiz.bannerImg : 'https://picsum.photos/1000',  // temporary
                     createdAt: quiz.createdAt,
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
