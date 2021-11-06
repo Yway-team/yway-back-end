@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { verifyAccessToken } = require('./auth');
 require('dotenv').config();  // Loads environment variables from .env into process.env
 const { MONGO_URI, BACKEND_PORT, CLIENT_ORIGIN } = process.env;  // Loads environment variables
 
@@ -18,10 +19,7 @@ async function startServer() {
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        context: ({ req }) => {
-            const _id = req.headers.authorization || '';
-            return { _id };
-        }
+        context: verifyAccessToken
     });
 
     await server.start();

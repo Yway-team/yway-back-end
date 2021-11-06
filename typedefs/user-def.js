@@ -26,7 +26,7 @@ const typeDefs = gql`
         getUserInfo(userId: ID!): UserInfo
     }
     extend type Mutation {
-        login(idToken: String!): User
+        login(idToken: String!): LoginInfo
         favoritePlatform(_id: ID!, platformId: ID!): Boolean
         sendFriendRequest(senderId: ID!, receiverId: ID!): Boolean
         addFriend(_id: ID!, friendId: ID!): Boolean
@@ -52,6 +52,17 @@ const typeDefs = gql`
         quizzes: [ID]
         achievements: [Achievement]
         history: [History]
+    }
+    type LoginInfo {
+        _id: ID!
+        accessToken: String!
+        avatar: String
+        creatorPoints: Int!
+        favorites: [ID!]
+        googleId: String
+        notifications: [Notification]
+        playPoints: Int!
+        username: String!
     }
     input PointsInput {
         playPoints: Int
@@ -81,7 +92,7 @@ const typeDefs = gql`
     }
     type Notification {
         description: String!
-        timestamp: String!
+        timestamp: String!  # Should this be createdAt?
         type: String!
     }
 `;

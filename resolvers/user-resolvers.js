@@ -1,9 +1,10 @@
 const ObjectId = require('mongoose').Types.ObjectId;
-const User = require('../models/user-model.js').default;
+const User = require('../models/user-model');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
+const { generateAccessToken } = require('../auth');
 
 const getBasicInfo = (user) => {
     return {
@@ -90,7 +91,7 @@ module.exports = {
         }
     },
     Mutation: {
-        login: async (_, {idToken}, context) => {
+        login: async (_, { idToken }) => {
             // check if ID is already stored in users
             // if not, create new user with the ID
             const ticket = await client.verifyIdToken({
@@ -98,11 +99,14 @@ module.exports = {
                 audience: CLIENT_ID
             });
             const {sub: googleId, name, picture} = ticket.getPayload();
-            let user = await User.findOne({googleId: googleId});  // should be null if no document found
-            if (!user) {
+            let user = await User.findOne({ googleId: googleId });  // should be null if no document found
+            let userId;
+            if (user) { userId = user._id; }
+            else {
                 // new user -> create user document and login.
+                userId = new ObjectId();
                 const newUser = {
-                    _id: new ObjectId(),
+                    _id: userId,
                     googleId: googleId,
                     username: name,
                     avatar: picture,
@@ -122,7 +126,18 @@ module.exports = {
                 user = new User(newUser);
                 await user.save();
             }
-            return getBasicInfo(user);
+            const accessToken = generateAccessToken(userId);
+            return {
+                _id: userId,
+                accessToken: accessToken,
+                avatar: user.avatar,
+                creatorPoints: user.creatorPoints,
+                favorites: user.favorites,
+                googleId: user.googleId,
+                notifications: user.notifications,
+                playPoints: user.playPoints,
+                username: user.username
+            };
         },
         incrementPoints: async (_, {points: {playPoints, creatorPoints}}, {_id}) => {
             const user = await User.findById(_id);
