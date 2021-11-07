@@ -8,7 +8,7 @@ const typeDefs = gql`
         questions: [ID!]!
         rating: Float!
         ratingCount: Int!
-        tags: [String]!
+        tags: [String]
         title: String!
         shuffleQuestions: Boolean!
         shuffleAnswers: Boolean!
@@ -57,14 +57,14 @@ const typeDefs = gql`
         bannerImg: String
         color: String
         description: String
-        platform: ID
+        platformName: String
         tags: [String]
         thumbnailImg: String
         timeToAnswer: Int
     }
     input QuestionInput {
         answerOptions: [String!]!
-        correctAnswer: String!
+        correctAnswerIndex: Int!
         description: String!
     }
 `;

@@ -9,7 +9,7 @@ const generateAccessToken = (userId) => {
 const verifyAccessToken = ({ req }) => {
     const accessToken = req.headers.authorization || '';
     return {
-        _id: accessToken ? jwt.verify(accessToken, ACCESS_TOKEN_SECRET)?._id : ''
+        _id: accessToken ? (jwt.verify(accessToken, ACCESS_TOKEN_SECRET)?._id || '') : ''
     };
 }
 

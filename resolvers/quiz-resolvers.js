@@ -1,7 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
-const Quiz = require('../models/quiz-model').default;
-const Question = require('../models/question-model').default;
-const User = require('../models/user-model').default;
+const Quiz = require('../models/quiz-model');
+const Question = require('../models/question-model');
+const User = require('../models/user-model');
 const { DEFAULT_TIME_TO_ANSWER } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -103,10 +103,11 @@ module.exports = {
         createAndPublishQuiz: async (_, { quiz }, { _id }) => {
             // creates a quiz based on the provided input and publish it to the specified platform
             // todo: verify that quiz can be created to the prescribed platform based on rules for submission
-            if (!_id || !quiz.platform) {
-                // no user is logged in (shouldn't happen) or no platform _id was provided
+            if (!_id || !quiz.platformName) {
+                // no user is logged in (shouldn't happen) or no platform name was provided
                 return null;
             }
+
             quiz._id = new ObjectId();
             quiz.owner = new ObjectId(_id);
             if (!quiz.timeToAnswer) {
@@ -118,11 +119,20 @@ module.exports = {
             quiz.rating = 0;
             quiz.ratingCount = 0;
 
+            // TEMPORARY: HARD-CODE FLETCHER'S _id AS THE PLATFORM _id
+            const platformId = new ObjectId('617b2ee8a4abb8c1b7811827');
+
+            // once platforms are implemented:
+            // const platformId = (await Platform.findOne({ name: quiz.platformName }))._id;
+            
+            quiz.platform = platformId;
+            delete quiz.platformName;  // platform name is not saved in quiz; its _id is
+
             // Handle questions
             for (let i = 0; i < quiz.questions.length; i++) {
-                const { answerOptions, correctAnswer, description } = quiz.questions[i];
-                if (!description || answerOptions.length === 0 || !answerOptions.includes(correctAnswer)) {
-                    // no answer options provided or no question description provided or correctAnswer is not
+                const { answerOptions, correctAnswerIndex, description } = quiz.questions[i];
+                if (!description || answerOptions.length === 0 || correctAnswerIndex < 0 || correctAnswerIndex >= answerOptions.length) {
+                    // no answer options provided or no question description provided or correctAnswerIndex is not
                     // one of the answerOptions
                     // todo: add better handling for this - more information
                     // it is planned for this validation to instead occur on the front-end
@@ -132,12 +142,12 @@ module.exports = {
                 const question = {
                     _id: questionId,
                     answerOptions: answerOptions,
-                    correctAnswer: correctAnswer,
+                    correctAnswerIndex: correctAnswerIndex,
                     description: description,
                     quiz: quiz._id,
                     attemptTotal: 0,
                     correctAttempts: 0,
-                    platform: quiz.platform
+                    platform: platformId
                 };
                 quiz.questions[i] = questionId;
                 await Question.create(question);
