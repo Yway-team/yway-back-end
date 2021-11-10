@@ -28,7 +28,7 @@ const questionSchema = new Schema({
     platform: {
         type: ObjectId
     }
-}, { timestamps: true });
+});
 
 const Question = model('Question', questionSchema);
 module.exports = Question;
