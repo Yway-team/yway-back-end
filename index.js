@@ -5,6 +5,10 @@ const { MONGO_URI, BACKEND_PORT, CLIENT_ORIGIN } = process.env;  // Loads enviro
 async function startServer() {
     const { ApolloServer } = require('apollo-server-express');
     const express = require('express');
+
+    const fs = require("fs")
+    const https = require("https")
+    const http = require("http")
     
     const helmet = require('helmet');
     const mongoSanitize = require('express-mongo-sanitize');
