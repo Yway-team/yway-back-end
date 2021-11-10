@@ -88,6 +88,34 @@ module.exports = {
                 case 'public':
                     return privateInfo;
             }
+        },
+        getDraftsInfo: async (_, __, { _id }) => {
+            if (!_id) {
+                // no user logged in
+                return null;
+            }
+            const user = await User.findById(_id);
+            if (!user) {
+                // weird situation, probably (hopefully) impossible
+                return null;
+            }
+            const draftsInfo = [];
+            // todo: sort by last updated?
+            user.drafts.forEach((draft) => {
+                const draftInfo = {
+                    _id: draft._id,
+                    bannerImg: draft.bannerImg,
+                    createdAt: draft.createdAt,
+                    description: draft.description,
+                    numQuestions: draft.questions.length,
+                    platformName: draft.platformName,
+                    tags: draft.tags,
+                    timeToAnswer: draft.timeToAnswer,
+                    title: draft.title
+                };
+                draftsInfo.push(draftInfo);
+            })
+            return draftsInfo;
         }
     },
     Mutation: {

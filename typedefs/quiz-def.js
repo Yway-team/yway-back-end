@@ -51,7 +51,7 @@ const typeDefs = gql`
     }
     type Draft {
         _id: ID
-        questions: [ID]
+        questions: [Question]
         tags: [String]
         title: String
         shuffleQuestions: Boolean

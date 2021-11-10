@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server');
 const userDef = require('./user-def').typeDefs;
 const quizDef = require('./quiz-def').typeDefs;
+const questionDef = require('./question-def').typeDefs;
 const platformDef = require('./platform-def').typeDefs;
 
 const rootDef = gql`
@@ -14,5 +15,5 @@ const rootDef = gql`
 `;
 
 module.exports = {
-    typeDefs: [rootDef, userDef, quizDef, platformDef]
+    typeDefs: [rootDef, userDef, quizDef, questionDef, platformDef]
 };

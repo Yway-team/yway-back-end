@@ -24,6 +24,7 @@ const typeDefs = gql`
         getCurrentUser(_id: ID!): User
         getUserPublicInfo(userId: ID!): UserInfo
         getUserInfo(userId: ID!): UserInfo
+        getDraftsInfo: [DraftInfo]
     }
     extend type Mutation {
         login(idToken: String!): LoginInfo
@@ -52,6 +53,17 @@ const typeDefs = gql`
         quizzes: [ID]
         achievements: [Achievement]
         history: [History]
+    }
+    type DraftInfo {
+        _id: ID
+        bannerImg: String
+        createdAt: String
+        description: String
+        numQuestions: Int
+        platformName: String
+        tags: [String]
+        timeToAnswer: Int
+        title: String
     }
     type LoginInfo {
         _id: ID!
