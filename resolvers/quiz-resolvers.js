@@ -80,7 +80,7 @@ module.exports = {
                 const quizInfo = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg ? quiz.bannerImg : 'https://picsum.photos/1000',  // temporary
-                    createdAt: quiz.createdAt,
+                    createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
                     ownerAvatar: quizOwner.avatar,
