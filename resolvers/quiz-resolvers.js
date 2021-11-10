@@ -2,7 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
 const User = require('../models/user-model');
-const { DEFAULT_TIME_TO_ANSWER } = require('../constants');
+const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
 // const dateScalar = new GraphQLScalarType({
@@ -158,7 +158,38 @@ module.exports = {
             }
             return quiz;
         },
-        saveQuizAsDraft: async (_, {_id}) => {
+        saveQuizAsDraft: async (_, { draft }, { _id }) => {
+            // If the draft has an _id, replace the draft with the corresponding _id in the user document
+            // else give the draft an _id and add it to the user's drafts
+            if (!_id) {
+                // user is not logged in
+                return null;
+            }
+            const user = await User.findById(_id);
+            if (!user.drafts) {
+                user.drafts = []
+            }
+            if (draft._id) {
+                // update the draft with the given _id
+                // verify that equals() works properly
+                // What if, somehow, there is no match?
+                draft._id = new ObjectId(draft._id);
+                for (let i = 0; i < user.drafts.length; i++) {
+                    if (user.drafts[i]._id.equals(draft._id)) {
+                        user.drafts[i] = draft;
+                        break;
+                    }
+                }
+            } else {
+                // this is a new draft; give it an _id and append it to the user's drafts array
+                if (user.drafts.length > MAX_DRAFTS) {
+                    return null;
+                }
+                draft._id = new ObjectId();
+                user.drafts.push(draft);
+            }
+            await user.save();
+            return draft._id.toString();
         },
         deleteQuiz: async (_, {_id}) => {
         },

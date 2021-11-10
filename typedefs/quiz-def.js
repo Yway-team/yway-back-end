@@ -29,7 +29,7 @@ const typeDefs = gql`
     }
     extend type Mutation {
         createAndPublishQuiz(quiz: QuizInput!): Quiz
-        saveQuizAsDraft(_id: ID!): Quiz
+        saveQuizAsDraft(draft: DraftInput!): ID
         deleteQuiz(_id: ID!): Boolean
         editPublishedQuiz(_id: ID!): Quiz
         rateQuiz(_id: ID!, rating: Int!): Boolean
@@ -49,6 +49,21 @@ const typeDefs = gql`
         rating: Float!
         title: String!
     }
+    type Draft {
+        _id: ID
+        questions: [ID]
+        tags: [String]
+        title: String
+        shuffleQuestions: Boolean
+        shuffleAnswers: Boolean
+        timeToAnswer: Int
+        bannerImg: String
+        color: String
+        createdAt: String
+        description: String
+        platformName: String
+        thumbnailImg: String
+    }
     input QuizInput {
         questions: [QuestionInput!]!
         title: String!
@@ -66,6 +81,21 @@ const typeDefs = gql`
         answerOptions: [String!]!
         correctAnswerIndex: Int!
         description: String!
+    }
+    input DraftInput {
+        _id: String
+        questions: [QuestionInput]
+        tags: [String]
+        title: String
+        shuffleQuestions: Boolean
+        shuffleAnswers: Boolean
+        timeToAnswer: Int
+        bannerImg: String
+        color: String
+        createdAt: String
+        description: String
+        platformName: String
+        thumbnailImg: String
     }
 `;
 

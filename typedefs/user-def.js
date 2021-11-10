@@ -7,7 +7,7 @@ const typeDefs = gql`
         avatar: String!
         bio: String
         creatorPoints: Int!
-        drafts: [Quiz]!
+        drafts: [Draft]!
         favorites: [ID]!
         friends: [ID]!
         googleId: ID!
