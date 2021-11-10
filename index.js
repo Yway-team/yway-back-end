@@ -14,6 +14,15 @@ async function startServer() {
     const resolvers = require('./resolvers/root-resolvers');
     const corsPolicy = { origin: [CLIENT_ORIGIN, 'http://yway.app.s3-website.us-east-2.amazonaws.com', 'http://localhost:3000', 'https://studio.apollographql.com'], credentials: true };
     
+    const configurations = {
+        // Note: You may need sudo to run on port 443
+        production: { ssl: true, port: 443, hostname: 'api.yway.app' },
+        development: { ssl: false, port: 4000, hostname: 'localhost' },
+    };
+
+    const environment = process.env.NODE_ENV || 'production';
+    const config = configurations[environment];
+
     const app = express();
     const server = new ApolloServer({
         typeDefs,
@@ -34,7 +43,36 @@ async function startServer() {
 
     server.applyMiddleware({ app, cors: corsPolicy });
 
-    app.listen({ port: BACKEND_PORT }, () => { console.log(`Server listening on :${BACKEND_PORT}${server.graphqlPath}`); })
+    // Create the HTTPS or HTTP server, per configuration
+    let httpServer;
+    if (config.ssl) {
+      // Assumes certificates are in a .ssl folder off of the package root.
+      // Make sure these files are secured.
+      httpServer = https.createServer(
+        {
+            key: fs.readFileSync('/etc/letsencrypt/live/api.yway.app/privkey.pem'),
+            cert: fs.readFileSync('/etc/letsencrypt/live/api.yway.app/fullchain.pem'),
+            ca: fs.readFileSync('/etc/letsencrypt/live/api.yway.app/chain.pem')
+        },
+  
+        app,
+      );
+    } else {
+      httpServer = http.createServer(app);
+    }
+  
+    await new Promise(resolve =>
+      httpServer.listen({ port: config.port }, resolve)
+    );
+
+    console.log(
+      '🚀 Server ready at',
+      `http${config.ssl ? 's' : ''}://${config.hostname}:${config.port}${
+        server.graphqlPath
+      }`
+    );  
+
+    // app.listen({ port: BACKEND_PORT }, () => { console.log(`Server listening on :${BACKEND_PORT}${server.graphqlPath}`); })
 }
 
 mongoose.connect(MONGO_URI)
