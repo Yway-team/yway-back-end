@@ -3,26 +3,26 @@ const { gql } = require('apollo-server');
 const typeDefs = gql`
     type Platform {
         _id: ID!
-        owner: ID!,
-        moderators: [ID]!,
-        followers: Int!,
-        bannerImg: String,
-        thumbnailImg: String,
-        title: String!,
-        description: String,
-        quizzes: [ID]!,
-        questions: [ID]!,
-        tags: [String]!,
-        color: String,
-        minCreatorPoints: Int!,
-        onlyModSubmissions: Boolean!,
-        bannedUsers: [ID]!,
-        platformMetrics: [Int]!,
+        owner: ID!
+        moderators: [ID]!
+        followers: Int!
+        bannerImg: String
+        thumbnailImg: String
+        title: String!
+        description: String
+        quizzes: [ID]!
+        questions: [ID]!
+        tags: [String]!
+        color: String
+        minCreatorPoints: Int!
+        onlyModSubmissions: Boolean!
+        bannedUsers: [ID]!
+        platformMetrics: [Int]
         leaderboard: [LeaderBoardEntry]!
     }
     type LeaderBoardEntry{
-        userId: ID!,
-        rank: Int!,
+        userId: ID!
+        rank: Int!
         points: Int!
     }
     extend type Query {
@@ -32,9 +32,19 @@ const typeDefs = gql`
         getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderBoardEntry]
     }
     extend type Mutation {
-        createNewPlatform(_id: ID!): Platform
+        createPlatform(platform: PlatformInput!): String
         deletePlatform(_id: ID!): Boolean
         updatePlatformSettings(_id: ID!): Boolean
+    }
+    input PlatformInput {
+        bannerImg: String
+        color: String
+        description: String
+        minCreatorPoints: Int
+        onlyModSubmissions: Boolean
+        thumbnailImg: String
+        tags: [String]
+        title: String!
     }
 `;
 

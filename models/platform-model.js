@@ -11,7 +11,8 @@ const platformSchema = new Schema({
     },
     moderators: {
         type: [ObjectId],
-        required: true
+        required: true,
+        default: []
     },
     followers: {
         type: Number,
@@ -36,15 +37,18 @@ const platformSchema = new Schema({
     },
     quizzes: {
         type: [ObjectId],
-        required: true
+        required: true,
+        default: []
     },
     questions: {
         type: [ObjectId],
-        required: true
+        required: true,
+        default: []
     },
     tags: {
         type: [String],
-        required: true
+        required: true,
+        default: []
     },
     color: {
         type: String,
@@ -61,11 +65,12 @@ const platformSchema = new Schema({
     },
     bannedUsers: {
         type: [ObjectId],
-        required: true
+        required: true,
+        default: []
     },
     platformMetrics: {
         type: [Number],
-        required: true
+        required: false
     },
     leaderboard: {
         type: [Object],
