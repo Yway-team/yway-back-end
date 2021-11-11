@@ -16,7 +16,7 @@ async function startServer() {
     
     const { typeDefs } = require('./typedefs/root-def');
     const resolvers = require('./resolvers/root-resolvers');
-    const corsPolicy = { origin: [CLIENT_ORIGIN, 'http://yway.app.s3-website.us-east-2.amazonaws.com', 'http://localhost:3000', 'https://studio.apollographql.com'], credentials: true };
+    const corsPolicy = { origin: [CLIENT_ORIGIN, 'http://yway.app.s3-website.us-east-2.amazonaws.com', 'http://localhost:3000', 'https://www.yway.app', 'https://studio.apollographql.com'], credentials: true };
     
     const configurations = {
         // Note: You may need sudo to run on port 443
