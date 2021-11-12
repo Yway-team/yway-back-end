@@ -35,7 +35,7 @@ const typeDefs = gql`
         rateQuiz(_id: ID!, rating: Int!): Boolean
     }
     type QuizInfo {
-        _id: ID
+        _id: ID!
         bannerImg: String
         createdAt: String!
         description: String

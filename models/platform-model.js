@@ -1,4 +1,5 @@
-const { model, Schema, ObjectId } = require('mongoose');
+const ObjectId = require('mongoose').Types.ObjectId;
+const { model, Schema } = require('mongoose');
 
 const platformSchema = new Schema({
     _id: {
@@ -14,7 +15,7 @@ const platformSchema = new Schema({
         required: true,
         default: []
     },
-    followers: {
+    favorites: {
         type: Number,
         required: true,
         default: 0

@@ -15,6 +15,27 @@ module.exports = {
         getMarathon: async (_, {_id}) => {
         },
         getLeaderboardEntries: async (_, {_id, howMany}) => {
+        },
+        getPlatformHighlights: async (_, { howMany }) => {
+            const platforms = await Platform.find().limit(howMany);
+            if (!platforms) {
+                // no platforms in database
+                return null;
+            }
+            const platformInfos = [];
+            for (let i = 0; i < platforms.length; i++) {
+                const platform = platforms[i];
+                const platformInfo = {
+                    _id: platform._id,
+                    description: platform.description,
+                    favorites: platform.favorites,
+                    numQuizzes: platform.quizzes.length,
+                    thumbnailImg: platform.thumbnailImg,
+                    title: platform.title
+                };
+                platformInfos.push(platformInfo);
+            }
+            return platformInfos;
         }
     },
     Mutation: {

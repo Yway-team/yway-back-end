@@ -5,7 +5,7 @@ const typeDefs = gql`
         _id: ID!
         owner: ID!
         moderators: [ID]!
-        followers: Int!
+        favorites: Int!
         bannerImg: String
         thumbnailImg: String
         title: String!
@@ -20,7 +20,15 @@ const typeDefs = gql`
         platformMetrics: [Int]
         leaderboard: [LeaderBoardEntry]!
     }
-    type LeaderBoardEntry{
+    type PlatformInfo {
+        _id: ID!
+        description: String
+        favorites: Int
+        numQuizzes: Int!
+        thumbnailImg: String
+        title: String!
+    }
+    type LeaderBoardEntry {
         userId: ID!
         rank: Int!
         points: Int!
@@ -30,6 +38,7 @@ const typeDefs = gql`
         getPlatformByName(name: String!): Platform
         getMarathon(_id: ID!): [String]
         getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderBoardEntry]
+        getPlatformHighlights(howMany: Int!): [PlatformInfo]
     }
     extend type Mutation {
         createPlatform(platform: PlatformInput!): String
