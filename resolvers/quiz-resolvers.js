@@ -2,6 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
 const User = require('../models/user-model');
+const Platform = require('../models/platform-model');
 const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -42,8 +43,7 @@ module.exports = {
                 // Weird situation - not sure what should happen here. Can ownerless quizzes exist?
                 return null;
             }
-            // const platform = await Platform.findById(quiz.platform);  // platforms have not yet been implemented
-            // When platforms have been implemented, change platformId to platform._id, platformName to platform.title, and platformThumbnail to platform.thumbnailImg.
+            const platform = await Platform.findById(quiz.platform);
             const quizInfo = {
                 bannerImg: quiz.bannerImg,
                 createdAt: quiz.createdAt,
@@ -52,9 +52,9 @@ module.exports = {
                 ownerAvatar: quizOwner.avatar,
                 ownerId: quizOwner._id,
                 ownerUsername: quizOwner.username,
-                platformId: quiz.platform,
-                platformName: 'Generic Platform Name',
-                platformThumbnail: 'https://picsum.photos/1000',
+                platformId: platform._id,
+                platformName: platform.title,
+                platformThumbnail: platform.thumbnailImg ? platform.thumbnailImg : 'https://picsum.photos/1000',  // temporary
                 rating: quiz.rating,
                 title: quiz.title
             };
@@ -64,19 +64,13 @@ module.exports = {
             const quizzes = await Quiz.find().limit(howMany);
             const quizInfos = [];
             for (let i = 0; i < quizzes.length; i++) {
-                // Mostly copy-pasted from getQuizInfo
                 const quiz = quizzes[i];
-                if (!quiz) {
-                    // the provided quizId does not exist
-                    return null;
-                }
                 const quizOwner = await User.findById(quiz.owner);  // there ought to be a faster way to do this - can we get all owners simultaneously?
                 if (!quizOwner) {
                     // Weird situation - not sure what should happen here. Can ownerless quizzes exist?
                     return null;
                 }
-                // const platform = await Platform.findById(quiz.platform);  // platforms have not yet been implemented
-                // When platforms have been implemented, change platformId to platform._id, platformName to platform.title, and platformThumbnail to platform.thumbnailImg.
+                const platform = await Platform.findById(quiz.platform);
                 const quizInfo = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg ? quiz.bannerImg : 'https://picsum.photos/1000',  // temporary
@@ -86,14 +80,15 @@ module.exports = {
                     ownerAvatar: quizOwner.avatar,
                     ownerId: quizOwner._id,
                     ownerUsername: quizOwner.username,
-                    platformId: quiz.platform,
-                    platformName: `Generic Platform Name ${i}`,
-                    platformThumbnail: 'https://picsum.photos/1000',
+                    platformId: platform._id,
+                    platformName: platform.title,
+                    platformThumbnail: platform.thumbnailImg ? platform.thumbnailImg : 'https://picsum.photos/1000',  // temporary
                     rating: quiz.rating,
                     title: quiz.title
                 };
                 quizInfos.push(quizInfo);
             }
+            console.log(quizInfos);
             return quizInfos;
         },
         getQuizMetrics: async (_, {_id}) => {
@@ -119,13 +114,12 @@ module.exports = {
             quiz.rating = 0;
             quiz.ratingCount = 0;
 
-            // TEMPORARY: HARD-CODE FLETCHER'S _id AS THE PLATFORM _id
-            const platformId = new ObjectId('617b2ee8a4abb8c1b7811827');
-
-            // once platforms are implemented:
-            // const platformId = (await Platform.findOne({ name: quiz.platformName }))._id;
-            
-            quiz.platform = platformId;
+            const platform = await Platform.findOne({ name: quiz.platformName });
+            if (!platform) {
+                // no platform by that name found
+                return null;
+            }
+            quiz.platform = platform._id;
             delete quiz.platformName;  // platform name is not saved in quiz; its _id is
 
             // Handle questions
@@ -147,15 +141,14 @@ module.exports = {
                     quiz: quiz._id,
                     attemptTotal: 0,
                     correctAttempts: 0,
-                    platform: platformId
+                    platform: platform._id
                 };
                 quiz.questions[i] = questionId;
                 await Question.create(question);
             }
-            const result = await Quiz.create(quiz);
-            if (!result) {
-                return null;
-            }
+            platform.quizzes.push(quiz._id);
+            await Quiz.create(quiz);
+            await platform.save();
             return quiz;
         },
         saveQuizAsDraft: async (_, { draft }, { _id }) => {
