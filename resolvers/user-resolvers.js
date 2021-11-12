@@ -1,5 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model');
+const Platform = require('../models/platform-model');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
@@ -231,8 +232,39 @@ module.exports = {
             await user.save();
             return true;
         },
-        favoritePlatform: async (_, {_id, platformId}) => {
-
+        favoritePlatform: async (_, { platformId }, { _id }) => {
+            const user = await User.findById(_id);
+            platformId = ObjectId(platformId);
+            const platform = await Platform.findById(platformId);
+            if (!platform) {
+                // the platform to be favorited does not exist
+                return false;
+            }
+            if (user.favorites.find(favoritePlatformId => favoritePlatformId.equals(platformId))) {
+                // the platform to be favorited is already a favorite
+                return false;
+            }
+            user.favorites.push(platformId);
+            platform.favorites += 1;
+            await user.save();
+            await platform.save();
+        },
+        unfavoritePlatform: async (_, { platformId }, { _id }) => {
+            const user = await User.findById(_id);
+            platformId = ObjectId(platformId);
+            const platform = await Platform.findById(platformId);
+            const favoriteIndex = user.favorites.findIndex(favoritePlatformId => favoritePlatformId.equals(platformId));
+            if (favoriteIndex === -1) {
+                // the given platform is not favorited by the user
+                return false;
+            }
+            user.favorites.splice(favoriteIndex, 1);
+            await user.save();
+            if (platform) {
+                platform.favorites -= 1;
+                await platform.save();
+            }
+            return true;
         },
         sendFriendRequest: async (_, {senderId, receiverId}) => {
 

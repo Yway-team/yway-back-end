@@ -1,3 +1,4 @@
+const ObjectId = require('mongoose').Types.ObjectId;
 const { model, Schema } = require('mongoose');
 
 const userSchema = new Schema({
@@ -50,7 +51,7 @@ const userSchema = new Schema({
         required: true
     },
     favorites: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     quizzes: {

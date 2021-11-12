@@ -88,7 +88,6 @@ module.exports = {
                 };
                 quizInfos.push(quizInfo);
             }
-            console.log(quizInfos);
             return quizInfos;
         },
         getQuizMetrics: async (_, {_id}) => {
