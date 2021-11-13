@@ -112,8 +112,7 @@ module.exports = {
             quiz.averageScore = 0;
             quiz.rating = 0;
             quiz.ratingCount = 0;
-
-            const platform = await Platform.findOne({ name: quiz.platformName });
+            const platform = await Platform.findOne({ title: quiz.platformName });  // escapes only quotes
             if (!platform) {
                 // no platform by that name found
                 return null;
@@ -121,6 +120,11 @@ module.exports = {
             quiz.platform = platform._id;
             delete quiz.platformName;  // platform name is not saved in quiz; its _id is
 
+            const user = await User.findById(_id);
+            if (!user) {
+                // shouldn't happen
+                return null;
+            }
             // Handle questions
             for (let i = 0; i < quiz.questions.length; i++) {
                 const { answerOptions, correctAnswerIndex, description } = quiz.questions[i];
@@ -145,8 +149,10 @@ module.exports = {
                 quiz.questions[i] = questionId;
                 await Question.create(question);
             }
+            user.quizzes.push(quiz._id);
             platform.quizzes.push(quiz._id);
             await Quiz.create(quiz);
+            await user.save();
             await platform.save();
             return quiz;
         },
