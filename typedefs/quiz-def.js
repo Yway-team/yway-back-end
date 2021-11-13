@@ -30,7 +30,7 @@ const typeDefs = gql`
     extend type Mutation {
         createAndPublishQuiz(quiz: QuizInput!): Quiz
         saveQuizAsDraft(draft: DraftInput!): ID
-        deleteQuiz(_id: ID!): Boolean
+        deleteQuiz(quizId: ID!): Boolean
         editPublishedQuiz(_id: ID!): Quiz
         rateQuiz(_id: ID!, rating: Int!): Boolean
     }

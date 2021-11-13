@@ -39,7 +39,7 @@ const userSchema = new Schema({
         required: true
     },
     friends: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     notifications: {
@@ -55,7 +55,7 @@ const userSchema = new Schema({
         required: true
     },
     quizzes: {
-        type: [String],
+        type: [ObjectId],
         required: true
     },
     drafts: {
@@ -63,7 +63,7 @@ const userSchema = new Schema({
         required: true
     },
     platforms: {
-        type: [String],
+        type: [ObjectId],
         required: true
     }
 }, { timestamps: true });

@@ -183,7 +183,39 @@ module.exports = {
             await user.save();
             return draft._id.toString();
         },
-        deleteQuiz: async (_, {_id}) => {
+        deleteQuiz: async (_, { quizId }, { _id }) => {
+            // deletes the quiz entirely - not the same as removing from platform
+            // delete quiz document
+            // remove from owner's quizzes
+            // remove from platform's quizzes
+            // delete quiz questions
+            // can only be done by owners and (todo) admins
+            const quiz = await Quiz.findById(quizId);
+            if (!quiz) {
+                // the quiz already does not exist
+                return null;
+            }
+            const userId = ObjectId(_id);
+            if (!quiz.owner.equals(userId)) {
+                // the owner is not logged in
+                return false;
+            }
+            const user = await User.findById(userId);
+            const platform = await Platform.findById(quiz.platform);
+
+            const userIndex = user.quizzes.findIndex(id => id.equals(quiz._id));
+            const platformIndex = platform.quizzes.findIndex(id => id.equals(quiz._id));
+            if (userIndex === -1 || platformIndex === -1) {
+                // Something has gone horribly wrong. This shouldn't ever happen.
+                return false;
+            }
+            user.quizzes.splice(userIndex, 1);
+            platform.quizzes.splice(platformIndex, 1);
+            await Quiz.deleteOne({ _id: quizId });
+            await user.save();
+            await platform.save();
+            await Question.deleteMany({ quiz: quizId });
+            return true;
         },
         editPublishedQuiz: async (_, {_id}) => {
         },
