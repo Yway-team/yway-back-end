@@ -117,7 +117,22 @@ module.exports = {
                 draftsInfo.push(draftInfo);
             })
             return draftsInfo;
-        }
+        },
+        /*getFavorites: async (_, __, { _id }) => {
+            if (!id) {
+                // user is not logged in
+                return null;
+            }
+            const user = await User.findById(_id);
+            if (!user) {
+                // no user by that _id (shouldn't happen)
+                return null;
+            }
+            // name, thumbnailImg, _id
+            const favoritePlatforms = await Platform.find({ _id: { $in: user.favorites } });
+            console.log(favoritePlatforms);
+            return favoritePlatforms.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
+        }*/
     },
     Mutation: {
         login: async (_, { idToken }) => {
@@ -156,12 +171,14 @@ module.exports = {
                 await user.save();
             }
             const accessToken = generateAccessToken(userId);
+            let favorites = await Platform.find({ _id: { $in: user.favorites } });
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
             return {
                 _id: userId,
                 accessToken: accessToken,
                 avatar: user.avatar,
                 creatorPoints: user.creatorPoints,
-                favorites: user.favorites,
+                favorites: favorites,
                 googleId: user.googleId,
                 notifications: user.notifications,
                 playPoints: user.playPoints,

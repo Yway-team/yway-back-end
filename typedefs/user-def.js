@@ -25,6 +25,7 @@ const typeDefs = gql`
         getUserPublicInfo(userId: ID!): UserInfo
         getUserInfo(userId: ID!): UserInfo
         getDraftsInfo: [DraftInfo]
+        getFavorites: [FavoriteInfo]
     }
     extend type Mutation {
         login(idToken: String!): LoginInfo
@@ -71,11 +72,15 @@ const typeDefs = gql`
         accessToken: String!
         avatar: String
         creatorPoints: Int!
-        favorites: [ID!]
+        favorites: [FavoriteInfo!]
         googleId: String
         notifications: [Notification]
         playPoints: Int!
         username: String!
+    }
+    type FavoriteInfo {
+        thumbnailImg: String
+        title: String
     }
     input PointsInput {
         playPoints: Int
