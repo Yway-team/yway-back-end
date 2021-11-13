@@ -255,16 +255,19 @@ module.exports = {
             const platform = await Platform.findById(platformId);
             if (!platform) {
                 // the platform to be favorited does not exist
-                return false;
+                return null;
             }
             if (user.favorites.find(favoritePlatformId => favoritePlatformId.equals(platformId))) {
                 // the platform to be favorited is already a favorite
-                return false;
+                return null;
             }
             user.favorites.push(platformId);
             platform.favorites += 1;
             await user.save();
             await platform.save();
+            let favorites = await Platform.find({ _id: { $in: user.favorites } });
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
+            return favorites;
         },
         unfavoritePlatform: async (_, { platformId }, { _id }) => {
             const user = await User.findById(_id);
@@ -273,7 +276,7 @@ module.exports = {
             const favoriteIndex = user.favorites.findIndex(favoritePlatformId => favoritePlatformId.equals(platformId));
             if (favoriteIndex === -1) {
                 // the given platform is not favorited by the user
-                return false;
+                return null;
             }
             user.favorites.splice(favoriteIndex, 1);
             await user.save();
@@ -281,7 +284,9 @@ module.exports = {
                 platform.favorites -= 1;
                 await platform.save();
             }
-            return true;
+            let favorites = await Platform.find({ _id: { $in: user.favorites } });
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
+            return favorites;
         },
         sendFriendRequest: async (_, {senderId, receiverId}) => {
 

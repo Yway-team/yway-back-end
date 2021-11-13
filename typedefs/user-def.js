@@ -29,8 +29,8 @@ const typeDefs = gql`
     }
     extend type Mutation {
         login(idToken: String!): LoginInfo
-        favoritePlatform(platformId: ID!): Boolean
-        unfavoritePlatform(platformId: ID!): Boolean
+        favoritePlatform(platformId: ID!): [FavoriteInfo!]
+        unfavoritePlatform(platformId: ID!): [FavoriteInfo!]
         sendFriendRequest(senderId: ID!, receiverId: ID!): Boolean
         addFriend(_id: ID!, friendId: ID!): Boolean
         removeFriend(_id: ID!, friendId: ID!): Boolean
