@@ -1,5 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Platform = require('../models/platform-model');
+const User = require('../models/user-model');
 
 module.exports = {
     Query: {
@@ -56,6 +57,9 @@ module.exports = {
             if (!result) {
                 return null;
             }
+            const user = await User.findById(_id);
+            user.platforms.push(platform._id);
+            await user.save();
             return platform._id.toString();
         },
         deletePlatform: async (_, {_id}) => {
