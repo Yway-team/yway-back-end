@@ -30,7 +30,7 @@ module.exports = {
                     description: platform.description,
                     favorites: platform.favorites,
                     numQuizzes: platform.quizzes.length,
-                    thumbnailImg: platform.thumbnailImg,
+                    thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
                     title: platform.title
                 };
                 platformInfos.push(platformInfo);

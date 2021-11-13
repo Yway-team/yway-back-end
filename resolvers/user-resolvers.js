@@ -172,7 +172,7 @@ module.exports = {
             }
             const accessToken = generateAccessToken(userId);
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary
             return {
                 _id: userId,
                 accessToken: accessToken,
@@ -266,7 +266,7 @@ module.exports = {
             await user.save();
             await platform.save();
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary img
             return favorites;
         },
         unfavoritePlatform: async (_, { platformId }, { _id }) => {
@@ -285,7 +285,7 @@ module.exports = {
                 await platform.save();
             }
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg, title: favorite.title }; }).sort();
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary img
             return favorites;
         },
         sendFriendRequest: async (_, {senderId, receiverId}) => {
