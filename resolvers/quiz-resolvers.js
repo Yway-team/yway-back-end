@@ -193,7 +193,7 @@ module.exports = {
             const quiz = await Quiz.findById(quizId);
             if (!quiz) {
                 // the quiz already does not exist
-                return null;
+                return false;
             }
             const userId = ObjectId(_id);
             if (!quiz.owner.equals(userId)) {
