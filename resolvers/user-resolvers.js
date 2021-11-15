@@ -250,6 +250,9 @@ module.exports = {
             return true;
         },
         favoritePlatform: async (_, { platformId }, { _id }) => {
+            if (!_id) {
+                return null;
+            }
             const user = await User.findById(_id);
             platformId = ObjectId(platformId);
             const platform = await Platform.findById(platformId);
@@ -270,6 +273,9 @@ module.exports = {
             return favorites;
         },
         unfavoritePlatform: async (_, { platformId }, { _id }) => {
+            if (!_id) {
+                return null;
+            }
             const user = await User.findById(_id);
             platformId = ObjectId(platformId);
             const platform = await Platform.findById(platformId);
