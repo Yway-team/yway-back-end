@@ -1,6 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
+const Quiz = require('../models/quiz-model');
 const { OAuth2Client } = require('google-auth-library');
 const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
@@ -81,7 +82,7 @@ module.exports = {
                 case 'private':
                     return publicInfo;
                 case 'friends':
-                    if (context._id && user.friends.includes(context._id)) {
+                    if (context._id && user.friends.find(friendId => friendId.equals(context._id))) {  // todo: this won't work because friends is [ObjectId] and context._id is String
                         // requesting user is logged in and friends with the user
                         return privateInfo;
                     }
@@ -117,6 +118,70 @@ module.exports = {
                 draftsInfo.push(draftInfo);
             })
             return draftsInfo;
+        },
+        getUserQuizzesInfo: async (_, { userId }, { _id }) => {
+            let getOwnQuizzes = false;  // is the user getting his or her own quizzes?
+            const loggedIn = Boolean(_id);
+            if (!userId) {
+                if (!loggedIn) {
+                    return null;
+                } else {
+                    // get logged-in user's own quiz info
+                    getOwnQuizzes = true;
+                    userId = _id;
+                }
+            }
+            console.log(userId);
+            const user = await User.findById(userId);
+            if (!user) {
+                // requested user does not exist
+                return null;
+            }
+            if (!getOwnQuizzes) {
+                // check permissions
+                switch (user.privacySettings) {
+                    case 'private':
+                        return null;
+                    case 'friends':
+                        if (!loggedIn || !user.friends.find(friendId => friendId.equals(_id))) {
+                            return null;
+                        }
+                        break;
+                    case 'public':
+                        break;
+                }
+            }
+
+            const quizzes = await Quiz.find({ _id: { $in: user.quizzes } });
+
+            const platforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });  // may be out of order
+            if (!quizzes) { return null; }
+            const quizInfos = [];
+            for (let i = 0; i < quizzes.length; i++) {
+                const quiz = quizzes[i];
+                const platform = platforms.find(platform => quiz.platform.equals(platform._id));
+                if (!platform) {
+                    // something went wrong
+                    return null;
+                }
+                const quizInfo = {
+                    _id: quiz._id,
+                    bannerImg: quiz.bannerImg,
+                    createdAt: quiz.createdAt,
+                    description: quiz.description,
+                    numQuestions: quiz.questions.length,
+                    ownerAvatar: user.avatar,
+                    ownerId: quiz.owner,
+                    ownerUsername: user.username,
+                    platformId: platform._id,
+                    platformName: platform.title,
+                    platformThumbnail: platform.thumbnailImg,
+                    rating: quiz.rating,
+                    title: quiz.title
+                };
+                quizInfos.push(quizInfo);
+            }
+            return quizInfos;
         },
         /*getFavorites: async (_, __, { _id }) => {
             if (!id) {
