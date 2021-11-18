@@ -130,6 +130,8 @@ module.exports = {
                     getOwnQuizzes = true;
                     userId = _id;
                 }
+            } else if (_id === userId) {
+                getOwnQuizzes = true;
             }
             const user = await User.findById(userId);
             if (!user) {
