@@ -27,6 +27,7 @@ const typeDefs = gql`
         getDraftsInfo: [DraftInfo]
         getFavorites: [FavoriteInfo]
         getUserQuizzesInfo(userId: ID): [QuizInfo]
+        getUserPlatformsInfo(userId: ID): [PlatformInfo]
     }
     extend type Mutation {
         login(idToken: String!): LoginInfo

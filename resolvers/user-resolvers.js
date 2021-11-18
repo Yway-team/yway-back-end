@@ -131,7 +131,6 @@ module.exports = {
                     userId = _id;
                 }
             }
-            console.log(userId);
             const user = await User.findById(userId);
             if (!user) {
                 // requested user does not exist
@@ -153,9 +152,8 @@ module.exports = {
             }
 
             const quizzes = await Quiz.find({ _id: { $in: user.quizzes } });
-
-            const platforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });  // may be out of order
             if (!quizzes) { return null; }
+            const platforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });  // may be out of order
             const quizInfos = [];
             for (let i = 0; i < quizzes.length; i++) {
                 const quiz = quizzes[i];
@@ -182,6 +180,58 @@ module.exports = {
                 quizInfos.push(quizInfo);
             }
             return quizInfos;
+        },
+        getUserPlatformsInfo: async (_, { userId }, { _id }) => {
+            let getOwnPlatforms = false;
+            const loggedIn = Boolean(_id);
+            if (!userId) {
+                if (!loggedIn) {
+                    return null;
+                } else {
+                    // get logged-in user's own quiz info
+                    getOwnPlatforms = true;
+                    userId = _id;
+                }
+            } else if (_id === userId) {
+                getOwnPlatforms = true;
+            }
+
+            const user = await User.findById(userId);
+            if (!user) {
+                // requested user does not exist
+                return null;
+            }
+            if (!getOwnPlatforms) {
+                // check permissions
+                switch (user.privacySettings) {
+                    case 'private':
+                        return null;
+                    case 'friends':
+                        if (!loggedIn || !user.friends.find(friendId => friendId.equals(_id))) {
+                            return null;
+                        }
+                        break;
+                    case 'public':
+                        break;
+                }
+            }
+
+            const platforms = await Platform.find({ _id: { $in: user.platforms } });
+            if (!platforms) { return null; }
+            const platformInfos = [];
+            for (let i = 0; i < platforms.length; i++) {
+                const platform = platforms[i];
+                const platformInfo = {
+                    _id: platform._id,
+                    description: platform.description,
+                    favorites: platform.favorites,
+                    numQuizzes: platform.quizzes.length,
+                    thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                    title: platform.title
+                };
+                platformInfos.push(platformInfo);
+            }
+            return platformInfos;
         },
         /*getFavorites: async (_, __, { _id }) => {
             if (!id) {
