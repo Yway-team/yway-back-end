@@ -33,9 +33,9 @@ const typeDefs = gql`
         login(idToken: String!): LoginInfo
         favoritePlatform(platformId: ID!): [FavoriteInfo!]
         unfavoritePlatform(platformId: ID!): [FavoriteInfo!]
-        sendFriendRequest(senderId: ID!, receiverId: ID!): Boolean
-        addFriend(_id: ID!, friendId: ID!): Boolean
-        removeFriend(_id: ID!, friendId: ID!): Boolean
+        sendFriendRequest(receiverId: ID!): Boolean
+        addFriend(friendId: ID!): Boolean
+        removeFriend(friendId: ID!): Boolean
         incrementPoints(points: PointsInput!): User
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): String
@@ -90,29 +90,29 @@ const typeDefs = gql`
     }
     input NotificationInput {
         description: String!
-        timestamp: String!
+        createdAt: String!
         type: String!
     }
     input HistoryInput {
         description: String!
-        timestamp: String!
+        createdAt: String!
         type: String!
     }
     type Achievement {
         creatorPointValue: Int
         description: String!
         playPointValue: Int
-        timestamp: String!
+        createdAt: String!
         type: String!
     }
     type History {
         description: String!
-        timestamp: String!
+        createdAt: String!
         type: String!
     }
     type Notification {
         description: String!
-        timestamp: String!  # Should this be createdAt?
+        createdAt: String!  # Should this be createdAt?
         type: String!
     }
 `;

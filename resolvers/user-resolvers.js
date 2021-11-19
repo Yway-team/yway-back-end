@@ -411,14 +411,62 @@ module.exports = {
             favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary img
             return favorites;
         },
-        sendFriendRequest: async (_, {senderId, receiverId}) => {
-
+        sendFriendRequest: async (_, { receiverId }, { _id }) => {
+            if (!_id) return false;
+            const receivingUser = await User.findById(receiverId);
+            if (!receivingUser) return false;
+            senderId = ObjectId(_id);
+            if (receivingUser.notifications.find(({ type, description }) => type === 'friend request' && description.equals(senderId))) {
+                // a friend request is already active from this user
+                return false;
+            }
+            receivingUser.notifications.push({
+                type: 'friend request',
+                description: ObjectId(_id),
+                createdAt: new Date()
+            });
+            await receivingUser.save();
+            return true;
         },
-        addFriend: async (_, {_id, friendId}) => {
-
+        addFriend: async (_, { friendId }, { _id }) => {
+            // this is called by the user who accepts a friend request
+            // todo: possibly abusable, look into that
+            if (!_id) return false;
+            const userId = ObjectId(_id);
+            friendId = ObjectId(friendId);
+            const user = await User.findById(userId);
+            if (!user) return false;
+            const friend = await User.findById(friendId);
+            if (!friend) return false;
+            if (!user.friends.find(id => id.equals(friendId))) {
+                user.friends.push(friendId);
+            }
+            if (!friend.friends.find(id => id.equals(userId))) {
+                friend.friends.push(userId);
+            }
+            await user.save();
+            await friend.save();
+            return true;
         },
-        removeFriend: async (_, {_id, friendId}) => {
-
+        removeFriend: async (_, { friendId }, { _id }) => {
+            if (!_id) return false;
+            const userId = ObjectId(_id);
+            friendId = ObjectId(friendId);
+            const user = await User.findById(userId);
+            if (!user) return false;
+            const friend = await User.findById(friendId);
+            if (!friend) return false;
+            const userIndex = user.friends.findIndex(id => id.equals(friendId));
+            const friendIndex = friend.friends.findIndex(id => id.equals(userId));
+            if (userIndex !== -1) {
+                user.friends.splice(userIndex, 1);
+            }
+            if (friendIndex !== -1) {
+                friend.friends.splice(friendIndex, 1);
+            }
+            await user.save();
+            await friend.save();
+            return true;
         }
     }
 };
