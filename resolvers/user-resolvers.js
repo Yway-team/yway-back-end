@@ -166,7 +166,7 @@ module.exports = {
                 }
                 const quizInfo = {
                     _id: quiz._id,
-                    bannerImg: quiz.bannerImg,
+                    bannerImg: quiz.bannerImg || 'https://picsum.photos/1000',  // temporary
                     createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
@@ -175,7 +175,7 @@ module.exports = {
                     ownerUsername: user.username,
                     platformId: platform._id,
                     platformName: platform.title,
-                    platformThumbnail: platform.thumbnailImg,
+                    platformThumbnail: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
                     rating: quiz.rating,
                     title: quiz.title
                 };
