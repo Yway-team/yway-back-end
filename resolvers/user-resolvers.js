@@ -107,7 +107,7 @@ module.exports = {
                 const draftInfo = {
                     _id: draft._id,
                     bannerImg: draft.bannerImg,
-                    createdAt: draft.createdAt,
+                    createdAt: draft.createdAt.toString(),
                     description: draft.description,
                     numQuestions: draft.questions.length,
                     platformName: draft.platformName,
@@ -167,7 +167,7 @@ module.exports = {
                 const quizInfo = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg,
-                    createdAt: quiz.createdAt,
+                    createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
                     ownerAvatar: user.avatar,
