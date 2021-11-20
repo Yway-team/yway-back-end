@@ -37,6 +37,7 @@ const typeDefs = gql`
         numQuestions: Int
         quizzesInfo: [QuizInfo]
         thumbnailImg: String
+        title: String
     }
     type LeaderBoardEntry {
         userId: ID!
