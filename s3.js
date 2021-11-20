@@ -1,4 +1,4 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 require('dotenv').config();
 const { S3_ACCESS_KEY_ID, S3_BUCKET, S3_REGION, S3_SECRET_ACCESS_KEY } = process.env;
 
@@ -26,4 +26,19 @@ async function uploadObject(data, name) {
     }
 }
 
-module.exports = { uploadObject };
+async function deleteObject(name) {
+    const params = {
+        Bucket: S3_BUCKET,
+        Key: name
+    };
+    const client = new S3Client(config);
+    const command = new DeleteObjectCommand(params);
+    try {
+        const data = await client.send(command);
+        console.log(data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+module.exports = { deleteObject, uploadObject };
