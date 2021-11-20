@@ -82,8 +82,8 @@ module.exports = {
             if (!platform) return null;
             return platform.thumbnailImg || 'https://picsum.photos/1000';  // temporary
         },
-        getPlatformSettings: async (_, { platformId }) => {
-            const platform = await Platform.findById(platformId);
+        getPlatformSettings: async (_, { title }) => {
+            const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
             const platformSettings = {
                 title: platform.title,
@@ -155,7 +155,14 @@ module.exports = {
         },
         deletePlatform: async (_, {_id}) => {
         },
-        updatePlatformSettings: async (_, {_id}) => {
+        updatePlatformSettings: async (_, { platformSettings }) => {
+            const platform = await Platform.findById(platformSettings.platformId);
+            if (!platform) return null;
+            // platform.title = platformSettings.title;  // disallowed for now
+            platform.bannerImg = platformSettings.bannerImg;
+            platform.thumbnailImg = platformSettings.thumbnailImg;
+            await platform.save();
+            return platformSettings;
         }
     }
 };
