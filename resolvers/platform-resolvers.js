@@ -104,7 +104,6 @@ module.exports = {
                 quizzesInfo.push(quizInfo);
             }
             const platformInfo = {
-                title: platform.title,
                 bannerImg: platform.bannerImg || 'https://picsum.photos/1000',  // temporary
                 description: platform.description,
                 favorites: platform.favorites,

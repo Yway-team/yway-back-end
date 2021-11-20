@@ -50,7 +50,7 @@ const typeDefs = gql`
         getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderBoardEntry]
         getPlatformHighlights(howMany: Int!): [PlatformInfo]
         getPlatformSummary(title: String!): PlatformSummary
-        getPlatformById(_id: String!): PlatformSummary
+        getPlatformById(_id: String!): PlatformById
     }
     extend type Mutation {
         createPlatform(platform: PlatformInput!): String
