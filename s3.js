@@ -19,10 +19,10 @@ async function uploadObject(data, name) {
     const client = new S3Client(config);
     const command = new PutObjectCommand(params);
     try {
-        const response = await client.send(command);
-        console.log('Success', response);
+        await client.send(command);
+        return true;
     } catch (error) {
-        console.error(error);
+        return false;
     }
 }
 
@@ -34,10 +34,10 @@ async function deleteObject(name) {
     const client = new S3Client(config);
     const command = new DeleteObjectCommand(params);
     try {
-        const data = await client.send(command);
-        console.log(data);
+        await client.send(command);
+        return true;
     } catch (error) {
-        console.error(error);
+        return false;
     }
 }
 

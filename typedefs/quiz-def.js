@@ -26,8 +26,8 @@ const typeDefs = gql`
         getQuizHighlights(howMany: Int!): [QuizInfo]
         getQuizInfo(quizId: ID!): QuizInfo
         getQuizMetrics(_id: ID!): Quiz
-        getQuestionList: [ID!]
-        getQuestionInfo: QuestionInfo
+        getQuestionList(quizId: ID!): [ID!]
+        getQuestionInfo(questionId: ID!): QuestionInfo
     }
     extend type Mutation {
         createAndPublishQuiz(quiz: QuizInput!): Quiz

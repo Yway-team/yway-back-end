@@ -76,6 +76,11 @@ module.exports = {
                 thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
             };
             return platformInfo;
+        },
+        getPlatformThumbnail: async (_, { title }) => {
+            const platform = await Platform.findOne({ title: title });
+            if (!platform) return null;
+            return platform.thumbnailImg || 'https://picsum.photos/1000';  // temporary
         }
     },
     Mutation: {

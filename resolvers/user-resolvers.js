@@ -339,11 +339,11 @@ module.exports = {
             return getBasicInfo(user);
         },
         addNotification: async (_, {notification}, {_id}) => {
-            const timestamp = new Date(notification.timestamp);
-            if (timestamp === 'Invalid Date') {
+            const createdAt = new Date(notification.createdAt);
+            if (createdAt === 'Invalid Date') {
                 return false;
             }
-            notification.timestamp = timestamp;
+            notification.createdAt = createdAt;
             const user = await User.findById(_id);
             const length = user.notifications.push(notification);
             if (length > MAX_NOTIFICATIONS) {
