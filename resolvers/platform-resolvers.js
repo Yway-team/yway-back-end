@@ -82,6 +82,16 @@ module.exports = {
             if (!platform) return null;
             return platform.thumbnailImg || 'https://picsum.photos/1000';  // temporary
         },
+        getPlatformSettings: async (_, { platformId }) => {
+            const platform = await Platform.findById(platformId);
+            if (!platform) return null;
+            const platformSettings = {
+                title: platform.title,
+                bannerImg: platform.bannerImg,
+                thumbnailImg: platform.thumbnailImg
+            };
+            return platformSettings;
+        },
         getPlatformById: async (_, { title }, { _id }) => {
             // todo: use _id to check for moderator status
             const platform = await Platform.findOne({ _id: _id });

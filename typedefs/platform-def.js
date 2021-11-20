@@ -39,6 +39,11 @@ const typeDefs = gql`
         thumbnailImg: String
         title: String
     }
+    type PlatformSettings {
+        title: String
+        bannerImg: String
+        thumbnailImg: String
+    }
     type LeaderBoardEntry {
         userId: ID!
         rank: Int!
@@ -52,6 +57,7 @@ const typeDefs = gql`
         getPlatformHighlights(howMany: Int!): [PlatformInfo]
         getPlatformSummary(title: String!): PlatformSummary
         getPlatformThumbnail(title: String!): String
+        getPlatformSettings(platformId: ID!): PlatformSettings
         getPlatformById(_id: String!): PlatformSummary
     }
     extend type Mutation {
