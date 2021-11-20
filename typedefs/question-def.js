@@ -11,6 +11,12 @@ const typeDefs = gql`
         correctAttempts: Int
         platform: ID
     }
+    type QuestionInfo {
+        _id: ID
+        answerOptions: [String]
+        correctAnswer: String
+        description: String
+    }
 `;
 
 module.exports = { typeDefs: typeDefs };

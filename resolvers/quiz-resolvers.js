@@ -23,6 +23,15 @@ const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS } = require('../constants');
 //     },
 // });
 
+function shuffle(a) {
+    const n = a.length;
+    const getNextIndex = x => Math.floor(Math.random() * (n - x) + x);
+    for (let i = 0; i < n - 2; i++) {
+        const j = getNextIndex(i);
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+}
+
 module.exports = {
     Query: {
         getQuiz: async (_, {_id}) => {
@@ -91,6 +100,36 @@ module.exports = {
             return quizInfos;
         },
         getQuizMetrics: async (_, {_id}) => {
+        },
+        getQuestionList: async (_, { quizId }) => {
+            // gives the quiz question list in the order the questions will be answered.
+            // the order will be as they are stored if shuffleQuestions is false,
+            // or randomly shuffled otherwise.
+            const quiz = await Quiz.findById(quizId);
+            if (!quiz) return null;
+            const questions = quiz.questions;
+            if (quiz.shuffleQuestions) {
+                shuffle(questions);
+            }
+            return questions;
+        },
+        getQuestionInfo: async (_, { questionId }) => {
+            // An alternative way to implement this is by taking shuffleAnswerOptions as a variable to prevent needing to fetch the quiz every time
+            const question = await Question.findById(questionId);
+            if (!question) return null;
+            const { shuffleAnswerOptions } = await Quiz.findById(question.quiz);
+            const correctAnswer = question.answerOptions[question.correctAnswerIndex];
+            const answerOptions = question.answerOptions;
+            if (shuffleAnswerOptions) {
+                shuffle(answerOptions);
+            }
+            const questionInfo = {
+                _id: question._id,
+                answerOptions: answerOptions,
+                correctAnswer: correctAnswer,
+                description: question.description
+            };
+            return questionInfo;
         }
     },
     Mutation: {
