@@ -22,6 +22,7 @@ async function uploadObject(data, name) {
         await client.send(command);
         return true;
     } catch (error) {
+        console.error(error);
         return false;
     }
 }

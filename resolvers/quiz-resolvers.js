@@ -3,6 +3,8 @@ const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
 const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
+const { S3_BUCKET, S3_REGION, S3_BUCKET_URL } = process.env;
+const { uploadObject } = require('../s3');
 const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -190,6 +192,20 @@ module.exports = {
             }
             user.quizzes.push(quiz._id);
             platform.quizzes.push(quiz._id);
+            
+            if (quiz.bannerImgData) {
+                const bannerImgKey = `/img/quiz/${quiz._id.toString()}/bannerImg`;
+                const success = await uploadObject(quiz.bannerImgData, bannerImgKey);
+                if (success) quiz.bannerImg = S3_BUCKET_URL + bannerImgKey;
+                delete quiz.bannerImgData;
+            }
+            if (quiz.thumbnailImgData) {
+                const thumbnailImgKey = `/img/quiz/${quiz._id.toString()}/thumbnailImg`;
+                const success = await uploadObject(quiz.thumbnailImgData, thumbnailImgKey);
+                if (success) quiz.thumbnailImg = S3_BUCKET_URL + thumbnailImgKey;
+                delete quiz.thumbnailImgData;
+            }
+
             await Quiz.create(quiz);
             await user.save();
             await platform.save();

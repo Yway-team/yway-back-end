@@ -71,12 +71,12 @@ const typeDefs = gql`
         title: String!
         shuffleQuestions: Boolean!
         shuffleAnswers: Boolean!
-        bannerImg: String
+        bannerImgData: String
         color: String
         description: String
         platformName: String
         tags: [String]
-        thumbnailImg: String
+        thumbnailImgData: String
         timeToAnswer: Int
     }
     input QuestionInput {
