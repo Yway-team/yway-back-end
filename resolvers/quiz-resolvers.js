@@ -57,6 +57,7 @@ module.exports = {
             const platform = await Platform.findById(quiz.platform);
             const quizInfo = {
                 bannerImg: quiz.bannerImg,
+                color: quiz.color,
                 createdAt: quiz.createdAt.toString(),
                 description: quiz.description,
                 numQuestions: quiz.questions.length,

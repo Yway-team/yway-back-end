@@ -39,6 +39,7 @@ const typeDefs = gql`
     type QuizInfo {
         _id: ID!
         bannerImg: String
+        color: String
         createdAt: String!
         description: String
         numQuestions: Int!
