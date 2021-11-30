@@ -69,7 +69,6 @@ module.exports = {
                 platformThumbnail: platform.thumbnailImg ? platform.thumbnailImg : 'https://picsum.photos/1000',  // temporary
                 rating: quiz.rating,
                 title: quiz.title,
-                attempts: quiz.attempts
             };
             return quizInfo;
         },
