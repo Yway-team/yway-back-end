@@ -4,7 +4,7 @@ const Question = require('../models/question-model');
 const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
 const { S3_BUCKET, S3_REGION, S3_BUCKET_URL } = process.env;
-const { uploadObject } = require('../s3');
+const { uploadImage } = require('../s3');
 const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -194,17 +194,29 @@ module.exports = {
             platform.quizzes.push(quiz._id);
             
             if (quiz.bannerImgData) {
-                const bannerImgKey = `/img/quiz/${quiz._id.toString()}/bannerImg`;
-                const success = await uploadObject(quiz.bannerImgData, bannerImgKey);
-                if (success) quiz.bannerImg = S3_BUCKET_URL + bannerImgKey;
+                let [prefix, imgData] = quiz.bannerImgData.split(',');
+                const type = prefix.split(';')[0].split('/')[1];
+                const encoding = prefix.split(';')[1];
+                imgData = new Buffer.from(imgData, encoding);
+                const key = `img/quiz/${quiz._id.toString()}/bannerImg.${type}`;
+                const success = await uploadImage(key, imgData, type, encoding);
+                if (success) quiz.bannerImg = `${S3_BUCKET_URL}/${key}`;
                 delete quiz.bannerImgData;
+                delete quiz.bannerImgName;
             }
             if (quiz.thumbnailImgData) {
-                const thumbnailImgKey = `/img/quiz/${quiz._id.toString()}/thumbnailImg`;
-                const success = await uploadObject(quiz.thumbnailImgData, thumbnailImgKey);
-                if (success) quiz.thumbnailImg = S3_BUCKET_URL + thumbnailImgKey;
+                const [prefix, imgData] = quiz.thumbnailImgData.split(',');
+                const type = prefix.split(';')[0].split('/')[1];
+                const encoding = prefix.split(';')[1];
+                const key = `img/quiz/${quiz._id.toString()}/thumbnailImg.${type}`;
+                const success = await uploadImage(key, imgData, type, encoding);
+                if (success) quiz.thumbnailImg = `${S3_BUCKET_URL}/${key}`;
                 delete quiz.thumbnailImgData;
+                delete quiz.thumbnailImgName;
             }
+
+            console.log(`bannerImg:`);
+            console.log(quiz.bannerImg);
 
             await Quiz.create(quiz);
             await user.save();

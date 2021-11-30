@@ -27,6 +27,25 @@ async function uploadObject(data, name) {
     }
 }
 
+async function uploadImage(key, data, type, encoding) {
+    const params = {
+        Bucket: S3_BUCKET,
+        Key: key,
+        Body: data,
+        ContentType: `image.${type}`,
+        ContentEncoding: encoding
+    };
+    const client = new S3Client(config);
+    const command = new PutObjectCommand(params);
+    try {
+        await client.send(command);
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
 async function deleteObject(name) {
     const params = {
         Bucket: S3_BUCKET,
@@ -42,4 +61,4 @@ async function deleteObject(name) {
     }
 }
 
-module.exports = { deleteObject, uploadObject };
+module.exports = { deleteObject, uploadObject, uploadImage };
