@@ -36,7 +36,7 @@ function shuffle(a) {
 
 module.exports = {
     Query: {
-        getQuiz: async (_, {_id}) => {
+        getQuiz: async (_, { _id }) => {
             const quiz = await Quiz.findById(_id);
             if (quiz) {
                 return quiz;
@@ -68,7 +68,7 @@ module.exports = {
                 platformName: platform.title,
                 platformThumbnail: platform.thumbnailImg ? platform.thumbnailImg : 'https://picsum.photos/1000',  // temporary
                 rating: quiz.rating,
-                title: quiz.title
+                title: quiz.title,
             };
             return quizInfo;
         },
@@ -102,7 +102,7 @@ module.exports = {
             }
             return quizInfos;
         },
-        getQuizMetrics: async (_, {_id}) => {
+        getQuizMetrics: async (_, { _id }) => {
         },
         getQuestionList: async (_, { quizId }) => {
             // gives the quiz question list in the order the questions will be answered.
@@ -193,7 +193,7 @@ module.exports = {
             }
             user.quizzes.push(quiz._id);
             platform.quizzes.push(quiz._id);
-            
+
             if (quiz.bannerImgData) {
                 let [prefix, imgData] = quiz.bannerImgData.split(',');
                 const type = prefix.split(';')[0].split('/')[1];
@@ -291,9 +291,9 @@ module.exports = {
             await Question.deleteMany({ quiz: quizId });
             return true;
         },
-        editPublishedQuiz: async (_, {_id}) => {
+        editPublishedQuiz: async (_, { _id }) => {
         },
-        rateQuiz: async (_, {_id, rating}) => {
+        rateQuiz: async (_, { _id, rating }) => {
         },
     }
 };
