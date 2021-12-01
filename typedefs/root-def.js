@@ -3,6 +3,7 @@ const userDef = require('./user-def').typeDefs;
 const quizDef = require('./quiz-def').typeDefs;
 const questionDef = require('./question-def').typeDefs;
 const platformDef = require('./platform-def').typeDefs;
+const feedDef = require('./feed-def').typeDefs;
 
 const rootDef = gql`
     type Query {
@@ -15,5 +16,5 @@ const rootDef = gql`
 `;
 
 module.exports = {
-    typeDefs: [rootDef, userDef, quizDef, questionDef, platformDef]
+    typeDefs: [rootDef, userDef, quizDef, questionDef, platformDef, feedDef]
 };

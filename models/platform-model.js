@@ -79,5 +79,7 @@ const platformSchema = new Schema({
     }
 }, { timestamps: true });
 
+platformSchema.index({ title: 'text' });
+
 const Platform = model('Platform', platformSchema);
 module.exports = Platform;
