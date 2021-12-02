@@ -72,6 +72,23 @@ module.exports = {
             };
             return quizInfo;
         },
+        getQuizEditInfo: async (_, { quizId }, { _id }) => {
+            if (!_id) return null;
+            const quiz = await Quiz.findById(quizId);
+            if (!quiz || !quiz.owner.equals(_id)) return null;
+            const platform = await Platform.findById(quiz.platform);
+            const editQuizInfo = {
+                _id: quiz._id,
+                bannerImg: quiz.bannerImg,
+                color: quiz.color,
+                description: quiz.description,
+                platformName: platform.title,
+                tags: quiz.tags,
+                thumbnailImg: quiz.thumbnailImg,
+                title: quiz.title
+            };
+            return editQuizInfo;
+        },
         getQuizHighlights: async (_, { howMany }) => {
             const quizzes = await Quiz.find().limit(howMany);
             const quizInfos = [];

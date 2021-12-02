@@ -25,6 +25,7 @@ const typeDefs = gql`
         getQuiz(_id: ID!): Quiz
         getQuizHighlights(howMany: Int!): [QuizInfo]
         getQuizInfo(quizId: ID!): QuizInfo
+        getQuizEditInfo(quizId: ID!): QuizInfo
         getQuizMetrics(_id: ID!): Quiz
         getQuestionList(quizId: ID!): [ID!]
         getQuestionInfo(questionId: ID!): QuestionInfo
@@ -50,6 +51,8 @@ const typeDefs = gql`
         platformName: String!
         platformThumbnail: String
         rating: Float!
+        tags: [String]
+        thumbnailImg: String
         title: String!
     }
     type Draft {
