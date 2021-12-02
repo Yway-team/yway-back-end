@@ -32,7 +32,6 @@ module.exports = {
             return platformInfos;
         },
         getPlatformSummary: async (_, { title }, { _id }) => {
-            // todo: use _id to check for moderator status
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
             const quizzes = await Quiz.find({ _id: { $in: platform.quizzes } }).limit(100);  // todo: limit this more intelligently
@@ -57,14 +56,21 @@ module.exports = {
                 };
                 quizzesInfo.push(quizInfo);
             }
+
+            _id = new ObjectId(_id);
+            const moderator = Boolean(platform.moderators.find(moderator => _id.equals(moderator)));
+
             const platformInfo = {
                 _id: platform._id,
                 bannerImg: platform.bannerImg || DEFAULT_BANNER_IMAGE,
+                color: platform.color,
                 description: platform.description,
                 favorites: platform.favorites,
+                moderator: moderator,
                 numQuizzes: platform.quizzes.length,
                 numQuestions: platform.questions.length,
                 quizzesInfo: quizzesInfo,
+                tags: platform.tags,
                 thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
             };
             return platformInfo;
@@ -77,6 +83,8 @@ module.exports = {
         getPlatformSettings: async (_, { title }, { _id }) => {
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
+            _id = new ObjectId(_id);
+            if (!platform.moderators.find(moderator => _id.equals(moderator))) return null;
             const platformSettings = {
                 bannerImg: platform.bannerImg,
                 color: platform.color,

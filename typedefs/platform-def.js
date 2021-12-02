@@ -31,11 +31,14 @@ const typeDefs = gql`
     type PlatformSummary {
         _id: ID
         bannerImg: String
+        color: String
         description: String
         favorites: Int
+        moderator: Boolean
         numQuizzes: Int
         numQuestions: Int
         quizzesInfo: [QuizInfo]
+        tags: [String]
         thumbnailImg: String
         title: String
     }
