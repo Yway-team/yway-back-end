@@ -63,7 +63,7 @@ const typeDefs = gql`
     type DraftInfo {
         _id: ID
         bannerImg: String
-        createdAt: String
+        updatedAt: String
         description: String
         numQuestions: Int
         platformName: String
