@@ -50,8 +50,6 @@ const typeDefs = gql`
         points: Int!
     }
     extend type Query {
-        getPlatform(_id: ID!): Platform
-        getPlatformByName(name: String!): Platform
         getMarathon(_id: ID!): [String]
         getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderBoardEntry]
         getPlatformHighlights(howMany: Int!): [PlatformInfo]
