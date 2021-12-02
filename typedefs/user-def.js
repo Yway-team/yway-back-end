@@ -24,6 +24,7 @@ const typeDefs = gql`
         getCurrentUser(_id: ID!): User
         getUserPublicInfo(userId: ID!): UserInfo
         getUserInfo(userId: ID!): UserInfo
+        getDraft(draftId: ID!): Draft
         getDraftsInfo: [DraftInfo]
         getFavorites: [FavoriteInfo]
         getUserQuizzesInfo(userId: ID): [QuizInfo]

@@ -93,6 +93,25 @@ module.exports = {
                     return privateInfo;
             }
         },
+        getDraft: async (_, { draftId }, { _id }) => {
+            if (!_id) {
+                // no user logged in
+                return null;
+            }
+            const user = await User.findById(_id);
+            if (!user) {
+                // shouldn't happen
+                return null;
+            }
+
+            draftId = new ObjectId(draftId);
+            const draft = user.drafts.find(draft => draft._id.equals(draftId));
+            if (!draft) {
+                return null;
+            }
+            draft.updatedAt = draft.updatedAt?.toString();  // only ?. for backward compatibility
+            return draft;
+        },
         getDraftsInfo: async (_, __, { _id }) => {
             if (!_id) {
                 // no user logged in
