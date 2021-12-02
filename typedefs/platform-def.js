@@ -40,9 +40,13 @@ const typeDefs = gql`
         title: String
     }
     type PlatformSettings {
-        title: String
         bannerImg: String
+        color: String
+        minCreatorPoints: Int
+        onlyModSubmissions: Boolean
+        tags: [String]
         thumbnailImg: String
+        title: String
     }
     type LeaderBoardEntry {
         userId: ID!

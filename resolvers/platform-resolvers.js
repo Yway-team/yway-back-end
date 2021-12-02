@@ -74,13 +74,17 @@ module.exports = {
             if (!platform) return null;
             return platform.thumbnailImg || DEFAULT_THUMBNAIL;
         },
-        getPlatformSettings: async (_, { title }) => {
+        getPlatformSettings: async (_, { title }, { _id }) => {
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
             const platformSettings = {
-                title: platform.title,
                 bannerImg: platform.bannerImg,
-                thumbnailImg: platform.thumbnailImg
+                color: platform.color,
+                minCreatorPoints: platform.minCreatorPoints,
+                onlyModSubmissions: platform.onlyModSubmissions,
+                tags: platform.tags,
+                thumbnailImg: platform.thumbnailImg,
+                title: platform.title
             };
             return platformSettings;
         },
