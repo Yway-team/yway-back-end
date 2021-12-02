@@ -4,7 +4,7 @@ const Question = require('../models/question-model');
 const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
 const { S3_BUCKET, S3_REGION, S3_BUCKET_URL } = process.env;
-const { uploadImage } = require('../s3');
+const { uploadImage, deleteObject } = require('../s3');
 const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -206,7 +206,7 @@ module.exports = {
                 delete quiz.bannerImgName;
             }
             if (quiz.thumbnailImgData) {
-                const [prefix, imgData] = quiz.thumbnailImgData.split(',');
+                let [prefix, imgData] = quiz.thumbnailImgData.split(',');
                 const type = prefix.split(';')[0].split('/')[1];
                 const encoding = prefix.split(';')[1];
                 imgData = new Buffer.from(imgData, encoding);
@@ -250,7 +250,7 @@ module.exports = {
                     delete draft.bannerImgName;
                 }
                 if (draft.thumbnailImgData) {
-                    const [prefix, imgData] = draft.thumbnailImgData.split(',');
+                    let [prefix, imgData] = draft.thumbnailImgData.split(',');
                     const type = prefix.split(';')[0].split('/')[1];
                     const encoding = prefix.split(';')[1];
                     imgData = new Buffer.from(imgData, encoding);
@@ -290,6 +290,7 @@ module.exports = {
             // remove from owner's quizzes
             // remove from platform's quizzes
             // delete quiz questions
+            // delete bannerImg and thumbnailImg from S3
             // can only be done by owners and (todo) admins
             const quiz = await Quiz.findById(quizId);
             if (!quiz) {
@@ -316,6 +317,14 @@ module.exports = {
             await user.save();
             await platform.save();
             await Question.deleteMany({ quiz: quizId });
+            if (quiz.bannerImg) {
+                const key = quiz.bannerImg.split('/').pop();
+                await deleteObject(key);
+            }
+            if (quiz.thumbnailImg) {
+                const key = quiz.thumbnailImg.split('/').pop();
+                await deleteObject(key);
+            }
             return true;
         },
         editPublishedQuiz: async (_, { _id }) => {

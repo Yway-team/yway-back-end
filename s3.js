@@ -46,10 +46,10 @@ async function uploadImage(key, data, type, encoding) {
     }
 }
 
-async function deleteObject(name) {
+async function deleteObject(key) {
     const params = {
         Bucket: S3_BUCKET,
-        Key: name
+        Key: key
     };
     const client = new S3Client(config);
     const command = new DeleteObjectCommand(params);
@@ -57,6 +57,7 @@ async function deleteObject(name) {
         await client.send(command);
         return true;
     } catch (error) {
+        console.error(error);
         return false;
     }
 }
