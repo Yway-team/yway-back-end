@@ -62,7 +62,7 @@ const typeDefs = gql`
         timeToAnswer: Int
         bannerImg: String
         color: String
-        createdAt: String
+        updatedAt: String
         description: String
         platformName: String
         thumbnailImg: String
@@ -95,12 +95,14 @@ const typeDefs = gql`
         shuffleQuestions: Boolean
         shuffleAnswers: Boolean
         timeToAnswer: Int
-        bannerImg: String
+        bannerImgData: String
+        bannerImgName: String
         color: String
-        createdAt: String
+        updatedAt: String
         description: String
         platformName: String
-        thumbnailImg: String
+        thumbnailImgData: String
+        thumbnailImgName: String
     }
 `;
 

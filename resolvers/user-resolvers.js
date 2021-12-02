@@ -109,7 +109,7 @@ module.exports = {
                 const draftInfo = {
                     _id: draft._id,
                     bannerImg: draft.bannerImg || DEFAULT_BANNER_IMAGE,
-                    createdAt: draft.createdAt.toString(),
+                    updatedAt: draft.updatedAt?.toString(),  // the ?. is only necessary for backward compatibility
                     description: draft.description,
                     numQuestions: draft.questions.length,
                     platformName: draft.platformName,

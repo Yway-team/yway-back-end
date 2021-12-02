@@ -209,6 +209,7 @@ module.exports = {
                 const [prefix, imgData] = quiz.thumbnailImgData.split(',');
                 const type = prefix.split(';')[0].split('/')[1];
                 const encoding = prefix.split(';')[1];
+                imgData = new Buffer.from(imgData, encoding);
                 const key = `img/quiz/${quiz._id.toString()}/thumbnailImg.${type}`;
                 const success = await uploadImage(key, imgData, type, encoding);
                 if (success) quiz.thumbnailImg = `${S3_BUCKET_URL}/${key}`;
@@ -232,7 +233,35 @@ module.exports = {
             if (!user.drafts) {
                 user.drafts = []
             }
-            if (draft._id) {
+            let draftId;
+            if (draft._id || user.drafts.length <= MAX_DRAFTS) {
+                if (!draft._id) {
+                    draftId = new ObjectId();
+                }
+                if (draft.bannerImgData) {
+                    let [prefix, imgData] = draft.bannerImgData.split(',');
+                    const type = prefix.split(';')[0].split('/')[1];
+                    const encoding = prefix.split(';')[1];
+                    imgData = new Buffer.from(imgData, encoding);
+                    const key = `img/quiz/${draft._id?.toString() || draftId}/bannerImg.${type}`;
+                    const success = await uploadImage(key, imgData, type, encoding);
+                    if (success) draft.bannerImg = `${S3_BUCKET_URL}/${key}`;
+                    delete draft.bannerImgData;
+                    delete draft.bannerImgName;
+                }
+                if (draft.thumbnailImgData) {
+                    const [prefix, imgData] = draft.thumbnailImgData.split(',');
+                    const type = prefix.split(';')[0].split('/')[1];
+                    const encoding = prefix.split(';')[1];
+                    imgData = new Buffer.from(imgData, encoding);
+                    const key = `img/quiz/${draft._id?.toString() || draftId}/thumbnailImg.${type}`;
+                    const success = await uploadImage(key, imgData, type, encoding);
+                    if (success) draft.thumbnailImg = `${S3_BUCKET_URL}/${key}`;
+                    delete draft.thumbnailImgData;
+                    delete draft.thumbnailImgName;
+                }
+            }
+            if (!draftId) {
                 // update the draft with the given _id
                 // verify that equals() works properly
                 // What if, somehow, there is no match?
@@ -248,9 +277,10 @@ module.exports = {
                 if (user.drafts.length > MAX_DRAFTS) {
                     return null;
                 }
-                draft._id = new ObjectId();
+                draft._id = draftId;
                 user.drafts.push(draft);
             }
+            draft.updatedAt = new Date(draft.updatedAt);
             await user.save();
             return draft._id.toString();
         },
