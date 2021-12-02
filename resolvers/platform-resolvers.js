@@ -34,10 +34,47 @@ module.exports = {
         getPlatformSummary: async (_, { title }, { _id }) => {
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
-            const quizzes = await Quiz.find({ _id: { $in: platform.quizzes } }).limit(100);  // todo: limit this more intelligently
+            
+            const quizzes = await Quiz.find({ _id: { $in: platform.quizzes } });
+            const sortedQuizzes = [...quizzes].sort((quiz1, quiz2) => {
+                if (quiz1.createdAt < quiz2.createdAt) return 1;
+                if (quiz1.createdAt > quiz2.createdAt) return -1;
+                return 0;
+            }).slice(0, 100);  // todo: limit this more intelligently
+            const owners = quizzes.map(quiz => quiz.owner);
+            let ownerScores = {};
+            
+            quizzes.forEach(quiz => {
+                if (ownerScores[quiz.owner]) ownerScores[quiz.owner] += quiz.attempts;
+                else ownerScores[quiz.owner] = quiz.attempts;
+            });
+
+            const sortedOwners = [...owners].sort((owner1, owner2) => {
+                if (ownerScores[owner1] < ownerScores[owner2]) return 1;
+                if (ownerScores[owner1] > ownerScores[owner2]) return -1;
+                return 0;
+            }).slice(0, 50);
+
+            let leaderboardEntries = [];
+            for (let i = 0; i < sortedOwners.length; i++) {
+                const ownerId = sortedOwners[i];
+                const owner = await User.findById(ownerId);
+                const ownerQuizzesStrings = owner.quizzes.map(quizId => quizId.toString());
+                const platformQuizzesStrings = platform.quizzes.map(quizId => quizId.toString());
+                const numQuizzesOnPlatform = ownerQuizzesStrings.filter(ownerQuizId => platformQuizzesStrings.includes(ownerQuizId)).length;
+                const leaderboardEntry = {
+                    userId: ownerId,
+                    avatar: owner.avatar,
+                    score: ownerScores[ownerId],
+                    secondaryScore: numQuizzesOnPlatform,
+                    username: owner.username
+                };
+                leaderboardEntries.push(leaderboardEntry);
+            }
+            
             const quizzesInfo = [];
-            for (let i = 0; i < quizzes.length; i++) {
-                const quiz = quizzes[i];
+            for (let i = 0; i < sortedQuizzes.length; i++) {
+                const quiz = sortedQuizzes[i];
                 const quizOwner = await User.findById(quiz.owner);
                 const quizInfo = {
                     _id: quiz._id,
@@ -68,12 +105,13 @@ module.exports = {
                 color: platform.color,
                 description: platform.description,
                 favorites: platform.favorites,
+                leaderboardEntries: leaderboardEntries,
                 moderator: moderator,
                 numQuizzes: platform.quizzes.length,
                 numQuestions: platform.questions.length,
                 quizzesInfo: quizzesInfo,
                 tags: platform.tags,
-                thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
+                thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL
             };
             return platformInfo;
         },
@@ -86,7 +124,7 @@ module.exports = {
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
             if (_id) _id = new ObjectId(_id);
-            if (!_id || !platform.moderators.find(moderator => _id.equals(moderator))) return null;
+            if (!_id || (!_id.equals(platform.owner) && !platform.moderators.find(moderator => _id.equals(moderator)))) return null;
             const platformSettings = {
                 bannerImg: platform.bannerImg,
                 color: platform.color,

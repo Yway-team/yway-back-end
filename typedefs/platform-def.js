@@ -18,7 +18,7 @@ const typeDefs = gql`
         onlyModSubmissions: Boolean!
         bannedUsers: [ID]!
         platformMetrics: [Int]
-        leaderboard: [LeaderBoardEntry]!
+        leaderboard: [LeaderboardEntry]!
     }
     type PlatformInfo {
         _id: ID!
@@ -34,6 +34,7 @@ const typeDefs = gql`
         color: String
         description: String
         favorites: Int
+        leaderboardEntries: [LeaderboardEntry]
         moderator: Boolean
         numQuizzes: Int
         numQuestions: Int
@@ -51,14 +52,16 @@ const typeDefs = gql`
         thumbnailImg: String
         title: String
     }
-    type LeaderBoardEntry {
-        userId: ID!
-        rank: Int!
-        points: Int!
+    type LeaderboardEntry {
+        avatar: String
+        score: Int
+        secondaryScore: Int
+        userId: ID
+        username: String
     }
     extend type Query {
         getMarathon(_id: ID!): [String]
-        getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderBoardEntry]
+        getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderboardEntry]
         getPlatformHighlights(howMany: Int!): [PlatformInfo]
         getPlatformSummary(title: String!): PlatformSummary
         getPlatformThumbnail(title: String!): String
