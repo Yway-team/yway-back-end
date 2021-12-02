@@ -6,5 +6,6 @@ const DEFAULT_BANNER_IMAGE = 'https://cse416-content.s3.us-east-2.amazonaws.com/
 const DEFAULT_AVATAR = 'https://cse416-content.s3.us-east-2.amazonaws.com/Default+avatar.png';
 const DEFAULT_THUMBNAIL = 'https://cse416-content.s3.us-east-2.amazonaws.com/thumbnail.png';
 const DEFAULT_PROFILE_BANNER = 'https://cse416-content.s3.us-east-2.amazonaws.com/profile+cover+photo.png';
+const REQUEST_SIZE_LIMIT = '4MB';
 
-module.exports = { MAX_NOTIFICATIONS, MAX_HISTORY, DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER };
+module.exports = { MAX_NOTIFICATIONS, MAX_HISTORY, DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER, REQUEST_SIZE_LIMIT };

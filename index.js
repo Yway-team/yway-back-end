@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { verifyAccessToken } = require('./auth');
+const { REQUEST_SIZE_LIMIT } = require('./constants');
 require('dotenv').config();  // Loads environment variables from .env into process.env
 const { MONGO_URI, BACKEND_PORT, CLIENT_ORIGIN } = process.env;  // Loads environment variables
 
@@ -38,7 +39,7 @@ async function startServer() {
     await server.start();
 
     app.use(helmet({ contentSecurityPolicy: false }));  // may be insecure
-    app.use(express.json());  // parses JSON
+    app.use(express.json({ limit: REQUEST_SIZE_LIMIT }));  // parses JSON
     app.use(express.urlencoded({ extended: false }));
     app.use(mongoSanitize());
     app.use(xssClean());
