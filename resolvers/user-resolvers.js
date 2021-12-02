@@ -8,6 +8,7 @@ const client = new OAuth2Client(CLIENT_ID);
 const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
 const { generateAccessToken } = require('../auth');
 const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER } = require('../constants');
+const { deleteObject } = require('../s3');
 
 const getBasicInfo = (user) => {
     return {
@@ -322,6 +323,26 @@ module.exports = {
                 playPoints: user.playPoints,
                 username: user.username
             };
+        },
+        deleteDraft: async (_, { draftId }, { _id }) => {
+            if (!_id) return null;
+            const user = await User.findById(_id);
+            draftId = new ObjectId(draftId);
+            const draftIndex = user.drafts.findIndex(draft => draft._id.equals(draftId));
+            if (draftIndex === -1) return null;
+            const [draft] = user.drafts.splice(draftIndex, 1);
+            
+            if (draft.bannerImg) {
+                const key = draft.bannerImg.split('/').pop();
+                await deleteObject(key);
+            }
+            if (draft.thumbnailImg) {
+                const key = draft.thumbnailImg.split('/').pop();
+                await deleteObject(key);
+            }
+            
+            await user.save();
+            return true;
         },
         incrementPoints: async (_, {points: {playPoints, creatorPoints}}, {_id}) => {
             const user = await User.findById(_id);
