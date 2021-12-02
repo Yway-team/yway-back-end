@@ -5,7 +5,7 @@ const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
 const { S3_BUCKET, S3_REGION, S3_BUCKET_URL } = process.env;
 const { uploadImage } = require('../s3');
-const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS } = require('../constants');
+const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
 // const dateScalar = new GraphQLScalarType({
@@ -56,7 +56,7 @@ module.exports = {
             }
             const platform = await Platform.findById(quiz.platform);
             const quizInfo = {
-                bannerImg: quiz.bannerImg,
+                bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                 color: quiz.color,
                 createdAt: quiz.createdAt.toString(),
                 description: quiz.description,
@@ -66,7 +66,7 @@ module.exports = {
                 ownerUsername: quizOwner.username,
                 platformId: platform._id,
                 platformName: platform.title,
-                platformThumbnail: platform.thumbnailImg ? platform.thumbnailImg : 'https://picsum.photos/1000',  // temporary
+                platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                 rating: quiz.rating,
                 title: quiz.title,
             };
@@ -85,7 +85,7 @@ module.exports = {
                 const platform = await Platform.findById(quiz.platform);
                 const quizInfo = {
                     _id: quiz._id,
-                    bannerImg: quiz.bannerImg ? quiz.bannerImg : 'https://picsum.photos/1000',  // temporary
+                    bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                     createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
@@ -94,7 +94,7 @@ module.exports = {
                     ownerUsername: quizOwner.username,
                     platformId: platform._id,
                     platformName: platform.title,
-                    platformThumbnail: platform.thumbnailImg ? platform.thumbnailImg : 'https://picsum.photos/1000',  // temporary
+                    platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                     rating: quiz.rating,
                     title: quiz.title
                 };
@@ -154,7 +154,7 @@ module.exports = {
             quiz.averageScore = 0;
             quiz.rating = 0;
             quiz.ratingCount = 0;
-            const platform = await Platform.findOne({ title: quiz.platformName });  // escapes only quotes
+            const platform = await Platform.findOne({ title: quiz.platformName });
             if (!platform) {
                 // no platform by that name found
                 return null;
@@ -215,9 +215,6 @@ module.exports = {
                 delete quiz.thumbnailImgData;
                 delete quiz.thumbnailImgName;
             }
-
-            console.log(`bannerImg:`);
-            console.log(quiz.bannerImg);
 
             await Quiz.create(quiz);
             await user.save();

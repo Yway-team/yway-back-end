@@ -2,6 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Platform = require('../models/platform-model');
 const Quiz = require('../models/quiz-model');
 const User = require('../models/user-model');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
 
 function getPlatformResults(platform) {
     return {
@@ -9,7 +10,7 @@ function getPlatformResults(platform) {
         description: platform.description,
         favorites: platform.favorites,
         numQuizzes: platform.quizzes.length,
-        thumbnailImg: platform.thumbnailImg,
+        thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
         title: platform.title
     }
 }
@@ -17,7 +18,7 @@ function getPlatformResults(platform) {
 function getQuizResults(quiz, platform, user) {
     return {
         _id: quiz._id,
-        bannerImg: quiz.bannerImg,
+        bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
         color: quiz.color,
         createdAt: quiz.createdAt.toString(),
         description: quiz.description,
@@ -27,7 +28,7 @@ function getQuizResults(quiz, platform, user) {
         ownerUsername: user.username,
         platformId: quiz.platform,
         platformName: platform.title,
-        platformThumbnail: platform.thumbnailImg,
+        platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
         rating: quiz.rating,
         title: quiz.title
     };

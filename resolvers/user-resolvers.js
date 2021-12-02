@@ -7,6 +7,7 @@ const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
 const { generateAccessToken } = require('../auth');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER } = require('../constants');
 
 const getBasicInfo = (user) => {
     return {
@@ -45,6 +46,7 @@ module.exports = {
             return publicInfo;
         },
         getUserInfo: async (_, { userId }, context) => {
+            // todo: return profile banner image (or DEFAULT_PROFILE_BANNER if not present)
             // Check relation of user's privacy settings to requesting user
             // Return info accordingly
             const user = await User.findById(userId);
@@ -106,7 +108,7 @@ module.exports = {
             user.drafts.forEach((draft) => {
                 const draftInfo = {
                     _id: draft._id,
-                    bannerImg: draft.bannerImg,
+                    bannerImg: draft.bannerImg || DEFAULT_BANNER_IMAGE,
                     createdAt: draft.createdAt.toString(),
                     description: draft.description,
                     numQuestions: draft.questions.length,
@@ -166,7 +168,7 @@ module.exports = {
                 }
                 const quizInfo = {
                     _id: quiz._id,
-                    bannerImg: quiz.bannerImg || 'https://picsum.photos/1000',  // temporary
+                    bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                     createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
@@ -175,7 +177,7 @@ module.exports = {
                     ownerUsername: user.username,
                     platformId: platform._id,
                     platformName: platform.title,
-                    platformThumbnail: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                    platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                     rating: quiz.rating,
                     title: quiz.title
                 };
@@ -228,7 +230,7 @@ module.exports = {
                     description: platform.description,
                     favorites: platform.favorites,
                     numQuizzes: platform.quizzes.length,
-                    thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                    thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                     title: platform.title
                 };
                 platformInfos.push(platformInfo);
@@ -289,11 +291,11 @@ module.exports = {
             }
             const accessToken = generateAccessToken(userId);
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
             return {
                 _id: userId,
                 accessToken: accessToken,
-                avatar: user.avatar,
+                avatar: user.avatar || DEFAULT_AVATAR,
                 creatorPoints: user.creatorPoints,
                 favorites: favorites,
                 googleId: user.googleId,
@@ -386,7 +388,7 @@ module.exports = {
             await user.save();
             await platform.save();
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary img
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
             return favorites;
         },
         unfavoritePlatform: async (_, { platformId }, { _id }) => {
@@ -408,7 +410,7 @@ module.exports = {
                 await platform.save();
             }
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || 'https://picsum.photos/1000', title: favorite.title }; }).sort();  // temporary img
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
             return favorites;
         },
         sendFriendRequest: async (_, { receiverId }, { _id }) => {

@@ -2,6 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Platform = require('../models/platform-model');
 const User = require('../models/user-model');
 const Quiz = require('../models/quiz-model');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
 
 module.exports = {
     Query: {
@@ -23,7 +24,7 @@ module.exports = {
                     description: platform.description,
                     favorites: platform.favorites,
                     numQuizzes: platform.quizzes.length,
-                    thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                    thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                     title: platform.title
                 };
                 platformInfos.push(platformInfo);
@@ -41,7 +42,7 @@ module.exports = {
                 const quizOwner = await User.findById(quiz.owner);
                 const quizInfo = {
                     _id: quiz._id,
-                    bannerImg: quiz.bannerImg || 'https://picsum.photos/1000',  // temporary
+                    bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                     createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
@@ -50,7 +51,7 @@ module.exports = {
                     ownerUsername: quizOwner.username,
                     platformId: platform._id,
                     platformName: platform.title,
-                    platformThumbnail: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                    platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                     rating: quiz.rating,
                     title: quiz.title
                 };
@@ -58,20 +59,20 @@ module.exports = {
             }
             const platformInfo = {
                 _id: platform._id,
-                bannerImg: platform.bannerImg || 'https://picsum.photos/1000',  // temporary
+                bannerImg: platform.bannerImg || DEFAULT_BANNER_IMAGE,
                 description: platform.description,
                 favorites: platform.favorites,
                 numQuizzes: platform.quizzes.length,
                 numQuestions: platform.questions.length,
                 quizzesInfo: quizzesInfo,
-                thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
             };
             return platformInfo;
         },
         getPlatformThumbnail: async (_, { title }) => {
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
-            return platform.thumbnailImg || 'https://picsum.photos/1000';  // temporary
+            return platform.thumbnailImg || DEFAULT_THUMBNAIL;
         },
         getPlatformSettings: async (_, { title }) => {
             const platform = await Platform.findOne({ title: title });
@@ -94,7 +95,7 @@ module.exports = {
                 const quizOwner = await User.findById(quiz.owner);
                 const quizInfo = {
                     _id: quiz._id,
-                    bannerImg: quiz.bannerImg || 'https://picsum.photos/1000',  // temporary
+                    bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                     createdAt: quiz.createdAt.toString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
@@ -103,20 +104,20 @@ module.exports = {
                     ownerUsername: quizOwner.username,
                     platformId: platform._id,
                     platformName: platform.title,
-                    platformThumbnail: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                    platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                     rating: quiz.rating,
                     title: quiz.title
                 };
                 quizzesInfo.push(quizInfo);
             }
             const platformInfo = {
-                bannerImg: platform.bannerImg || 'https://picsum.photos/1000',  // temporary
+                bannerImg: platform.bannerImg || DEFAULT_BANNER_IMAGE,
                 description: platform.description,
                 favorites: platform.favorites,
                 numQuizzes: platform.quizzes.length,
                 numQuestions: platform.questions.length,
                 quizzesInfo: quizzesInfo,
-                thumbnailImg: platform.thumbnailImg || 'https://picsum.photos/1000',  // temporary
+                thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
             };
             return platformInfo;
         }
