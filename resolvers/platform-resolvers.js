@@ -57,8 +57,10 @@ module.exports = {
                 quizzesInfo.push(quizInfo);
             }
 
-            _id = new ObjectId(_id);
-            const moderator = Boolean(platform.moderators.find(moderator => _id.equals(moderator)));
+            if (_id) {
+                _id = new ObjectId(_id);
+            }
+            const moderator = Boolean(_id && (_id.equals(platform.owner) || platform.moderators.find(moderator => _id.equals(moderator))));
 
             const platformInfo = {
                 _id: platform._id,
@@ -83,8 +85,8 @@ module.exports = {
         getPlatformSettings: async (_, { title }, { _id }) => {
             const platform = await Platform.findOne({ title: title });
             if (!platform) return null;
-            _id = new ObjectId(_id);
-            if (!platform.moderators.find(moderator => _id.equals(moderator))) return null;
+            if (_id) _id = new ObjectId(_id);
+            if (!_id || !platform.moderators.find(moderator => _id.equals(moderator))) return null;
             const platformSettings = {
                 bannerImg: platform.bannerImg,
                 color: platform.color,
