@@ -12,7 +12,7 @@ module.exports = {
         },
         getLeaderboardEntries: async (_, {_id, howMany}) => {
         },
-        getPlatformHighlights: async (_, { howMany }) => {
+        getPlatformHighlights: async (_, {howMany}) => {
             const platforms = await Platform.find().limit(howMany);
             if (!platforms) {
                 // no platforms in database
@@ -33,11 +33,11 @@ module.exports = {
             }
             return platformInfos;
         },
-        getPlatformSummary: async (_, { title }, { _id }) => {
-            const platform = await Platform.findOne({ title: title });
+        getPlatformSummary: async (_, {title}, {_id}) => {
+            const platform = await Platform.findOne({title: title});
             if (!platform) return null;
-            
-            const quizzes = await Quiz.find({ _id: { $in: platform.quizzes } });
+
+            const quizzes = await Quiz.find({_id: {$in: platform.quizzes}});
             const sortedQuizzes = [...quizzes].sort((quiz1, quiz2) => {
                 if (quiz1.createdAt < quiz2.createdAt) return 1;
                 if (quiz1.createdAt > quiz2.createdAt) return -1;
@@ -53,7 +53,7 @@ module.exports = {
             }
             let owners = uniqueIds(quizzes.map(quiz => quiz.owner));
             let ownerScores = {};
-            
+
             quizzes.forEach(quiz => {
                 if (ownerScores[quiz.owner]) ownerScores[quiz.owner] += quiz.attempts;
                 else ownerScores[quiz.owner] = quiz.attempts;
@@ -81,7 +81,7 @@ module.exports = {
                 };
                 leaderboardEntries.push(leaderboardEntry);
             }
-            
+
             const quizzesInfo = [];
             for (let i = 0; i < sortedQuizzes.length; i++) {
                 const quiz = sortedQuizzes[i];
@@ -125,13 +125,13 @@ module.exports = {
             };
             return platformInfo;
         },
-        getPlatformThumbnail: async (_, { title }) => {
-            const platform = await Platform.findOne({ title: title });
+        getPlatformThumbnail: async (_, {title}) => {
+            const platform = await Platform.findOne({title: title});
             if (!platform) return null;
             return platform.thumbnailImg || DEFAULT_THUMBNAIL;
         },
-        getPlatformSettings: async (_, { title }, { _id }) => {
-            const platform = await Platform.findOne({ title: title });
+        getPlatformSettings: async (_, {title}, {_id}) => {
+            const platform = await Platform.findOne({title: title});
             if (!platform) return null;
             if (_id) _id = new ObjectId(_id);
             if (!_id || (!_id.equals(platform.owner) && !platform.moderators.find(moderator => _id.equals(moderator)))) return null;
@@ -148,11 +148,11 @@ module.exports = {
             };
             return platformSettings;
         },
-        getPlatformById: async (_, { title }, { _id }) => {
+        getPlatformById: async (_, {title}, {_id}) => {
             // todo: use _id to check for moderator status
-            const platform = await Platform.findOne({ _id: _id });
+            const platform = await Platform.findOne({_id: _id});
             if (!platform) return null;
-            const quizzes = await Quiz.find({ _id: { $in: platform.quizzes } }).limit(100);  // todo: limit this more intelligently
+            const quizzes = await Quiz.find({_id: {$in: platform.quizzes}}).limit(100);  // todo: limit this more intelligently
             const quizzesInfo = [];
             for (let i = 0; i < quizzes.length; i++) {
                 const quiz = quizzes[i];
@@ -187,19 +187,27 @@ module.exports = {
         }
     },
     Mutation: {
-        createPlatform: async (_, { platform }, { _id }) => {
+        createPlatform: async (_, {platform}, {_id}) => {
             if (!_id) {
                 // user is not logged in
                 return null;
             }
             // verify that platform's name is not taken
-            const taken = await Platform.exists({ title: platform.title });
+            const taken = await Platform.exists({title: platform.title});
             if (taken) {
                 return 'name taken';
             }
             // assume that other inputs are valid; validation should be done on the client side
             platform._id = new ObjectId();
             platform.owner = new ObjectId(_id);
+
+            if (platform.bannerImgData) {
+                await uploadBannerImg(platform, platform._id, 'platform');
+            }
+            // if (platform.thumbnailImgData) {
+            //     await uploadThumbnailImg(platform, platform._id, 'platform');
+            // }
+
             const result = await Platform.create(platform);
             if (!result) {
                 return null;
@@ -211,7 +219,7 @@ module.exports = {
         },
         deletePlatform: async (_, {_id}) => {
         },
-        updatePlatformSettings: async (_, { platformSettings }, { _id }) => {
+        updatePlatformSettings: async (_, {platformSettings}, {_id}) => {
             const platform = await Platform.findById(platformSettings.platformId);
             _id = new ObjectId(_id);
             if (!_id.equals(platform.owner) && !platform.moderators.find(moderatorId => _id.equals(moderatorId))) return null;
