@@ -67,13 +67,12 @@ const typeDefs = gql`
         getPlatformSummary(title: String!): PlatformSummary
         getPlatformThumbnail(title: String!): String
         getPlatformSettings(title: String!): PlatformSettings
-        updatePlatformSettings(platformSettings: PlatformSettingsInput!): PlatformSettings
         getPlatformById(_id: String!): PlatformSummary
     }
     extend type Mutation {
         createPlatform(platform: PlatformInput!): String
         deletePlatform(_id: ID!): Boolean
-        updatePlatformSettings(_id: ID!): Boolean
+        updatePlatformSettings(platformSettings: PlatformSettingsInput!): PlatformSettings
     }
     input PlatformSettingsInput {
         bannerImgData: String
