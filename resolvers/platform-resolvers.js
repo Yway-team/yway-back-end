@@ -2,6 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Platform = require('../models/platform-model');
 const User = require('../models/user-model');
 const Quiz = require('../models/quiz-model');
+const Question = require('../models/question-model');
 const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
 const { uploadBannerImg, uploadThumbnailImg } = require('../s3');
 
@@ -42,7 +43,15 @@ module.exports = {
                 if (quiz1.createdAt > quiz2.createdAt) return -1;
                 return 0;
             }).slice(0, 100);  // todo: limit this more intelligently
-            const owners = quizzes.map(quiz => quiz.owner);
+            function uniqueIds(array) {
+                const visited = {};
+                return array.filter((id) => {
+                    if (visited[id.toString()]) return false;
+                    visited[id.toString()] = true;
+                    return true;
+                });
+            }
+            let owners = uniqueIds(quizzes.map(quiz => quiz.owner));
             let ownerScores = {};
             
             quizzes.forEach(quiz => {
@@ -127,6 +136,7 @@ module.exports = {
             if (_id) _id = new ObjectId(_id);
             if (!_id || (!_id.equals(platform.owner) && !platform.moderators.find(moderator => _id.equals(moderator)))) return null;
             const platformSettings = {
+                _id: platform._id,
                 bannerImg: platform.bannerImg,
                 color: platform.color,
                 description: platform.description,
@@ -223,6 +233,61 @@ module.exports = {
             delete platformSettings.platformId;
             await platform.save();
             return platformSettings;
-        }
+        },
+        /*removeQuizFromPlatform: async (_, { platformId, quizId }, { _id }) => {
+            // fetch platform
+            // check if logged in user is a moderator or owner of the platform
+            // if so, remove the quiz from the platform:
+
+            // 1. fetch the quiz
+            // 2. strip the platform field
+            // 3. remove platforms-specific statistics, such as averageScore, attempts, rating, and ratingCount
+            // 4. remove quizId from quizzes and question IDs from questions
+            // 4. delete the quiz questions and use them to generate a new drafts object
+            // 5. set the draft's updatedAt field to the quiz's createdAt field
+            // 6. add the draft object to the quiz owner's drafts, bypassing the number of drafts limit
+
+            if (!_id) return null;
+            _id = new ObjectId(_id);
+
+            const platform = await Platform.findById(platformId);
+
+            if (!_id.equals(platform.owner) && !platform.moderators.find(moderatorId => _id.equals(moderatorId))) return null;
+
+            const quiz = await Quiz.findById(quizId);
+            
+            delete quiz.platform;
+            delete quiz.averageScore;
+            delete quiz.attempts;
+            delete quiz.rating;
+            delete quiz.ratingCounts;
+            
+            // remove quiz ID from quizzes
+            quizId = new ObjectId(quizId);
+            const quizIndex = platform.quizzes.findIndex(id => quizId.equals(id));
+            if (quizIndex !== -1) platform.quizzes.splice(quizIndex, 1);
+
+            // remove the quiz's question IDs from the platform's questions
+            platform.questions = platform.questions.filter(questionId => !quiz.questions.find(questionId));
+
+            const questionOrderMapping = {};
+            for (let i = 0; i < quiz.questions.length; i++) {
+                questionOrderMapping[quiz.question[i]] = i;
+            }
+            const questions = await Question.find({ _id: { $in: quiz.questions } });
+            questions.sort((q1, q2) => questionOrderMapping[q1._id] - questionOrderMapping[q2._id]);  // should restore the original order
+            questions.forEach(question => {
+                delete question._id;
+                delete question.quiz;
+                delete question.attemptTotal;
+                delete question.correctAttempts;
+                delete question.platform;
+            });
+            const draft = {
+                bannerImg: quiz.bannerImg,
+                color: quiz.color,
+                
+            }
+        }*/
     }
 };

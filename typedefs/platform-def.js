@@ -44,6 +44,7 @@ const typeDefs = gql`
         title: String
     }
     type PlatformSettings {
+        _id: ID
         bannerImg: String
         color: String
         description: String
