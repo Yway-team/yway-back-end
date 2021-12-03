@@ -15,3 +15,5 @@
 .pnp.cjs
 .yarn/
 node_modules
+
+test.js

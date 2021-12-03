@@ -46,6 +46,7 @@ const typeDefs = gql`
     type PlatformSettings {
         bannerImg: String
         color: String
+        description: String
         minCreatorPoints: Int
         onlyModSubmissions: Boolean
         tags: [String]
@@ -75,18 +76,25 @@ const typeDefs = gql`
         updatePlatformSettings(_id: ID!): Boolean
     }
     input PlatformSettingsInput {
+        bannerImgData: String
+        color: String
+        description: String
+        minCreatorPoints: Int
+        onlyModSubmissions: Boolean
         platformId: ID
+        tags: [String]
+        thumbnailImgData: String
         title: String
-        bannerImg: String
-        thumbnailImg: String
     }
     input PlatformInput {
         bannerImg: String
+        bannerImgData: String
         color: String
         description: String
         minCreatorPoints: Int
         onlyModSubmissions: Boolean
         thumbnailImg: String
+        thumbnailImgData: String
         tags: [String]
         title: String!
     }

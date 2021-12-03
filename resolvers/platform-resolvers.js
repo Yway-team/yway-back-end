@@ -3,6 +3,7 @@ const Platform = require('../models/platform-model');
 const User = require('../models/user-model');
 const Quiz = require('../models/quiz-model');
 const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
+const { uploadBannerImg, uploadThumbnailImg } = require('../s3');
 
 module.exports = {
     Query: {
@@ -128,6 +129,7 @@ module.exports = {
             const platformSettings = {
                 bannerImg: platform.bannerImg,
                 color: platform.color,
+                description: platform.description,
                 minCreatorPoints: platform.minCreatorPoints,
                 onlyModSubmissions: platform.onlyModSubmissions,
                 tags: platform.tags,
@@ -199,12 +201,26 @@ module.exports = {
         },
         deletePlatform: async (_, {_id}) => {
         },
-        updatePlatformSettings: async (_, { platformSettings }) => {
+        updatePlatformSettings: async (_, { platformSettings }, { _id }) => {
             const platform = await Platform.findById(platformSettings.platformId);
+            _id = new ObjectId(_id);
+            if (!_id.equals(platform.owner) && !platform.moderators.find(moderatorId => _id.equals(moderatorId))) return null;
             if (!platform) return null;
             // platform.title = platformSettings.title;  // disallowed for now
-            platform.bannerImg = platformSettings.bannerImg;
-            platform.thumbnailImg = platformSettings.thumbnailImg;
+            platform.color = platformSettings.color;
+            platform.description = platformSettings.description;
+            platform.minCreatorPoints = platformSettings.minCreatorPoints;
+            platform.onlyModSubmissions = platformSettings.onlyModSubmissions;
+            platform.tags = platformSettings.tags;
+            if (platformSettings.bannerImgData) {
+                await uploadBannerImg(platformSettings, platformSettings.platformId, 'platform');
+                platform.bannerImg = platformSettings.bannerImg;
+            }
+            if (platformSettings.thumbnailImgData) {
+                await uploadThumbnailImg(platformSettings, platformSettings.platformId, 'platform');
+                platform.thumbnailImg = platformSettings.thumbnailImg;
+            }
+            delete platformSettings.platformId;
             await platform.save();
             return platformSettings;
         }
