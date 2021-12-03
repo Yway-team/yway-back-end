@@ -88,14 +88,14 @@ const typeDefs = gql`
         title: String
     }
     input PlatformInput {
-        bannerImg: String
         bannerImgData: String
+        bannerImgName: String
         color: String
         description: String
         minCreatorPoints: Int
         onlyModSubmissions: Boolean
-        thumbnailImg: String
         thumbnailImgData: String
+        thumbnailImgName: String
         tags: [String]
         title: String!
     }
