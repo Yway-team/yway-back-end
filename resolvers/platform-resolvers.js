@@ -234,7 +234,7 @@ module.exports = {
             await platform.save();
             return platformSettings;
         },
-        /*removeQuizFromPlatform: async (_, { platformId, quizId }, { _id }) => {
+        removeQuizFromPlatform: async (_, { platformId, quizId }, { _id }) => {
             // fetch platform
             // check if logged in user is a moderator or owner of the platform
             // if so, remove the quiz from the platform:
@@ -256,12 +256,6 @@ module.exports = {
 
             const quiz = await Quiz.findById(quizId);
             
-            delete quiz.platform;
-            delete quiz.averageScore;
-            delete quiz.attempts;
-            delete quiz.rating;
-            delete quiz.ratingCounts;
-            
             // remove quiz ID from quizzes
             quizId = new ObjectId(quizId);
             const quizIndex = platform.quizzes.findIndex(id => quizId.equals(id));
@@ -272,22 +266,43 @@ module.exports = {
 
             const questionOrderMapping = {};
             for (let i = 0; i < quiz.questions.length; i++) {
-                questionOrderMapping[quiz.question[i]] = i;
+                questionOrderMapping[quiz.questions[i]] = i;
             }
-            const questions = await Question.find({ _id: { $in: quiz.questions } });
+            let questions = await Question.find({ _id: { $in: quiz.questions } });
             questions.sort((q1, q2) => questionOrderMapping[q1._id] - questionOrderMapping[q2._id]);  // should restore the original order
-            questions.forEach(question => {
-                delete question._id;
-                delete question.quiz;
-                delete question.attemptTotal;
-                delete question.correctAttempts;
-                delete question.platform;
+            questions = questions.map(question => {
+                return {
+                    answerOptions: question.answerOptions,
+                    correctAnswerIndex: question.correctAnswerIndex,
+                    description: question.description
+                }
             });
+            
             const draft = {
+                _id: quizId,
                 bannerImg: quiz.bannerImg,
                 color: quiz.color,
-                
+                description: quiz.description,
+                platformName: null,
+                questions: questions,
+                shuffleAnswers: quiz.shuffleAnswers,
+                shuffleQuestions: quiz.shuffleQuestions,
+                tags: quiz.tags,
+                thumbnailImg: quiz.thumbnailImg,
+                timeToAnswer: quiz.timeToAnswer,
+                title: quiz.title,
+                updatedAt: new Date()
             }
-        }*/
+
+            const user = await User.findById(quiz.owner);
+            user.drafts.push(draft);
+
+            await user.save();
+            await platform.save();
+            await Quiz.deleteOne({ _id: quizId });
+            await Question.deleteMany({ _id: { $in: quiz.questions } });
+
+            return true;
+        }
     }
 };

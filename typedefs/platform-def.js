@@ -74,6 +74,7 @@ const typeDefs = gql`
         createPlatform(platform: PlatformInput!): String
         deletePlatform(_id: ID!): Boolean
         updatePlatformSettings(platformSettings: PlatformSettingsInput!): PlatformSettings
+        removeQuizFromPlatform(platformId: ID!, quizId: ID!): Boolean
     }
     input PlatformSettingsInput {
         bannerImgData: String

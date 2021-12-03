@@ -71,6 +71,7 @@ const typeDefs = gql`
         thumbnailImg: String
     }
     input QuizInput {
+        _id: ID
         questions: [QuestionInput!]!
         title: String!
         shuffleQuestions: Boolean!

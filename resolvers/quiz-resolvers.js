@@ -161,7 +161,7 @@ module.exports = {
                 return null;
             }
 
-            quiz._id = new ObjectId();
+            quiz._id = new ObjectId(quiz._id);
             quiz.owner = new ObjectId(_id);
             if (!quiz.timeToAnswer) {
                 // if no time limit provided, set it to the default
@@ -210,6 +210,9 @@ module.exports = {
             }
             user.quizzes.push(quiz._id);
             platform.quizzes.push(quiz._id);
+
+            const draftIndex = user.drafts.findIndex(draft => draft._id.equals(quiz._id));
+            if (draftIndex !== -1) user.drafts.splice(draftIndex, 1);
 
             if (quiz.bannerImgData) {
                 await uploadBannerImg(quiz, quiz._id, 'quiz');
@@ -303,11 +306,13 @@ module.exports = {
             await platform.save();
             await Question.deleteMany({ quiz: quizId });
             if (quiz.bannerImg) {
-                const key = quiz.bannerImg.split('/').pop();
+                const urlComponents = quiz.bannerImg.split('/');
+                const key = urlComponents.slice(urlComponents.findIndex('img')).join('/');
                 await deleteObject(key);
             }
             if (quiz.thumbnailImg) {
-                const key = quiz.thumbnailImg.split('/').pop();
+                const urlComponents = quiz.thumbnailImg.split('/');
+                const key = urlComponents.slice(urlComponents.findIndex('img')).join('/');
                 await deleteObject(key);
             }
             return true;
