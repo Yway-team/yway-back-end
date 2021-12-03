@@ -1,6 +1,6 @@
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 require('dotenv').config();
-const { S3_ACCESS_KEY_ID, S3_BUCKET, S3_REGION, S3_SECRET_ACCESS_KEY } = process.env;
+const { S3_ACCESS_KEY_ID, S3_BUCKET, S3_BUCKET_URL, S3_REGION, S3_SECRET_ACCESS_KEY } = process.env;
 
 const config = {
     region: S3_REGION,

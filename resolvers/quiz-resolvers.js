@@ -4,7 +4,7 @@ const Question = require('../models/question-model');
 const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
 const { S3_BUCKET, S3_REGION, S3_BUCKET_URL } = process.env;
-const { uploadImage, deleteObject } = require('../s3');
+const { uploadImage, deleteObject, uploadBannerImg, uploadThumbnailImg } = require('../s3');
 const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
@@ -212,26 +212,10 @@ module.exports = {
             platform.quizzes.push(quiz._id);
 
             if (quiz.bannerImgData) {
-                let [prefix, imgData] = quiz.bannerImgData.split(',');
-                const type = prefix.split(';')[0].split('/')[1];
-                const encoding = prefix.split(';')[1];
-                imgData = new Buffer.from(imgData, encoding);
-                const key = `img/quiz/${quiz._id.toString()}/bannerImg.${type}`;
-                const success = await uploadImage(key, imgData, type, encoding);
-                if (success) quiz.bannerImg = `${S3_BUCKET_URL}/${key}`;
-                delete quiz.bannerImgData;
-                delete quiz.bannerImgName;
+                await uploadBannerImg(quiz, quiz._id, 'quiz');
             }
             if (quiz.thumbnailImgData) {
-                let [prefix, imgData] = quiz.thumbnailImgData.split(',');
-                const type = prefix.split(';')[0].split('/')[1];
-                const encoding = prefix.split(';')[1];
-                imgData = new Buffer.from(imgData, encoding);
-                const key = `img/quiz/${quiz._id.toString()}/thumbnailImg.${type}`;
-                const success = await uploadImage(key, imgData, type, encoding);
-                if (success) quiz.thumbnailImg = `${S3_BUCKET_URL}/${key}`;
-                delete quiz.thumbnailImgData;
-                delete quiz.thumbnailImgName;
+                await uploadThumbnailImg(quiz, quiz._id, 'quiz');
             }
 
             await Quiz.create(quiz);
@@ -256,26 +240,10 @@ module.exports = {
                     draftId = new ObjectId();
                 }
                 if (draft.bannerImgData) {
-                    let [prefix, imgData] = draft.bannerImgData.split(',');
-                    const type = prefix.split(';')[0].split('/')[1];
-                    const encoding = prefix.split(';')[1];
-                    imgData = new Buffer.from(imgData, encoding);
-                    const key = `img/quiz/${draft._id?.toString() || draftId}/bannerImg.${type}`;
-                    const success = await uploadImage(key, imgData, type, encoding);
-                    if (success) draft.bannerImg = `${S3_BUCKET_URL}/${key}`;
-                    delete draft.bannerImgData;
-                    delete draft.bannerImgName;
+                    await uploadBannerImg(draft, draft._id || draftId, 'quiz');
                 }
                 if (draft.thumbnailImgData) {
-                    let [prefix, imgData] = draft.thumbnailImgData.split(',');
-                    const type = prefix.split(';')[0].split('/')[1];
-                    const encoding = prefix.split(';')[1];
-                    imgData = new Buffer.from(imgData, encoding);
-                    const key = `img/quiz/${draft._id?.toString() || draftId}/thumbnailImg.${type}`;
-                    const success = await uploadImage(key, imgData, type, encoding);
-                    if (success) draft.thumbnailImg = `${S3_BUCKET_URL}/${key}`;
-                    delete draft.thumbnailImgData;
-                    delete draft.thumbnailImgName;
+                    await uploadThumbnailImg(draft, draft._id || draftId, 'quiz');
                 }
             }
             if (!draftId) {
