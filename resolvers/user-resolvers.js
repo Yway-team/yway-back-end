@@ -566,14 +566,14 @@ module.exports = {
             if (!_id) return false;
             const receivingUser = await User.findById(receiverId);
             if (!receivingUser) return false;
-            senderId = ObjectId(_id);
+            const senderId = ObjectId(_id);
             if (receivingUser.notifications.find(({ type, description }) => type === 'friend request' && description.equals(senderId))) {
                 // a friend request is already active from this user
                 return false;
             }
             receivingUser.notifications.push({
                 type: 'friend request',
-                description: ObjectId(_id),
+                description: senderId,
                 createdAt: new Date()
             });
             await receivingUser.save();
