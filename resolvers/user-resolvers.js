@@ -592,17 +592,21 @@ module.exports = {
             // this is called by the user who accepts a friend request
             // todo: possibly abusable, look into that
             if (!_id) return false;
-            const userId = ObjectId(_id);
-            friendId = ObjectId(friendId);
+            if (!friendId || friendId === _id) return false;
+            const userId = new ObjectId(_id);
+            friendId = new ObjectId(friendId);
             const user = await User.findById(userId);
-            if (!user) return false;
             const friend = await User.findById(friendId);
-            if (!friend) return false;
+            if (!user || !friend) return false;
             if (!user.friends.find(id => id.equals(friendId))) {
                 user.friends.push(friendId);
+                const requestIndex = user.sentFriendRequests.findIndex(id => id.equals(friendId));
+                if (requestIndex !== -1) user.sentFriendRequests.splice(requestIndex, 1);
             }
             if (!friend.friends.find(id => id.equals(userId))) {
                 friend.friends.push(userId);
+                const requestIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
+                if (requestIndex !== -1) user.receivedFriendRequests.splice(requestIndex, 1);
             }
             await user.save();
             await friend.save();

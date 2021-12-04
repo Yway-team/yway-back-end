@@ -129,7 +129,7 @@ const typeDefs = gql`
     }
     type Notification {
         description: String!
-        createdAt: String!  # Should this be createdAt?
+        createdAt: String!
         type: String!
     }
 `;
