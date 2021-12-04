@@ -24,6 +24,7 @@ const typeDefs = gql`
         getCurrentUser(_id: ID!): User
         getUserPublicInfo(userId: ID!): UserInfo
         getUserInfo(userId: ID!): UserInfo
+        getProfileOverview(userId: ID!): ProfileOverview
         getDraft(draftId: ID!): Draft
         getDraftsInfo: [DraftInfo]
         getFavorites: [FavoriteInfo]
@@ -61,6 +62,15 @@ const typeDefs = gql`
         quizzes: [ID]
         achievements: [Achievement]
         history: [History]
+    }
+    type ProfileOverview {
+        creatorPoints: Int
+        playPoints: Int
+        achievements: [Achievement]
+        history: [History]
+        friendsInfo: [UserInfo]
+        quizzesInfo: [QuizInfo]
+        platformsInfo: [PlatformInfo]
     }
     type DraftInfo {
         _id: ID

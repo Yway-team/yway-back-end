@@ -95,6 +95,90 @@ module.exports = {
                     return privateInfo;
             }
         },
+        getProfileOverview: async (_, { userId }, { _id }) => {
+            if (!userId) return null;
+            const user = await User.findById(userId);
+
+            const publicInfo = {
+                _id: user._id,
+                username: user.username,
+                avatar: user.avatar,
+                privacySettings: user.privacySettings
+            };
+            // 4 each
+            // 6 friends
+            let quizzesInfo = await Quiz.find({ _id: { $in: user.quizzes } }).sort({ updatedAt: 'descending' }).limit(4)
+            const quizPlatforms = await Platform.find({ _id: { $in: quizzesInfo.map(quiz => quiz.platform) } });
+            const quizOwners = await User.find({ _id: { $in: quizzesInfo.map(quiz => quiz.owner) } });
+            quizzesInfo = quizzesInfo.map(quiz => {
+                const platformIndex = quizPlatforms.findIndex(platform => quiz.platform.equals(platform._id));
+                const platform = quizPlatforms[platformIndex];
+                const ownerIndex = quizOwners.findIndex(owner => quiz.owner.equals(owner._id))
+                const owner = quizOwners[ownerIndex];
+                return {
+                    _id: quiz._id,
+                    bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
+                    color: quiz.color,
+                    createdAt: quiz.createdAt.toString(),
+                    description: quiz.description,
+                    numQuestions: quiz.questions.length,
+                    ownerAvatar: owner.avatar,
+                    ownerId: owner._id,
+                    ownerUsername: owner.username,
+                    platformId: platform._id,
+                    platformName: platform.title,
+                    platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
+                    rating: quiz.rating,
+                    title: quiz.title
+                };
+            });
+            const platformsInfo = (await Platform.find({ _id: { $in: user.platforms } }).sort({ updatedAt: 'descending' }).limit(4)).map(platform => {
+                return {
+                    _id: platform._id,
+                    description: platform.description,
+                    favorites: platform.favorites,
+                    numQuizzes: platform.quizzes.length,
+                    thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
+                    title: platform.title
+                }
+            });
+            const friendsInfo = (await User.find( { _id: { $in: user.friends } })).slice(-6).map(friend => {
+                return {
+                    _id: friend._id,
+                    avatar: friend.avatar,
+                    username: friend.username
+                };
+            });
+            const achievements = user.achievements.slice(-4);
+            const history = user.history.slice(-4);
+            const overview = {
+                playPoints: user.playPoints,
+                creatorPoints: user.creatorPoints,
+                achievements: achievements,
+                friendsInfo: friendsInfo,
+                history: history,
+                quizzesInfo: quizzesInfo,
+                platformsInfo: platformsInfo
+            };
+
+            if (_id === userId) {
+                // logged-in user is requesting own info
+                return overview;
+            }
+            _id = new ObjectId(_id);
+            switch (user.privacySettings) {
+                case 'private':
+                    return null;
+                case 'friends':
+                    if (_id && user.friends.find(friendId => friendId.equals(_id))) {
+                        // requesting user is logged in and friends with the user
+                        return overview;
+                    }
+                    return null;
+                case 'public':
+                    return overview;
+            }
+        },
         getDraft: async (_, { draftId }, { _id }) => {
             if (!_id) {
                 // no user logged in
