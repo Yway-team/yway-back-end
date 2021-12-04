@@ -135,6 +135,7 @@ module.exports = {
                     numQuestions: draft.questions.length,
                     platformName: draft.platformName,
                     tags: draft.tags,
+                    thumbnailImg: draft.thumbnailImg || DEFAULT_THUMBNAIL,
                     timeToAnswer: draft.timeToAnswer,
                     title: draft.title
                 };
