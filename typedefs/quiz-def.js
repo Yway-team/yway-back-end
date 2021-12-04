@@ -34,7 +34,7 @@ const typeDefs = gql`
         createAndPublishQuiz(quiz: QuizInput!): Quiz
         saveQuizAsDraft(draft: DraftInput!): ID
         deleteQuiz(quizId: ID!): Boolean
-        editPublishedQuiz(_id: ID!): Quiz
+        updatePublishedQuiz(quizDetails: EditQuizInput!): Quiz
         rateQuiz(_id: ID!, rating: Int!): Boolean
     }
     type QuizInfo {
@@ -85,6 +85,17 @@ const typeDefs = gql`
         thumbnailImgData: String
         thumbnailImgName: String
         timeToAnswer: Int
+    }
+    input EditQuizInput {
+        _id: ID!
+        bannerImg: String
+        bannerImgData: String
+        color: String
+        description: String
+        tags: [String]
+        thumbnailImg: String
+        thumbnailImgData: String
+        title: String
     }
     input QuestionInput {
         answerOptions: [String!]!

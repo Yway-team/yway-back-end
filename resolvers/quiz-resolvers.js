@@ -90,7 +90,7 @@ module.exports = {
             return editQuizInfo;
         },
         getQuizHighlights: async (_, { howMany }) => {
-            const quizzes = await Quiz.find().limit(howMany);
+            const quizzes = await Quiz.find().sort({ createdAt: 'descending' }).limit(howMany);
             const quizInfos = [];
             for (let i = 0; i < quizzes.length; i++) {
                 const quiz = quizzes[i];
@@ -325,7 +325,24 @@ module.exports = {
             }
             return true;
         },
-        editPublishedQuiz: async (_, { _id }) => {
+        updatePublishedQuiz: async (_, { quizDetails }) => {
+            const quiz = await Quiz.findById(quizDetails._id);
+            quiz.title = quizDetails.title;
+            quiz.description = quizDetails.description;
+            quiz.tags = quizDetails.tags;
+            quiz.color = quizDetails.color;
+            if (quizDetails.bannerImgData) {
+                quizDetails.bannerImg = await uploadBannerImg(quizDetails, quizDetails._id, 'quiz');
+                delete quizDetails.bannerImgData;
+                quiz.bannerImg = quizDetails.bannerImg;
+            }
+            if (quizDetails.thumbnailImgData) {
+                quizDetails.thumbnailImg = await uploadThumbnailImg(quizDetails, quizDetails._id, 'quiz');
+                delete quizDetails.thumbnailImgData;
+                quiz.thumbnailImg = quizDetails.thumbnailImg;
+            }
+            await quiz.save();
+            return quizDetails;
         },
         rateQuiz: async (_, { _id, rating }) => {
         },
