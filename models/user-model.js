@@ -42,6 +42,14 @@ const userSchema = new Schema({
         type: [ObjectId],
         required: true
     },
+    sentFriendRequests: {
+        type: [ObjectId],
+        default: []
+    },
+    receivedFriendRequests: {
+        type: [ObjectId],
+        default: []
+    },
     notifications: {
         type: [Object],
         required: true

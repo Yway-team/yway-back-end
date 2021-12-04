@@ -14,6 +14,8 @@ const typeDefs = gql`
         history: [History]!
         moderator: [ID]!
         notifications: [Notification]!
+        receivedFriendRequests: [ID]
+        sentFriendRequests: [ID]
         platforms: [ID]!
         playPoints: Int!
         privacySettings: String!

@@ -564,19 +564,28 @@ module.exports = {
         },
         sendFriendRequest: async (_, { receiverId }, { _id }) => {
             if (!_id) return false;
+            if (_id === receiverId) return false;
+            receiverId = new ObjectId(receiverId);
+            const senderId = new ObjectId(_id);
             const receivingUser = await User.findById(receiverId);
-            if (!receivingUser) return false;
-            const senderId = ObjectId(_id);
+            const sendingUser = await User.findById(senderId);
+            if (!receivingUser || !sendingUser) return false;
             if (receivingUser.notifications.find(({ type, description }) => type === 'friend request' && description.equals(senderId))) {
                 // a friend request is already active from this user
                 return false;
             }
-            receivingUser.notifications.push({
+            receivingUser.receivedFriendRequests.push(senderId);
+            const length = receivingUser.notifications.push({
                 type: 'friend request',
                 description: senderId,
                 createdAt: new Date()
             });
+            if (length > MAX_NOTIFICATIONS) {
+                receivingUser.notifications.splice(0, length - MAX_NOTIFICATIONS);
+            }
+            sendingUser.sentFriendRequests.push(receiverId);
             await receivingUser.save();
+            await sendingUser.save();
             return true;
         },
         addFriend: async (_, { friendId }, { _id }) => {
