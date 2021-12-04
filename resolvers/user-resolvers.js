@@ -98,16 +98,9 @@ module.exports = {
         getProfileOverview: async (_, { userId }, { _id }) => {
             if (!userId) return null;
             const user = await User.findById(userId);
-
-            const publicInfo = {
-                _id: user._id,
-                username: user.username,
-                avatar: user.avatar,
-                privacySettings: user.privacySettings
-            };
-            // 4 each
-            // 6 friends
-            let quizzesInfo = await Quiz.find({ _id: { $in: user.quizzes } }).sort({ updatedAt: 'descending' }).limit(4)
+            
+            // 6 each
+            let quizzesInfo = await Quiz.find({ _id: { $in: user.quizzes } }).sort({ updatedAt: 'descending' }).limit(6)
             const quizPlatforms = await Platform.find({ _id: { $in: quizzesInfo.map(quiz => quiz.platform) } });
             const quizOwners = await User.find({ _id: { $in: quizzesInfo.map(quiz => quiz.owner) } });
             quizzesInfo = quizzesInfo.map(quiz => {
@@ -132,7 +125,7 @@ module.exports = {
                     title: quiz.title
                 };
             });
-            const platformsInfo = (await Platform.find({ _id: { $in: user.platforms } }).sort({ updatedAt: 'descending' }).limit(4)).map(platform => {
+            const platformsInfo = (await Platform.find({ _id: { $in: user.platforms } }).sort({ updatedAt: 'descending' }).limit(6)).map(platform => {
                 return {
                     _id: platform._id,
                     description: platform.description,
@@ -149,8 +142,8 @@ module.exports = {
                     username: friend.username
                 };
             });
-            const achievements = user.achievements.slice(-4);
-            const history = user.history.slice(-4);
+            const achievements = user.achievements.slice(-6);
+            const history = user.history.slice(-6);
             const overview = {
                 playPoints: user.playPoints,
                 creatorPoints: user.creatorPoints,
