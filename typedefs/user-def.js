@@ -109,6 +109,7 @@ const typeDefs = gql`
         description: String!
         createdAt: String!
         type: String!
+        name: String
     }
     input HistoryInput {
         description: String!
@@ -128,6 +129,7 @@ const typeDefs = gql`
         type: String!
     }
     type Notification {
+        name: String
         description: String!
         createdAt: String!
         type: String!

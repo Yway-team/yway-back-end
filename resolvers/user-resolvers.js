@@ -578,7 +578,8 @@ module.exports = {
             const length = receivingUser.notifications.push({
                 type: 'friend request',
                 description: senderId,
-                createdAt: new Date()
+                createdAt: new Date(),
+                name: sendingUser.username
             });
             if (length > MAX_NOTIFICATIONS) {
                 receivingUser.notifications.splice(0, length - MAX_NOTIFICATIONS);
