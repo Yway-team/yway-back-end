@@ -285,16 +285,12 @@ module.exports = {
             const { sub: googleId, name, picture } = ticket.getPayload();
             let user = await User.findOne({ googleId: googleId });  // should be null if no document found
             let userId;
-            console.log(typeof(Buffer.from('abc', 'base64') + Buffer.from('def', 'base64')));
             if (user) userId = user._id;
             else {
                 // new user -> create user document and login.
                 // todo: upload picture to S3
                 userId = new ObjectId();
                 const pictureData = await getImageDataFromURL(picture);
-                console.log('pictureData:');
-                console.log(typeof pictureData);
-                console.log(pictureData);
                 const avatar = await uploadAvatar(pictureData.toString(), userId);
                 const newUser = {
                     _id: userId,
