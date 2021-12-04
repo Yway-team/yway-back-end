@@ -359,6 +359,13 @@ module.exports = {
             await user.save();
             return getBasicInfo(user);
         },
+        incrementPlayPoints: async (_, { playPointsIncrement }, { _id }) => {
+            if (!_id) return null;
+            const user = await User.findById(_id);
+            user.playPoints += playPointsIncrement;
+            await user.save();
+            return user.playPoints;
+        },
         updateBio: async (_, {bio}, {_id}) => {
             const user = await User.findById(_id);
             user.bio = bio;

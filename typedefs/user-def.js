@@ -39,6 +39,7 @@ const typeDefs = gql`
         addFriend(friendId: ID!): Boolean
         removeFriend(friendId: ID!): Boolean
         incrementPoints(points: PointsInput!): User
+        incrementPlayPoints(playPointsIncrement: Int!): Int
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): String
         updateUsername(username: String!): User
