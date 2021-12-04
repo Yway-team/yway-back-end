@@ -25,7 +25,7 @@ const platformSchema = new Schema({
         required: false
     },
     thumbnailImg: {
-        type: Number,
+        type: String,
         required: false
     },
     title: {
