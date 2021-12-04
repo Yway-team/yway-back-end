@@ -202,11 +202,15 @@ module.exports = {
             platform.owner = new ObjectId(_id);
 
             if (platform.bannerImgData) {
-                await uploadBannerImg(platform, platform._id, 'platform');
+                platform.bannerImg = await uploadBannerImg(platform, platform._id, 'platform');
+                delete platform.bannerImgData;
+                delete platform.bannerImgName;
             }
-            // if (platform.thumbnailImgData) {
-            //     await uploadThumbnailImg(platform, platform._id, 'platform');
-            // }
+            if (platform.thumbnailImgData) {
+                platform.thumbnailImg = await uploadThumbnailImg(platform, platform._id, 'platform');
+                delete platform.thumbnailImgData;
+                delete platform.thumbnailImgName;
+            }
 
             const result = await Platform.create(platform);
             if (!result) {
@@ -231,11 +235,15 @@ module.exports = {
             platform.onlyModSubmissions = platformSettings.onlyModSubmissions;
             platform.tags = platformSettings.tags;
             if (platformSettings.bannerImgData) {
-                await uploadBannerImg(platformSettings, platformSettings.platformId, 'platform');
+                platformSettings.bannerImg = await uploadBannerImg(platformSettings, platformSettings.platformId, 'platform');
+                delete platformSettings.bannerImgData;
+                delete platformSettings.bannerImgName;
                 platform.bannerImg = platformSettings.bannerImg;
             }
             if (platformSettings.thumbnailImgData) {
-                await uploadThumbnailImg(platformSettings, platformSettings.platformId, 'platform');
+                platformSettings.thumbnailImg = await uploadThumbnailImg(platformSettings, platformSettings.platformId, 'platform');
+                delete platformSettings.thumbnailImgData;
+                delete platformSettings.thumbnailImgName;
                 platform.thumbnailImg = platformSettings.thumbnailImg;
             }
             delete platformSettings.platformId;

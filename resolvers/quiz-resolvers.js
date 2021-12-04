@@ -215,10 +215,14 @@ module.exports = {
             if (draftIndex !== -1) user.drafts.splice(draftIndex, 1);
 
             if (quiz.bannerImgData) {
-                await uploadBannerImg(quiz, quiz._id, 'quiz');
+                quiz.bannerImg = await uploadBannerImg(quiz, quiz._id, 'quiz');
+                delete quiz.bannerImgData;
+                delete quiz.bannerImgName;
             }
             if (quiz.thumbnailImgData) {
-                await uploadThumbnailImg(quiz, quiz._id, 'quiz');
+                quiz.thumbnailImg = await uploadThumbnailImg(quiz, quiz._id, 'quiz');
+                delete quiz.thumbnailImgData;
+                delete quiz.thumbnailImgName;
             }
 
             await Quiz.create(quiz);
@@ -243,10 +247,14 @@ module.exports = {
                     draftId = new ObjectId();
                 }
                 if (draft.bannerImgData) {
-                    await uploadBannerImg(draft, draft._id || draftId, 'quiz');
+                    draft.bannerImg = await uploadBannerImg(draft, draft._id || draftId, 'quiz');
+                    delete draft.bannerImgData;
+                    delete draft.bannerImgName;
                 }
                 if (draft.thumbnailImgData) {
-                    await uploadThumbnailImg(draft, draft._id || draftId, 'quiz');
+                    draft.thumbnailImg = await uploadThumbnailImg(draft, draft._id || draftId, 'quiz');
+                    delete draft.thumbnailImgData;
+                    delete draft.thumbnailImgName;
                 }
             }
             if (!draftId) {

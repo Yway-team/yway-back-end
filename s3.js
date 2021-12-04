@@ -63,31 +63,39 @@ async function deleteObject(key) {
 }
 
 async function uploadBannerImg(obj, objId, objType) {
-    if (obj.bannerImgData) {
-        let [prefix, imgData] = obj.bannerImgData.split(',');
-        const type = prefix.split(';')[0].split('/')[1];
-        const encoding = prefix.split(';')[1];
-        imgData = new Buffer.from(imgData, encoding);
-        const key = `img/${objType}/${objId}/bannerImg.${type}`;  // objType === 'quiz' || objType === 'platform'
-        const success = await uploadImage(key, imgData, type, encoding);
-        if (success) obj.bannerImg = `${S3_BUCKET_URL}/${key}`;
-        delete obj.bannerImgData;
-        delete obj.bannerImgName;
-    }
+    let [prefix, imgData] = obj.bannerImgData.split(',');
+    const type = prefix.split(';')[0].split('/')[1];
+    const encoding = prefix.split(';')[1];
+    imgData = Buffer.from(imgData, encoding);
+    const key = `img/${objType}/${objId}/bannerImg.${type}`;  // objType === 'quiz' || objType === 'platform'
+    const success = await uploadImage(key, imgData, type, encoding);
+    let url;
+    if (success) url = `${S3_BUCKET_URL}/${key}`;
+    return url;
 }
 
 async function uploadThumbnailImg(obj, objId, objType) {
-    if (obj.thumbnailImgData) {
-        let [prefix, imgData] = obj.thumbnailImgData.split(',');
-        const type = prefix.split(';')[0].split('/')[1];
-        const encoding = prefix.split(';')[1];
-        imgData = new Buffer.from(imgData, encoding);
-        const key = `img/${objType}/${objId}/thumbnailImg.${type}`;  // objType === 'quiz' || objType === 'platform'
-        const success = await uploadImage(key, imgData, type, encoding);
-        if (success) obj.thumbnailImg = `${S3_BUCKET_URL}/${key}`;
-        delete obj.thumbnailImgData;
-        delete obj.thumbnailImgName;
-    }
+    let [prefix, imgData] = obj.thumbnailImgData.split(',');
+    const type = prefix.split(';')[0].split('/')[1];
+    const encoding = prefix.split(';')[1];
+    imgData = Buffer.from(imgData, encoding);
+    const key = `img/${objType}/${objId}/thumbnailImg.${type}`;  // objType === 'quiz' || objType === 'platform'
+    const success = await uploadImage(key, imgData, type, encoding);
+    let url;
+    if (success) url = `${S3_BUCKET_URL}/${key}`;
+    return url;
 }
 
-module.exports = { deleteObject, uploadObject, uploadImage, uploadBannerImg, uploadThumbnailImg };
+async function uploadAvatar(data, userId) {
+    let [prefix, imgData] = data.split(',');
+    const type = prefix.split(';')[0].split('/')[1];
+    const encoding = prefix.split(';')[1];
+    imgData = Buffer.from(imgData, encoding);
+    const key = `img/user/${userId}/avatar.${type}`;
+    const success = await uploadImage(key, imgData, type, encoding);
+    let url;
+    if (success) url = `${S3_BUCKET_URL}/${key}`;
+    return url;
+}
+
+module.exports = { deleteObject, uploadBannerImg, uploadThumbnailImg, uploadAvatar };
