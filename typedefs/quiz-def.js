@@ -36,7 +36,7 @@ const typeDefs = gql`
         saveQuizAsDraft(draft: DraftInput!): ID
         deleteQuiz(quizId: ID!): Boolean
         updatePublishedQuiz(quizDetails: EditQuizInput!): Quiz
-        rateQuiz(_id: ID!, rating: Int!): Boolean
+        rateQuiz(quizId: ID!, rating: Int!): Boolean
     }
     type QuizInfo {
         _id: ID!

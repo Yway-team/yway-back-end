@@ -374,7 +374,16 @@ module.exports = {
             await quiz.save();
             return quizDetails;
         },
-        rateQuiz: async (_, { _id, rating }) => {
+        rateQuiz: async (_, { quizId, rating }, { _id }) => {
+            if (_id) return null;
+            // todo: don't increment ratingCount if the logged in user has rated this quiz before
+            if (rating < 1 || rating > 5) return null;
+            const quiz = await Quiz.findById(quizId);
+            quiz.ratingCount += 1;
+            const averageRating = ((quiz.ratingCount-1)*quiz.rating + rating)/quiz.ratingCount;
+            quiz.rating = averageRating;
+            await quiz.save();
+            return true;
         },
     }
 };
