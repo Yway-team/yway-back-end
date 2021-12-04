@@ -375,7 +375,6 @@ module.exports = {
             return quizDetails;
         },
         rateQuiz: async (_, { quizId, rating }, { _id }) => {
-            console.log('rating quiz');
             if (!_id) return null;
             // todo: don't increment ratingCount if the logged in user has rated this quiz before
             if (rating < 1 || rating > 5) return null;
@@ -384,7 +383,6 @@ module.exports = {
             const averageRating = ((quiz.ratingCount-1)*quiz.rating + rating)/quiz.ratingCount;
             quiz.rating = averageRating;
             await quiz.save();
-            console.log('rated quiz. new rating', quiz.rating);
             return true;
         },
     }

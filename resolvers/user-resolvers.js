@@ -392,6 +392,26 @@ module.exports = {
             await user.save();
             return getBasicInfo(user);
         },
+        editProfile: async (_, { username, bio, bannerImgData, avatarData }, { _id }) => {
+            if (!username) {
+                return null;
+            }
+            const user = await User.findById(_id);
+            user.username = username;
+            user.bio = bio;
+            if (bannerImgData) {
+                // todo
+            }
+            if (avatarData) {
+                user.avatar = await uploadAvatar(avatarData, _id);
+            }
+            await user.save();
+            return {
+                username: user.username,
+                bio: user.bio,
+                avatar: user.avatar
+            };
+        },
         addNotification: async (_, {notification}, {_id}) => {
             const createdAt = new Date(notification.createdAt);
             if (createdAt === 'Invalid Date') {

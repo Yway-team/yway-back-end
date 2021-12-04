@@ -43,14 +43,15 @@ const typeDefs = gql`
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): String
         updateUsername(username: String!): User
+        editProfile(username: String!, bio: String, bannerImgData: String, avatarData: String): UserInfo
         addNotification(notification: NotificationInput!): Boolean
         addHistory(history: HistoryInput!): Boolean
     }
     type UserInfo {
-        _id: ID!
-        avatar: String!
-        privacySettings: String!
-        username: String!
+        _id: ID
+        avatar: String
+        privacySettings: String
+        username: String
         bio: String
         creatorPoints: Int
         friends: [ID]
