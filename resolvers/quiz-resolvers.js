@@ -119,6 +119,36 @@ module.exports = {
             }
             return quizInfos;
         },
+        getTopQuizzes: async (_, { howMany }) => {
+            const quizzes = await Quiz.find().sort({ attempts: 'descending' }).limit(howMany);
+            const quizInfos = [];
+            for (let i = 0; i < quizzes.length; i++) {
+                const quiz = quizzes[i];
+                const quizOwner = await User.findById(quiz.owner);  // there ought to be a faster way to do this - can we get all owners simultaneously?
+                if (!quizOwner) {
+                    // Weird situation - not sure what should happen here. Can ownerless quizzes exist?
+                    return null;
+                }
+                const platform = await Platform.findById(quiz.platform);
+                const quizInfo = {
+                    _id: quiz._id,
+                    bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
+                    createdAt: quiz.createdAt.toString(),
+                    description: quiz.description,
+                    numQuestions: quiz.questions.length,
+                    ownerAvatar: quizOwner.avatar,
+                    ownerId: quizOwner._id,
+                    ownerUsername: quizOwner.username,
+                    platformId: platform._id,
+                    platformName: platform.title,
+                    platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
+                    rating: quiz.rating,
+                    title: quiz.title
+                };
+                quizInfos.push(quizInfo);
+            }
+            return quizInfos;
+        },
         getQuizMetrics: async (_, { _id }) => {
         },
         getQuestionList: async (_, { quizId }) => {

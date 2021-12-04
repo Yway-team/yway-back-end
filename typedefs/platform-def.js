@@ -65,6 +65,7 @@ const typeDefs = gql`
         getMarathon(_id: ID!): [String]
         getLeaderboardEntries(_id: ID!, howMany: Int): [LeaderboardEntry]
         getPlatformHighlights(howMany: Int!): [PlatformInfo]
+        getTopPlatforms(howMany: Int!): [PlatformInfo]
         getPlatformSummary(title: String!): PlatformSummary
         getPlatformThumbnail(title: String!): String
         getPlatformSettings(title: String!): PlatformSettings

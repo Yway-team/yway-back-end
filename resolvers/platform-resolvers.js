@@ -13,7 +13,28 @@ module.exports = {
         getLeaderboardEntries: async (_, {_id, howMany}) => {
         },
         getPlatformHighlights: async (_, {howMany}) => {
-            const platforms = await Platform.find().limit(howMany);
+            const platforms = await Platform.find().sort({ createdAt: 'descending' }).limit(howMany);
+            if (!platforms) {
+                // no platforms in database
+                return null;
+            }
+            const platformInfos = [];
+            for (let i = 0; i < platforms.length; i++) {
+                const platform = platforms[i];
+                const platformInfo = {
+                    _id: platform._id,
+                    description: platform.description,
+                    favorites: platform.favorites,
+                    numQuizzes: platform.quizzes.length,
+                    thumbnailImg: platform.thumbnailImg || DEFAULT_THUMBNAIL,
+                    title: platform.title
+                };
+                platformInfos.push(platformInfo);
+            }
+            return platformInfos;
+        },
+        getTopPlatforms: async (_, {howMany}) => {
+            const platforms = await Platform.find().sort({ favorites: 'descending' }).limit(howMany);
             if (!platforms) {
                 // no platforms in database
                 return null;

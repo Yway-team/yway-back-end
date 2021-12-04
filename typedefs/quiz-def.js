@@ -24,6 +24,7 @@ const typeDefs = gql`
     extend type Query {
         getQuiz(_id: ID!): Quiz
         getQuizHighlights(howMany: Int!): [QuizInfo]
+        getTopQuizzes(howMany: Int!): [QuizInfo]
         getQuizInfo(quizId: ID!): QuizInfo
         getQuizEditInfo(quizId: ID!): QuizInfo
         getQuizMetrics(_id: ID!): Quiz
