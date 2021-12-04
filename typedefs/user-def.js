@@ -68,6 +68,7 @@ const typeDefs = gql`
         numQuestions: Int
         platformName: String
         tags: [String]
+        thumbnailImg: String
         timeToAnswer: Int
         title: String
     }
