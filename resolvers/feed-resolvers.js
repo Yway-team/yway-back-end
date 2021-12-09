@@ -52,42 +52,60 @@ module.exports = {
                 tags: []
             };
 
-            if (filter === 'platforms') {
-                const platforms = await Platform.find({ $text: { $search: searchString } }, { score: { $meta: 'textScore' } })
-                                                .sort( { score: { $meta: 'textScore' } }).limit(30);
-                searchResults.platforms = platforms.map(getPlatformResults);
-            } else if (filter === 'users') {
-                const users = await User.find({ $text: { $search: searchString } }, { score: { $meta: 'textScore' } })
-                                        .sort( { score: { $meta: 'textScore' } }).limit(30);
-                searchResults.users = users.map(getUserResults);
-            } else if (filter === 'quizzes') {
-                const quizzes = await Quiz.find({ $text: { $search: searchString } }, { score: { $meta: 'textScore' } })
-                                          .sort( { score: { $meta: 'textScore' } }).limit(30);
+            const options = {
+                readConcern: {
+                    level: 'local'  // Why does this have to be 'local'?
+                }
+            };
+
+            const searchPlatforms = async howMany => {
+                const platforms = await Platform.aggregate().search({
+                    autocomplete: {
+                        query: searchString,
+                        path: 'title'
+                    }
+                }).option(options).limit(howMany);
+                return platforms.map(getPlatformResults);
+            };
+
+            const searchQuizzes = async howMany => {
+                const quizzes = await Quiz.aggregate().search({
+                    autocomplete: {
+                        query: searchString,
+                        path: 'title'
+                    }
+                }).option(options).limit(howMany);
                 const owners = await User.find({ _id: { $in: quizzes.map(quiz => quiz.owner) } });
                 const quizPlatforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });
-                searchResults.quizzes = quizzes.map(quiz => {
+                return quizzes.map(quiz => {
                     const owner = owners.find(user => user._id.equals(quiz.owner));
                     const platform = quizPlatforms.find(platform => platform._id.equals(quiz.platform));
                     return getQuizResults(quiz, platform, owner);
                 });
+            };
+
+            const searchUsers = async howMany => {
+                const users = await User.aggregate().search({
+                    autocomplete: {
+                        query: searchString,
+                        path: 'username'
+                    }
+                }).option(options).limit(howMany);
+                return users.map(getUserResults);
+            };
+
+            if (filter === 'platforms') {
+                searchResults.platforms = await searchPlatforms(30);
+            } else if (filter === 'quizzes') {
+                searchResults.quizzes = await searchQuizzes(30);
+            } else if (filter === 'users') {
+                searchResults.users = await searchUsers(30);
             } else if (filter === 'tags') {
                 
             } else {
-                const platforms = await Platform.find({ $text: { $search: searchString } }, { score: { $meta: 'textScore' } })
-                                                .sort( { score: { $meta: 'textScore' } }).limit(10);
-                searchResults.platforms = platforms.map(getPlatformResults);
-                const quizzes = await Quiz.find({ $text: { $search: searchString } }, { score: { $meta: 'textScore' } })
-                                          .sort( { score: { $meta: 'textScore' } }).limit(10);
-                const owners = await User.find({ _id: { $in: quizzes.map(quiz => quiz.owner) } });
-                const quizPlatforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });
-                searchResults.quizzes = quizzes.map(quiz => {
-                    const owner = owners.find(user => user._id.equals(quiz.owner));
-                    const platform = quizPlatforms.find(platform => platform._id.equals(quiz.platform));
-                    return getQuizResults(quiz, platform, owner);
-                });
-                const users = await User.find({ $text: { $search: searchString } }, { score: { $meta: 'textScore' } })
-                                        .sort( { score: { $meta: 'textScore' } }).limit(10);
-                searchResults.users = users.map(getUserResults);
+                searchResults.platforms = await searchPlatforms(10);
+                searchResults.quizzes = await searchQuizzes(10);
+                searchResults.users = await searchUsers(10);
             }
             return searchResults;
         }

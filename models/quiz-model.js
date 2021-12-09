@@ -75,7 +75,5 @@ const quizSchema = new Schema({
     }
 }, { timestamps: true });
 
-quizSchema.index({ title: 'text' });
-
 const Quiz = model('Quiz', quizSchema);
 module.exports = Quiz;
