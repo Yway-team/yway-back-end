@@ -293,6 +293,10 @@ module.exports = {
                 };
                 quizInfos.push(quizInfo);
             }
+            quizInfos.sort((q1, q2) => {
+                const [t1, t2] = [new Date(q1.createdAt).valueOf(), new Date(q2.createdAt).valueOf()];
+                return t2 - t1;  // sort descending
+            });
             return quizInfos;
         },
         getUserPlatformsInfo: async (_, { userId }, { _id }) => {
@@ -677,16 +681,23 @@ module.exports = {
                 user.friends.push(senderId);
                 const sentIndex = user.sentFriendRequests.findIndex(id => id.equals(senderId));
                 if (sentIndex !== -1) user.sentFriendRequests.splice(sentIndex, 1);
-                const receivedIndex = user.sentFriendRequests.findIndex(id => id.equals(senderId));
+                const receivedIndex = user.receivedFriendRequests.findIndex(id => id.equals(senderId));
                 if (receivedIndex !== -1) user.sentFriendRequests.splice(receivedIndex, 1);
             }
             if (!sender.friends.find(id => id.equals(userId))) {
                 sender.friends.push(userId);
-                const receivedIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
-                if (receivedIndex !== -1) user.receivedFriendRequests.splice(receivedIndex, 1);
-                const sentIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
-                if (sentIndex !== -1) user.receivedFriendRequests.splice(sentIndex, 1);
             }
+
+            const userSentIndex = user.sentFriendRequests.findIndex(id => id.equals(senderId));
+            if (userSentIndex !== -1) user.sentFriendRequests.splice(userSentIndex, 1);
+            const userReceivedIndex = user.receivedFriendRequests.findIndex(id => id.equals(senderId));
+            if (userReceivedIndex !== -1) user.receivedFriendRequests.splice(userReceivedIndex, 1);
+            
+            const senderReceivedIndex = sender.receivedFriendRequests.findIndex(id => id.equals(userId));
+            if (senderReceivedIndex !== -1) sender.receivedFriendRequests.splice(senderReceivedIndex, 1);
+            const senderSentIndex = sender.sentFriendRequests.findIndex(id => id.equals(userId));
+            if (senderSentIndex !== -1) sender.sentFriendRequests.splice(senderSentIndex, 1);
+            
             await user.save();
             await sender.save();
             return true;
