@@ -65,6 +65,7 @@ module.exports = {
             else if (user.sentFriendRequests.find(receiverId => receiverId.equals(_id))) friendStatus = 'received';
             else if (user.receivedFriendRequests.find(senderId => senderId.equals(_id))) friendStatus = 'sent';
             else friendStatus = 'none';
+            console.log(friendStatus);
             const publicInfo = {
                 _id: user._id,
                 avatar: user.avatar,
@@ -89,7 +90,7 @@ module.exports = {
                 username: user.username
             };
 
-            if (_id.equals(userId)) {
+            if (userId.equals(_id)) {
                 // logged-in user is requesting own info
                 return privateInfo;
             }
