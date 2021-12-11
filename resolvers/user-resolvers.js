@@ -47,39 +47,44 @@ module.exports = {
             };
             return publicInfo;
         },
-        getUserInfo: async (_, { userId }, context) => {
+        getUserInfo: async (_, { userId }, { _id }) => {
             // todo: return profile banner image (or DEFAULT_PROFILE_BANNER if not present)
             // Check relation of user's privacy settings to requesting user
             // Return info accordingly
             // todo: return whether the logged in user and the user are friends
+            userId = new ObjectId(userId);
+            if (_id) _id = new ObjectId(_id);
             const user = await User.findById(userId);
             if (!user) {
                 return null;
             }
-
+            
+            const friend = Boolean(_id && user.friends.find(friendId => friendId.equals(_id)));
             const publicInfo = {
                 _id: user._id,
-                username: user.username,
                 avatar: user.avatar,
-                privacySettings: user.privacySettings
+                friend: friend,
+                privacySettings: user.privacySettings,
+                username: user.username
             };
             const privateInfo = {
                 _id: user._id,
-                username: user.username,
-                bio: user.bio,
-                avatar: user.avatar,
-                privacySettings: user.privacySettings,
-                playPoints: user.playPoints,
-                creatorPoints: user.creatorPoints,
-                moderator: user.moderator,
                 achievements: user.achievements,
+                avatar: user.avatar,
+                bio: user.bio,
+                creatorPoints: user.creatorPoints,
+                friend: friend,
                 friends: user.friends,
                 history: user.history,
+                moderator: user.moderator,
+                platforms: user.platforms,
+                playPoints: user.playPoints,
+                privacySettings: user.privacySettings,
                 quizzes: user.quizzes,
-                platforms: user.platforms
+                username: user.username
             };
 
-            if (context._id === userId) {
+            if (_id.equals(userId)) {
                 // logged-in user is requesting own info
                 return privateInfo;
             }
@@ -87,7 +92,7 @@ module.exports = {
                 case 'private':
                     return publicInfo;
                 case 'friends':
-                    if (context._id && user.friends.find(friendId => friendId.equals(context._id))) {  // todo: this won't work because friends is [ObjectId] and context._id is String
+                    if (friend) {
                         // requesting user is logged in and friends with the user
                         return privateInfo;
                     }
@@ -642,13 +647,17 @@ module.exports = {
             if (!user || !friend) return false;
             if (!user.friends.find(id => id.equals(friendId))) {
                 user.friends.push(friendId);
-                const requestIndex = user.sentFriendRequests.findIndex(id => id.equals(friendId));
-                if (requestIndex !== -1) user.sentFriendRequests.splice(requestIndex, 1);
+                const sentIndex = user.sentFriendRequests.findIndex(id => id.equals(friendId));
+                if (sentIndex !== -1) user.sentFriendRequests.splice(sentIndex, 1);
+                const receivedIndex = user.sentFriendRequests.findIndex(id => id.equals(friendId));
+                if (receivedIndex !== -1) user.sentFriendRequests.splice(receivedIndex, 1);
             }
             if (!friend.friends.find(id => id.equals(userId))) {
                 friend.friends.push(userId);
-                const requestIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
-                if (requestIndex !== -1) user.receivedFriendRequests.splice(requestIndex, 1);
+                const receivedIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
+                if (receivedIndex !== -1) user.receivedFriendRequests.splice(receivedIndex, 1);
+                const sentIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
+                if (sentIndex !== -1) user.receivedFriendRequests.splice(sentIndex, 1);
             }
             await user.save();
             await friend.save();
