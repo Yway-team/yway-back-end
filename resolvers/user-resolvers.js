@@ -641,32 +641,48 @@ module.exports = {
             await sendingUser.save();
             return true;
         },
-        addFriend: async (_, { friendId }, { _id }) => {
+        acceptFriendRequest: async (_, { senderId }, { _id }) => {
             // this is called by the user who accepts a friend request
             // todo: possibly abusable, look into that
-            if (!_id) return false;
-            if (!friendId || friendId === _id) return false;
+            if (!_id || !senderId || senderId === _id) return false;
             const userId = new ObjectId(_id);
-            friendId = new ObjectId(friendId);
+            senderId = new ObjectId(senderId);
             const user = await User.findById(userId);
-            const friend = await User.findById(friendId);
-            if (!user || !friend) return false;
-            if (!user.friends.find(id => id.equals(friendId))) {
-                user.friends.push(friendId);
-                const sentIndex = user.sentFriendRequests.findIndex(id => id.equals(friendId));
+            const sender = await User.findById(senderId);
+            if (!user || !sender) return false;
+            if (!user.friends.find(id => id.equals(senderId))) {
+                user.friends.push(senderId);
+                const sentIndex = user.sentFriendRequests.findIndex(id => id.equals(senderId));
                 if (sentIndex !== -1) user.sentFriendRequests.splice(sentIndex, 1);
-                const receivedIndex = user.sentFriendRequests.findIndex(id => id.equals(friendId));
+                const receivedIndex = user.sentFriendRequests.findIndex(id => id.equals(senderId));
                 if (receivedIndex !== -1) user.sentFriendRequests.splice(receivedIndex, 1);
             }
-            if (!friend.friends.find(id => id.equals(userId))) {
-                friend.friends.push(userId);
+            if (!sender.friends.find(id => id.equals(userId))) {
+                sender.friends.push(userId);
                 const receivedIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
                 if (receivedIndex !== -1) user.receivedFriendRequests.splice(receivedIndex, 1);
                 const sentIndex = user.receivedFriendRequests.findIndex(id => id.equals(userId));
                 if (sentIndex !== -1) user.receivedFriendRequests.splice(sentIndex, 1);
             }
             await user.save();
-            await friend.save();
+            await sender.save();
+            return true;
+        },
+        declineFriendRequest: async (_, { senderId }, { _id }) => {
+            // this is called by the user who declines a friend request
+            if (!_id || !friendId || friendId === _id) return false;
+            const userId = new ObjectId(_id);
+            senderId = new ObjectId(senderId);
+            const user = await User.findById(userId);
+            const sender = await User.findById(senderId);
+            if (!user || !sender) return false;
+            const receivedIndex = user.receivedFriendRequests.findIndex(id => id.equals(senderId));
+            if (receivedIndex !== -1) user.receivedFriendRequests.splice(receivedIndex, 1);
+            const sentIndex = sender.sentFriendRequests.findIndex(id => id.equals(userId));
+            if (sentIndex !== -1) sender.sentFriendRequests.splice(sentIndex, 1);
+            
+            await user.save();
+            await sender.save();
             return true;
         },
         removeFriend: async (_, { friendId }, { _id }) => {

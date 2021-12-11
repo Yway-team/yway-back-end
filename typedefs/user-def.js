@@ -40,7 +40,8 @@ const typeDefs = gql`
         favoritePlatform(platformId: ID!): [FavoriteInfo!]
         unfavoritePlatform(platformId: ID!): [FavoriteInfo!]
         sendFriendRequest(receiverId: ID!): Boolean
-        addFriend(friendId: ID!): Boolean
+        acceptFriendRequest(senderId: ID!): Boolean
+        declineFriendRequest(senderId: ID!): Boolean
         removeFriend(friendId: ID!): Boolean
         setReadNotifications(time: String!): [Notification]
         incrementPoints(points: PointsInput!): User
