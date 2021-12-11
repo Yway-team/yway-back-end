@@ -639,7 +639,7 @@ module.exports = {
         },
         setReadNotifications: async (_, { time }, { _id }) => {
             if (!_id) return null;
-            const time = new Date(time);
+            time = new Date(time);
             const user = await User.findById(_id);
             user.notifications.forEach(notification => {
                 if (notification.unread && notification.createdAt.valueOf() <= time.valueOf()) {
