@@ -704,7 +704,7 @@ module.exports = {
         },
         declineFriendRequest: async (_, { senderId }, { _id }) => {
             // this is called by the user who declines a friend request
-            if (!_id || !friendId || friendId === _id) return false;
+            if (!_id || !senderId || senderId === _id) return false;
             const userId = new ObjectId(_id);
             senderId = new ObjectId(senderId);
             const user = await User.findById(userId);
