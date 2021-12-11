@@ -58,7 +58,7 @@ module.exports = {
             const quizInfo = {
                 bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                 color: quiz.color,
-                createdAt: quiz.createdAt.toString(),
+                createdAt: quiz.createdAt.toISOString(),
                 description: quiz.description,
                 numQuestions: quiz.questions.length,
                 ownerAvatar: quizOwner.avatar,
@@ -103,7 +103,7 @@ module.exports = {
                 const quizInfo = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
-                    createdAt: quiz.createdAt.toString(),
+                    createdAt: quiz.createdAt.toISOString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
                     ownerAvatar: quizOwner.avatar,
@@ -133,7 +133,7 @@ module.exports = {
                 const quizInfo = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
-                    createdAt: quiz.createdAt.toString(),
+                    createdAt: quiz.createdAt.toISOString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
                     ownerAvatar: quizOwner.avatar,

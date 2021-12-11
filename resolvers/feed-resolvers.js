@@ -20,7 +20,7 @@ function getQuizResults(quiz, platform, user) {
         _id: quiz._id,
         bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
         color: quiz.color,
-        createdAt: quiz.createdAt.toString(),
+        createdAt: quiz.createdAt.toISOString(),
         description: quiz.description,
         numQuestions: quiz.questions.length,
         ownerAvatar:  user.avatar,

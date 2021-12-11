@@ -112,7 +112,7 @@ module.exports = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
                     color: quiz.color,
-                    createdAt: quiz.createdAt.toString(),
+                    createdAt: quiz.createdAt.toISOString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
                     ownerAvatar: owner.avatar,
@@ -188,7 +188,7 @@ module.exports = {
             if (!draft) {
                 return null;
             }
-            draft.updatedAt = draft.updatedAt?.toString();  // only ?. for backward compatibility
+            draft.updatedAt = draft.updatedAt?.toISOString();  // only ?. for backward compatibility
             return draft;
         },
         getDraftsInfo: async (_, __, { _id }) => {
@@ -207,7 +207,7 @@ module.exports = {
                 const draftInfo = {
                     _id: draft._id,
                     bannerImg: draft.bannerImg || DEFAULT_BANNER_IMAGE,
-                    updatedAt: draft.updatedAt?.toString(),  // the ?. is only necessary for backward compatibility
+                    updatedAt: draft.updatedAt?.toISOString(),  // the ?. is only necessary for backward compatibility
                     description: draft.description,
                     numQuestions: draft.questions.length,
                     platformName: draft.platformName,
@@ -268,7 +268,7 @@ module.exports = {
                 const quizInfo = {
                     _id: quiz._id,
                     bannerImg: quiz.bannerImg || DEFAULT_BANNER_IMAGE,
-                    createdAt: quiz.createdAt.toString(),
+                    createdAt: quiz.createdAt.toISOString(),
                     description: quiz.description,
                     numQuestions: quiz.questions.length,
                     ownerAvatar: user.avatar,
@@ -336,6 +336,42 @@ module.exports = {
             }
             return platformInfos;
         },
+        getUserFriendsInfo: async (_, { userId }, { _id }) => {
+            userId = new ObjectId(userId);
+            if (_id) _id = new ObjectId(_id);
+            const user = await User.findById(userId);
+            let friendsInfo;
+            let friendRequestsInfo;
+            if (_id && _id.equals(userId)) {
+                // logged in user's own profile; return received friend requests and ignore privacy settings
+                const senders = await User.find({ _id: user.receivedFriendRequests });
+                friendRequestsInfo = user.receivedFriendRequests.map(senderId => {
+                    const sender = senders.find(sender => sender._id.equals(senderId));
+                    return {
+                        _id: senderId,
+                        avatar: sender.avatar,
+                        username: sender.username
+                    };
+                });
+            } else {
+                if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(_id))) {
+                    // logged in user is authorized according to the user's privacy settings
+                    const friends = await User.find({ _id: user.friends });
+                    friendsInfo = user.friends.map(friendId => {
+                        const friend = friends.find(friend => friend._id.equals(friendId));
+                        return {
+                            _id: friendId,
+                            avatar: friend.avatar,
+                            username: friend.username
+                        };
+                    });
+                }
+            }
+            return {
+                friendsInfo: friendsInfo,
+                friendRequestsInfo: friendRequestsInfo
+            };
+        }
         /*getFavorites: async (_, __, { _id }) => {
             if (!id) {
                 // user is not logged in
@@ -394,7 +430,7 @@ module.exports = {
             const accessToken = generateAccessToken(userId);
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
             favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
-            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toString());
+            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toISOString());
             return {
                 _id: userId,
                 accessToken: accessToken,
@@ -642,12 +678,12 @@ module.exports = {
             time = new Date(time);
             const user = await User.findById(_id);
             user.notifications.forEach(notification => {
-                if (notification.unread && notification.createdAt.valueOf() <= time.valueOf()) {
+                if (notification.unread && (notification.createdAt.valueOf() <= time.valueOf())) {
                     notification.unread = false;
                 }
             });
             await user.save();
-            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toString());
+            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toISOString());
             return user.notifications;
         }
     }
