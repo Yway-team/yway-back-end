@@ -549,30 +549,30 @@ module.exports = {
                 avatar: user.avatar
             };
         },
-        addNotification: async (_, {notification}, {_id}) => {
+        addNotification: async (_, { userId, notification }) => {
             const createdAt = new Date(notification.createdAt);
             if (createdAt === 'Invalid Date') {
                 return false;
             }
             notification.createdAt = createdAt;
-            const user = await User.findById(_id);
-            const length = user.notifications.push(notification);
+            const user = await User.findById(userId);
+            const length = user.notifications.unshift(notification);
             if (length > MAX_NOTIFICATIONS) {
-                user.notifications.splice(0, length - MAX_NOTIFICATIONS);
+                user.notifications.splice(MAX_NOTIFICATIONS, length - MAX_NOTIFICATIONS);
             }
             await user.save();
             return true;
         },
-        addHistory: async (_, {history}, {_id}) => {
+        addHistory: async (_, { history }, { _id }) => {
             const timestamp = new Date(history.timestamp);
             if (timestamp === 'Invalid Date') {
                 return false;
             }
             history.timestamp = timestamp;
             const user = await User.findById(_id);
-            const length = user.history.push(history);
+            const length = user.history.unshift(history);
             if (length > MAX_HISTORY) {
-                user.history.splice(0, length - MAX_HISTORY);
+                user.history.splice(MAX_HISTORY, length - MAX_HISTORY);
             }
             await user.save();
             return true;
@@ -655,9 +655,9 @@ module.exports = {
                 type: 'friend request',
                 unread: true
             }
-            const length = receivingUser.notifications.push(notification);
+            const length = receivingUser.notifications.unshift(notification);
             if (length > MAX_NOTIFICATIONS) {
-                receivingUser.notifications.splice(0, length - MAX_NOTIFICATIONS);
+                receivingUser.notifications.splice(MAX_NOTIFICATIONS, length - MAX_NOTIFICATIONS);
             }
             sendingUser.sentFriendRequests.push(receiverId);
             await receivingUser.save();
