@@ -394,6 +394,7 @@ module.exports = {
             const accessToken = generateAccessToken(userId);
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
             favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
+            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toString());
             return {
                 _id: userId,
                 accessToken: accessToken,
@@ -635,6 +636,19 @@ module.exports = {
             await user.save();
             await friend.save();
             return true;
+        },
+        setReadNotifications: async (_, { time }, { _id }) => {
+            if (!_id) return null;
+            const time = new Date(time);
+            const user = await User.findById(_id);
+            user.notifications.forEach(notification => {
+                if (notification.unread && notification.createdAt.valueOf() <= time.valueOf()) {
+                    notification.unread = false;
+                }
+            });
+            await user.save();
+            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toString());
+            return user.notifications;
         }
     }
 };
