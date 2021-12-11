@@ -345,7 +345,7 @@ module.exports = {
             let friendRequestsInfo;
             if (_id && _id.equals(userId)) {
                 // logged in user's own profile; return received friend requests and ignore privacy settings
-                const senders = await User.find({ _id: user.receivedFriendRequests });
+                const senders = await User.find({ _id: { $in: user.receivedFriendRequests } });
                 friendRequestsInfo = user.receivedFriendRequests.map(senderId => {
                     const sender = senders.find(sender => sender._id.equals(senderId));
                     return {
@@ -357,7 +357,7 @@ module.exports = {
             }
             if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(_id))) {
                 // logged in user is authorized according to the user's privacy settings
-                const friends = await User.find({ _id: user.friends });
+                const friends = await User.find({ _id: { $in: user.friends } });
                 console.log(friends);
                 friendsInfo = user.friends.map(friendId => {
                     const friend = friends.find(friend => friend._id.equals(friendId));
