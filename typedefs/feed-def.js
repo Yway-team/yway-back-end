@@ -10,6 +10,7 @@ const typeDefs = gql`
 
     extend type Query {
         search(searchString: String!, filter: String): SearchResults
+        searchPlatformTitles(searchString: String!): [String]
     }
 `;
 

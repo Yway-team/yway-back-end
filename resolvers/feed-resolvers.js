@@ -108,6 +108,17 @@ module.exports = {
                 searchResults.users = await searchUsers(10);
             }
             return searchResults;
+        },
+        searchPlatformTitles: async (_, { searchString }) => {
+            if (!searchString) return [];
+            const platforms = await Platform.aggregate().search({
+                autocomplete: {
+                    query: searchString,
+                    path: 'title'
+                }
+            }).option({ readConcern: { level: 'local' } }).limit(30);
+            const titles = platforms.map(platform => platform.title);
+            return titles;
         }
     }
 };
