@@ -106,10 +106,12 @@ const typeDefs = gql`
         creatorPoints: Int
     }
     input NotificationInput {
-        description: String!
-        createdAt: String!
-        type: String!
+        _id: String
+        createdAt: String
+        icon: String
         name: String
+        type: String
+        unread: Boolean
     }
     input HistoryInput {
         description: String!
@@ -129,10 +131,12 @@ const typeDefs = gql`
         type: String!
     }
     type Notification {
+        _id: String
+        createdAt: String
+        icon: String
         name: String
-        description: String!
-        createdAt: String!
-        type: String!
+        type: String
+        unread: Boolean
     }
 `;
 

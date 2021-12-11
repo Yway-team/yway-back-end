@@ -559,7 +559,7 @@ module.exports = {
                 await platform.save();
             }
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();  // todo: how does this sort?
             return favorites;
         },
         sendFriendRequest: async (_, { receiverId }, { _id }) => {
@@ -575,12 +575,15 @@ module.exports = {
                 return false;
             }
             receivingUser.receivedFriendRequests.push(senderId);
-            const length = receivingUser.notifications.push({
-                type: 'friend request',
-                description: senderId,
+            const notification = {
+                _id: senderId,
                 createdAt: new Date(),
-                name: sendingUser.username
-            });
+                icon: sendingUser.avatar,
+                name: sendingUser.username,
+                type: 'friend request',
+                unread: true
+            }
+            const length = receivingUser.notifications.push(notification);
             if (length > MAX_NOTIFICATIONS) {
                 receivingUser.notifications.splice(0, length - MAX_NOTIFICATIONS);
             }
