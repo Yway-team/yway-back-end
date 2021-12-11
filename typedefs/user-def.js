@@ -32,6 +32,7 @@ const typeDefs = gql`
         getFavorites: [FavoriteInfo]
         getUserQuizzesInfo(userId: ID): [QuizInfo]
         getUserPlatformsInfo(userId: ID): [PlatformInfo]
+        getUserFriendsInfo(userId: ID!): FriendsInfo
     }
     extend type Mutation {
         login(idToken: String!): LoginInfo
@@ -65,6 +66,10 @@ const typeDefs = gql`
         quizzes: [ID]
         achievements: [Achievement]
         history: [History]
+    }
+    type FriendsInfo {
+        friendsInfo: [UserInfo]
+        friendRequestsInfo: [UserInfo]
     }
     type ProfileOverview {
         creatorPoints: Int
