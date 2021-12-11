@@ -51,6 +51,7 @@ module.exports = {
             // todo: return profile banner image (or DEFAULT_PROFILE_BANNER if not present)
             // Check relation of user's privacy settings to requesting user
             // Return info accordingly
+            // todo: return whether the logged in user and the user are friends
             const user = await User.findById(userId);
             if (!user) {
                 return null;
@@ -677,14 +678,14 @@ module.exports = {
             if (!_id) return null;
             time = new Date(time);
             const user = await User.findById(_id);
-            user.notifications.forEach(notification => {
+            user.notifications = user.notifications.map(notification => {
                 if (notification.unread && (notification.createdAt.valueOf() <= time.valueOf())) {
-                    notification.unread = false;
+                    return {...notification, unread: false};
                 }
+                return notification;
             });
             await user.save();
-            user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toISOString());
-            return user.notifications;
+            return user.notifications.map(notification => { return { ...notification, createdAt: notification.createdAt.toISOString() }; });
         }
     }
 };
