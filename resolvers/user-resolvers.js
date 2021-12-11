@@ -353,19 +353,19 @@ module.exports = {
                         username: sender.username
                     };
                 });
-            } else {
-                if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(_id))) {
-                    // logged in user is authorized according to the user's privacy settings
-                    const friends = await User.find({ _id: user.friends });
-                    friendsInfo = user.friends.map(friendId => {
-                        const friend = friends.find(friend => friend._id.equals(friendId));
-                        return {
-                            _id: friendId,
-                            avatar: friend.avatar,
-                            username: friend.username
-                        };
-                    });
-                }
+            }
+            if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(_id))) {
+                // logged in user is authorized according to the user's privacy settings
+                const friends = await User.find({ _id: user.friends });
+                console.log(friends);
+                friendsInfo = user.friends.map(friendId => {
+                    const friend = friends.find(friend => friend._id.equals(friendId));
+                    return {
+                        _id: friendId,
+                        avatar: friend.avatar,
+                        username: friend.username
+                    };
+                });
             }
             return {
                 friendsInfo: friendsInfo,
