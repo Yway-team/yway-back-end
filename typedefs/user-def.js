@@ -45,6 +45,7 @@ const typeDefs = gql`
         removeFriend(friendId: ID!): Boolean
         setReadNotifications(time: String!): [Notification]
         incrementPoints(points: PointsInput!): User
+        incrementCreatorPoints(creatorPointsIncrement: Int!): Int
         incrementPlayPoints(playPointsIncrement: Int!): Int
         updateBio(bio: String!): User
         updatePrivacySettings(privacySettings: String!): String

@@ -65,7 +65,6 @@ module.exports = {
             else if (user.sentFriendRequests.find(receiverId => receiverId.equals(_id))) friendStatus = 'received';
             else if (user.receivedFriendRequests.find(senderId => senderId.equals(_id))) friendStatus = 'sent';
             else friendStatus = 'none';
-            console.log(friendStatus);
             const publicInfo = {
                 _id: user._id,
                 avatar: user.avatar,
@@ -369,7 +368,6 @@ module.exports = {
             if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(_id))) {
                 // logged in user is authorized according to the user's privacy settings
                 const friends = await User.find({ _id: { $in: user.friends } });
-                console.log(friends);
                 friendsInfo = user.friends.map(friendId => {
                     const friend = friends.find(friend => friend._id.equals(friendId));
                     return {
@@ -441,7 +439,13 @@ module.exports = {
             }
             const accessToken = generateAccessToken(userId);
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; })
+                                 .sort((f1, f2) => {
+                                    const [t1, t2] = [f1.title.toLowerCase(), f2.title.toLowerCase()];
+                                    if (t1 < t2) return -1;
+                                    else if (t1 > t2) return 1;
+                                    return 0;
+                                });
             user.notifications.forEach(notification => notification.createdAt = notification.createdAt.toISOString());
             return {
                 _id: userId,
@@ -485,6 +489,13 @@ module.exports = {
             }
             await user.save();
             return getBasicInfo(user);
+        },
+        incrementCreatorPoints: async (_, { creatorPointsIncrement }, { _id }) => {
+            if (!_id) return null;
+            const user = await User.findById(_id);
+            user.creatorPoints += creatorPointsIncrement;
+            await user.save();
+            return user.playPoints;
         },
         incrementPlayPoints: async (_, { playPointsIncrement }, { _id }) => {
             if (!_id) return null;
@@ -586,7 +597,13 @@ module.exports = {
             await user.save();
             await platform.save();
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; })
+                                 .sort((f1, f2) => {
+                                    const [t1, t2] = [f1.title.toLowerCase(), f2.title.toLowerCase()];
+                                    if (t1 < t2) return -1;
+                                    else if (t1 > t2) return 1;
+                                    return 0;
+                                });
             return favorites;
         },
         unfavoritePlatform: async (_, { platformId }, { _id }) => {
@@ -608,7 +625,13 @@ module.exports = {
                 await platform.save();
             }
             let favorites = await Platform.find({ _id: { $in: user.favorites } });
-            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; }).sort();  // todo: how does this sort?
+            favorites = favorites.map(favorite => { return { thumbnailImg: favorite.thumbnailImg || DEFAULT_THUMBNAIL, title: favorite.title }; })
+                                 .sort((f1, f2) => {
+                                    const [t1, t2] = [f1.title.toLowerCase(), f2.title.toLowerCase()];
+                                    if (t1 < t2) return -1;
+                                    else if (t1 > t2) return 1;
+                                    return 0;
+                                });
             return favorites;
         },
         sendFriendRequest: async (_, { receiverId }, { _id }) => {
