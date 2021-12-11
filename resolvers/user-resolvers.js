@@ -60,10 +60,15 @@ module.exports = {
             }
             
             const friend = Boolean(_id && user.friends.find(friendId => friendId.equals(_id)));
+            let friendStatus;
+            if (friend) friendStatus = 'friend';
+            else if (user.sentFriendRequests.find(receiverId => receiverId.equals(_id))) friendStatus = 'received';
+            else if (user.receivedFriendRequests.find(senderId => senderId.equals(_id))) friendStatus = 'sent';
+            else friendStatus = 'none';
             const publicInfo = {
                 _id: user._id,
                 avatar: user.avatar,
-                friend: friend,
+                friendStatus: friendStatus,
                 privacySettings: user.privacySettings,
                 username: user.username
             };
@@ -73,7 +78,7 @@ module.exports = {
                 avatar: user.avatar,
                 bio: user.bio,
                 creatorPoints: user.creatorPoints,
-                friend: friend,
+                friendStatus: friendStatus,
                 friends: user.friends,
                 history: user.history,
                 moderator: user.moderator,

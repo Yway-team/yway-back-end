@@ -59,7 +59,7 @@ const typeDefs = gql`
         username: String
         bio: String
         creatorPoints: Int
-        friend: Boolean
+        friendStatus: String
         friends: [ID]
         moderator: [ID]
         platforms: [ID]
