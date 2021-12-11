@@ -169,7 +169,7 @@ module.exports = {
                 // logged-in user is requesting own info
                 return overview;
             }
-            _id = new ObjectId(_id);
+            if (_id) _id = new ObjectId(_id);
             switch (user.privacySettings) {
                 case 'private':
                     return null;
