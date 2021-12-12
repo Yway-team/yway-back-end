@@ -7,7 +7,7 @@ const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
 const { generateAccessToken } = require('../auth');
-const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER } = require('../constants');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER, ACHIEVEMENTS } = require('../constants');
 const { deleteObject, uploadAvatar } = require('../s3');
 const { getImageDataFromURL } = require('../utils');
 
@@ -74,7 +74,7 @@ module.exports = {
             };
             const privateInfo = {
                 _id: user._id,
-                achievements: user.achievements,
+                achievements: [], // user.achievements,
                 avatar: user.avatar,
                 bio: user.bio,
                 creatorPoints: user.creatorPoints,
@@ -158,7 +158,7 @@ module.exports = {
             const overview = {
                 playPoints: user.playPoints,
                 creatorPoints: user.creatorPoints,
-                achievements: achievements,
+                achievements: [], // todo achievements,
                 friendsInfo: friendsInfo,
                 history: history,
                 quizzesInfo: quizzesInfo,
@@ -751,6 +751,23 @@ module.exports = {
             });
             await user.save();
             return user.notifications.map(notification => { return { ...notification, createdAt: notification.createdAt.toISOString() }; });
+        },
+        earnAchievement: async (_, { achievement }, { _id }) => {
+            // achievement types: createquiz#, createplatform#, quizzesonplatform#, playquiz#, streak#
+            // #'s
+            // createquiz: 1, 5, 10, 50, 100
+            // createplatform: 1, 5, 10
+            // quizzesonplatform: 10, 100, 1000
+            // playquiz: 1, 5, 20, 50, 100, 1000
+            // streak: 5, 10, 15, 20, 25, 50, 100
+            if (!_id) return false;
+            const userId = new ObjectId(_id);
+            const user = await User.findById(userId);
+            if (!ACHIEVEMENTS.includes(achievement)) return false;
+            if (user.achievements[achievement]) user.achievements = { ...user.achievements, [achievement]: user.achievements[achievement] + 1 };
+            else user.achievements[achievement] = 1;
+            await user.save();
+            return true;
         }
     }
 };
