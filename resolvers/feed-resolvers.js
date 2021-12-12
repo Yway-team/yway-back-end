@@ -45,7 +45,7 @@ function getUserResults(user) {
 module.exports = {
     Query: {
         search: async (_, { searchString, filter, skip }) => {
-            const [skipPlatforms, skipQuizzes, skipPeople] = [skip?.platforms || 0, skip?.quizzes || 0, skip?.people || 0];
+            if (filter === 'all' || !skip) skip = 0;
             
             const searchResults = {
                 platforms: [],
@@ -60,23 +60,23 @@ module.exports = {
                 }
             };
 
-            const searchPlatforms = async howMany => {
+            const searchPlatforms = async (howMany, skipAmt) => {
                 const platforms = await Platform.aggregate().search({
                     autocomplete: {
                         query: searchString,
                         path: 'title'
                     }
-                }).option(options).skip(skipPlatforms).limit(howMany);
+                }).option(options).skip(skipAmt).limit(howMany);
                 return platforms.map(getPlatformResults);
             };
 
-            const searchQuizzes = async howMany => {
+            const searchQuizzes = async (howMany, skipAmt) => {
                 const quizzes = await Quiz.aggregate().search({
                     autocomplete: {
                         query: searchString,
                         path: 'title'
                     }
-                }).option(options).skip(skipQuizzes).limit(howMany);
+                }).option(options).skip(skipAmt).limit(howMany);
                 const owners = await User.find({ _id: { $in: quizzes.map(quiz => quiz.owner) } });
                 const quizPlatforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });
                 return quizzes.map(quiz => {
@@ -86,28 +86,28 @@ module.exports = {
                 });
             };
 
-            const searchUsers = async howMany => {
+            const searchUsers = async (howMany, skipAmt) => {
                 const users = await User.aggregate().search({
                     autocomplete: {
                         query: searchString,
                         path: 'username'
                     }
-                }).option(options).skip(skipPeople).limit(howMany);
+                }).option(options).skip(skipAmt).limit(howMany);
                 return users.map(getUserResults);
             };
 
             if (filter === 'platforms') {
-                searchResults.platforms = await searchPlatforms(30);
+                searchResults.platforms = await searchPlatforms(30, skip);
             } else if (filter === 'quizzes') {
-                searchResults.quizzes = await searchQuizzes(30);
+                searchResults.quizzes = await searchQuizzes(30, skip);
             } else if (filter === 'users') {
-                searchResults.users = await searchUsers(30);
+                searchResults.users = await searchUsers(30, skip);
             } else if (filter === 'tags') {
                 
             } else {
-                searchResults.platforms = await searchPlatforms(5);
-                searchResults.quizzes = await searchQuizzes(5);
-                searchResults.users = await searchUsers(5);
+                searchResults.platforms = await searchPlatforms(5, skip);
+                searchResults.quizzes = await searchQuizzes(5, skip);
+                searchResults.users = await searchUsers(5, skip);
             }
             return searchResults;
         },
