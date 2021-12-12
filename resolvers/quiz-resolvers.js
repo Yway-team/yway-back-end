@@ -184,9 +184,9 @@ module.exports = {
         canPublishToPlatform: async (_, { title }, { _id }) => {
             if (!_id) return false;
             const userId = new ObjectId(_id);
-            const user = User.findById(userId);
+            const user = await User.findById(userId);
             if (!user) return false;
-            const platform = Platform.findOne({ title: title });
+            const platform = await Platform.findOne({ title: title });
             if (!platform) return false;
 
             if (user.creatorPoints < platform.minCreatorPoints) return false;
