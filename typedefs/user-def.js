@@ -130,10 +130,10 @@ const typeDefs = gql`
     type Achievement {
         creatorPointValue: Int
         icon: String
-        description: String!
+        description: String
         playPointValue: Int
-        createdAt: String!
-        name: String!
+        createdAt: String
+        name: String
     }
     type History {
         description: String!
