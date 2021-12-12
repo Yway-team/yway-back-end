@@ -369,7 +369,7 @@ module.exports = {
                     };
                 });
             }
-            if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(_id))) {
+            if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(id => id.equals(_id)))) {
                 // logged in user is authorized according to the user's privacy settings
                 const friends = await User.find({ _id: { $in: user.friends } });
                 friendsInfo = user.friends.map(friendId => {
@@ -382,8 +382,8 @@ module.exports = {
                 });
             }
             return {
-                friendsInfo: friendsInfo,
-                friendRequestsInfo: friendRequestsInfo
+                friendsInfo: friendsInfo || [],
+                friendRequestsInfo: friendRequestsInfo || []
             };
         }
         /*getFavorites: async (_, __, { _id }) => {

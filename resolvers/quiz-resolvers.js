@@ -43,7 +43,7 @@ module.exports = {
             }
             return null;
         },
-        getQuizInfo: async (_, { quizId }, { _id }) => {
+        getQuizInfo: async (_, { quizId }) => {
             const quiz = await Quiz.findById(quizId);
             if (!quiz) {
                 // the provided quizId does not exist
@@ -68,7 +68,8 @@ module.exports = {
                 platformName: platform.title,
                 platformThumbnail: platform.thumbnailImg || DEFAULT_THUMBNAIL,
                 rating: quiz.rating,
-                title: quiz.title,
+                timeToAnswer: quiz.timeToAnswer,
+                title: quiz.title
             };
             return quizInfo;
         },
@@ -209,6 +210,9 @@ module.exports = {
             if (!quiz.timeToAnswer) {
                 // if no time limit provided, set it to the default
                 quiz.timeToAnswer = DEFAULT_TIME_TO_ANSWER;
+            }
+            if (quiz.timeToAnswer < 1) {
+                return null;
             }
             quiz.attempts = 0;
             quiz.averageScore = 0;

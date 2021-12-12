@@ -55,6 +55,7 @@ const typeDefs = gql`
         rating: Float!
         tags: [String]
         thumbnailImg: String
+        timeToAnswer: Int
         title: String!
     }
     type Draft {

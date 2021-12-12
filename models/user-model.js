@@ -40,7 +40,8 @@ const userSchema = new Schema({
     },
     friends: {
         type: [ObjectId],
-        required: true
+        required: true,
+        default: []
     },
     sentFriendRequests: {
         type: [ObjectId],
