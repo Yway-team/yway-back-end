@@ -44,7 +44,9 @@ function getUserResults(user) {
 
 module.exports = {
     Query: {
-        search: async (_, { searchString, filter }) => {
+        search: async (_, { searchString, filter, skip }) => {
+            const [skipPlatforms, skipQuizzes, skipPeople] = [skip?.platforms || 0, skip?.quizzes || 0, skip?.people || 0];
+            
             const searchResults = {
                 platforms: [],
                 quizzes: [],
@@ -64,7 +66,7 @@ module.exports = {
                         query: searchString,
                         path: 'title'
                     }
-                }).option(options).limit(howMany);
+                }).option(options).skip(skipPlatforms).limit(howMany);
                 return platforms.map(getPlatformResults);
             };
 
@@ -74,7 +76,7 @@ module.exports = {
                         query: searchString,
                         path: 'title'
                     }
-                }).option(options).limit(howMany);
+                }).option(options).skip(skipQuizzes).limit(howMany);
                 const owners = await User.find({ _id: { $in: quizzes.map(quiz => quiz.owner) } });
                 const quizPlatforms = await Platform.find({ _id: { $in: quizzes.map(quiz => quiz.platform) } });
                 return quizzes.map(quiz => {
@@ -90,7 +92,7 @@ module.exports = {
                         query: searchString,
                         path: 'username'
                     }
-                }).option(options).limit(howMany);
+                }).option(options).skip(skipPeople).limit(howMany);
                 return users.map(getUserResults);
             };
 
@@ -103,9 +105,9 @@ module.exports = {
             } else if (filter === 'tags') {
                 
             } else {
-                searchResults.platforms = await searchPlatforms(10);
-                searchResults.quizzes = await searchQuizzes(10);
-                searchResults.users = await searchUsers(10);
+                searchResults.platforms = await searchPlatforms(5);
+                searchResults.quizzes = await searchQuizzes(5);
+                searchResults.users = await searchUsers(5);
             }
             return searchResults;
         },

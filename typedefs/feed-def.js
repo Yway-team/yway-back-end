@@ -9,8 +9,13 @@ const typeDefs = gql`
     }
 
     extend type Query {
-        search(searchString: String!, filter: String): SearchResults
+        search(searchString: String!, filter: String, skip: SkipInput): SearchResults
         searchPlatformTitles(searchString: String!): [String]
+    }
+    input SkipInput {
+        platforms: Int
+        quizzes: Int
+        people: Int
     }
 `;
 
