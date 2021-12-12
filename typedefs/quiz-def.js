@@ -30,6 +30,7 @@ const typeDefs = gql`
         getQuizMetrics(_id: ID!): Quiz
         getQuestionList(quizId: ID!): [ID!]
         getQuestionInfo(questionId: ID!): QuestionInfo
+        canPublishToPlatform(title: String!): Boolean
     }
     extend type Mutation {
         createAndPublishQuiz(quiz: QuizInput!): Quiz
