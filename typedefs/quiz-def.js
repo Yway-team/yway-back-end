@@ -33,7 +33,7 @@ const typeDefs = gql`
         canPublishToPlatform(title: String!): Boolean
     }
     extend type Mutation {
-        createAndPublishQuiz(quiz: QuizInput!): Quiz
+        createAndPublishQuiz(quiz: QuizInput!): CreateQuizOutput
         saveQuizAsDraft(draft: DraftInput!): ID
         deleteQuiz(quizId: ID!): Boolean
         updatePublishedQuiz(quizDetails: EditQuizInput!): Quiz
@@ -72,6 +72,10 @@ const typeDefs = gql`
         description: String
         platformName: String
         thumbnailImg: String
+    }
+    type CreateQuizOutput {
+        creatorPoints: Int
+        achievement: Achievement
     }
     input QuizInput {
         _id: ID

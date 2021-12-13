@@ -128,16 +128,17 @@ const typeDefs = gql`
         type: String!
     }
     type Achievement {
+        count: Int
+        lastEarned: String
         creatorPointValue: Int
-        icon: String
-        description: String
+        description: String!
+        icon: String!
+        name: String!
         playPointValue: Int
-        createdAt: String
-        name: String
     }
     type History {
-        description: String!
         createdAt: String!
+        description: String!
         type: String!
     }
     type Notification {

@@ -5,7 +5,7 @@ const User = require('../models/user-model');
 const Platform = require('../models/platform-model');
 const { S3_BUCKET, S3_REGION, S3_BUCKET_URL } = process.env;
 const { uploadImage, deleteObject, uploadBannerImg, uploadThumbnailImg } = require('../s3');
-const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
+const { DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL, ACHIEVEMENTS, CREATE_QUIZ_REWARD } = require('../constants');
 // const { GraphQLScalarType, Kind } = require('graphql');
 //
 // const dateScalar = new GraphQLScalarType({
@@ -272,10 +272,27 @@ module.exports = {
                 delete quiz.thumbnailImgName;
             }
 
+            // quiz has been created; now handle rewards and achievements
+            user.creatorPoints += CREATE_QUIZ_REWARD;
+            
+            let achievement;
+            user.numQuizzesCreated += 1;
+            if ([1, 5, 10, 50, 100].includes(user.numQuizzesCreated)) {
+                // createquiz achievement has been earned
+                const code = `createquiz${user.numQuizzesCreated}`;
+                achievement = user.achievements[code] = ACHIEVEMENTS[code];
+                achievement.lastEarned = new Date();
+                if (achievement.creatorPointValue) user.creatorPoints += achievement.creatorPointValue;
+            }
             await Quiz.create(quiz);
             await user.save();
             await platform.save();
-            return quiz;
+
+            if (achievement) achievement.lastEarned = achievement.lastEarned.toISOString();
+            return {
+                creatorPoints: user.creatorPoints,
+                achievement: achievement
+            };
         },
         saveQuizAsDraft: async (_, { draft }, { _id }) => {
             // If the draft has an _id, replace the draft with the corresponding _id in the user document

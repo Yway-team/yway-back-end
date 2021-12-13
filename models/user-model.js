@@ -35,8 +35,9 @@ const userSchema = new Schema({
         required: true
     },
     achievements: {
-        type: [Object],
-        required: true
+        type: Object,
+        required: true,
+        default: {}
     },
     friends: {
         type: [ObjectId],
@@ -74,6 +75,26 @@ const userSchema = new Schema({
     platforms: {
         type: [ObjectId],
         required: true
+    },
+    currentStreak: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    numPlatformsCreated: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    numQuizzesCreated: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    numQuizzesTaken: {
+        type: Number,
+        required: true,
+        default: 0
     }
 }, { timestamps: true });
 
