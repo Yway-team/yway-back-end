@@ -383,8 +383,8 @@ module.exports = {
                 });
             }
             return {
-                friendsInfo: friendsInfo || [],
-                friendRequestsInfo: friendRequestsInfo || []
+                friendsInfo: friendsInfo || null,
+                friendRequestsInfo: friendRequestsInfo || null
             };
         }
         /*getFavorites: async (_, __, { _id }) => {
