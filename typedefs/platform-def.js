@@ -72,10 +72,15 @@ const typeDefs = gql`
         getPlatformById(_id: String!): PlatformSummary
     }
     extend type Mutation {
-        createPlatform(platform: PlatformInput!): String
+        createPlatform(platform: PlatformInput!): CreatePlatformOutput
         deletePlatform(_id: ID!): Boolean
         updatePlatformSettings(platformSettings: PlatformSettingsInput!): PlatformSettings
         removeQuizFromPlatform(platformId: ID!, quizId: ID!): Boolean
+    }
+    type CreatePlatformOutput {
+        achievement: Achievement
+        creatorPoints: Int
+        platformId: String!
     }
     input PlatformSettingsInput {
         bannerImgData: String

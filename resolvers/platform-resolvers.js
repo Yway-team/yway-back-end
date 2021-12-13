@@ -3,7 +3,7 @@ const Platform = require('../models/platform-model');
 const User = require('../models/user-model');
 const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
-const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL } = require('../constants');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL, CREATE_PLATFORM_REWARD } = require('../constants');
 const { uploadBannerImg, uploadThumbnailImg } = require('../s3');
 
 module.exports = {
@@ -216,7 +216,7 @@ module.exports = {
             // verify that platform's name is not taken
             const taken = await Platform.exists({title: platform.title});
             if (taken) {
-                return 'name taken';
+                return { platformId: 'name taken' };
             }
             // assume that other inputs are valid; validation should be done on the client side
             platform._id = new ObjectId();
@@ -239,8 +239,23 @@ module.exports = {
             }
             const user = await User.findById(_id);
             user.platforms.push(platform._id);
+            user.creatorPoints += CREATE_PLATFORM_REWARD;
+            user.numPlatformsCreated += 1;
+            if ([1, 5, 10].includes(user.numPlatformsCreated)) {
+                // give createplatform achievement
+                const code = `createplatform${user.numPlatformsCreated}`;
+                achievement = user.achievements[code] = ACHIEVEMENTS[code];
+                achievement.lastEarned = new Date();
+                user.markModified('achievements');
+                user.creatorPoints += achievement.creatorPointValue;
+            }
+
             await user.save();
-            return platform._id.toString();
+            return {
+                achievement: achievement,
+                creatorPoints: user.creatorPoints,
+                platformId: platform._id.toString()
+            };
         },
         deletePlatform: async (_, {_id}) => {
         },

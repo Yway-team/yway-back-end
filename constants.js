@@ -10,6 +10,7 @@ const DEFAULT_ACHIEVEMENT_ICON = 'https://cse416-content.s3.us-east-2.amazonaws.
 const REQUEST_SIZE_LIMIT = '4MB';
 const { S3_BUCKET_URL } = process.env;
 const CREATE_QUIZ_REWARD = 100;
+const CREATE_PLATFORM_REWARD = 100;
 const CORRECT_ANSWER_REWARD = 10;
 // const ACHIEVEMENT_CODES = [
 //     'createquiz1', 'createquiz5', 'createquiz10', 'createquiz50', 'createquiz100',
@@ -35,9 +36,9 @@ const ACHIEVEMENTS = {
     'createquiz50': { name: 'Font of Knowledge', description: 'Create fifty quizzes.', icon: `${S3_BUCKET_URL}/img/achievements/createquiz50.png`, creatorPointValue: 5000 },
     'createquiz100': { name: 'Knower of the Unknown', description: 'Create a hundred quizzes.', icon: `${S3_BUCKET_URL}/img/achievements/createquiz100.png`, creatorPointValue: 25000 },
     
-    'createplatform1': { name: 'Welcome to Yway: Created a Platform!', description: 'Create your first platform.', icon: `${S3_BUCKET_URL}/img/achievements/createplatform1.png` },
-    'createplatform5': { name: 'Many Interests', description: 'Create five platforms.', icon: `${S3_BUCKET_URL}/img/achievements/createplatform5.png` },
-    'createplatform10': { name: 'Patron of Knowledge', description: 'Create ten platforms.', icon: `${S3_BUCKET_URL}/img/achievements/createplatform10.png` },
+    'createplatform1': { name: 'Welcome to Yway: Created a Platform!', description: 'Create your first platform.', icon: `${S3_BUCKET_URL}/img/achievements/createplatform1.png`, creatorPointValue: 1000 },
+    'createplatform5': { name: 'Many Interests', description: 'Create five platforms.', icon: `${S3_BUCKET_URL}/img/achievements/createplatform5.png`, creatorPointValue: 5000 },
+    'createplatform10': { name: 'Patron of Knowledge', description: 'Create ten platforms.', icon: `${S3_BUCKET_URL}/img/achievements/createplatform10.png`, creatorPointValue: 10000 },
 
     'quizzesonplatform10': { name: 'Humble Hub', description: 'Have ten quizzes on your platform.', icon: `${S3_BUCKET_URL}/img/achievements/quizzesonplatform10.png` },
     'quizzesonplatform100': { name: 'Sagacious City', description: 'Have a hundred quizzes on your platform.', icon: `${S3_BUCKET_URL}/img/achievements/quizzesonplatform100.png` },
@@ -59,4 +60,4 @@ const ACHIEVEMENTS = {
     'streak100': { name: '100 Question Streak', description: 'Is this even possible?', icon: `${S3_BUCKET_URL}/img/achievements/streak100.png`, playPointValue: 5000, count: 1 }
 };
 
-module.exports = { MAX_NOTIFICATIONS, MAX_HISTORY, DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER, REQUEST_SIZE_LIMIT, ACHIEVEMENTS, CREATE_QUIZ_REWARD, CORRECT_ANSWER_REWARD };
+module.exports = { MAX_NOTIFICATIONS, MAX_HISTORY, DEFAULT_TIME_TO_ANSWER, MAX_DRAFTS, DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER, REQUEST_SIZE_LIMIT, ACHIEVEMENTS, CREATE_QUIZ_REWARD, CREATE_PLATFORM_REWARD, CORRECT_ANSWER_REWARD };
