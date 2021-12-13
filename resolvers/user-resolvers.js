@@ -8,7 +8,7 @@ const client = new OAuth2Client(CLIENT_ID);
 const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
 const { generateAccessToken } = require('../auth');
 const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, ACHIEVEMENTS, CORRECT_ANSWER_REWARD } = require('../constants');
-const { deleteObject, uploadAvatar } = require('../s3');
+const { deleteObject, uploadAvatar, uploadBannerImg } = require('../s3');
 const { getImageDataFromURL } = require('../utils');
 
 const getBasicInfo = (user) => {
