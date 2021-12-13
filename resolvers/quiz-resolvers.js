@@ -282,6 +282,7 @@ module.exports = {
                 const code = `createquiz${user.numQuizzesCreated}`;
                 achievement = user.achievements[code] = ACHIEVEMENTS[code];
                 achievement.lastEarned = new Date();
+                user.markModified('achievements');
                 if (achievement.creatorPointValue) user.creatorPoints += achievement.creatorPointValue;
             }
             await Quiz.create(quiz);
