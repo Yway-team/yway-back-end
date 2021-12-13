@@ -55,7 +55,7 @@ const typeDefs = gql`
         addHistory(history: HistoryInput!): Boolean
         incrementStreak: StreakOutput
         resetStreak: Boolean
-        incrementNumQuizzesPlayed: Achievement
+        incrementNumQuizzesPlayed: IncrementQuizzesOutput
     }
     type StreakOutput {
         achievement: Achievement

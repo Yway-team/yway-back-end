@@ -773,7 +773,7 @@ module.exports = {
                 }
                 achievement.lastEarned = new Date();
                 user.playPoints += achievement.playPointValue;
-                user.markModified('achievement');
+                user.markModified('achievements');
             }
             await user.save();
 
