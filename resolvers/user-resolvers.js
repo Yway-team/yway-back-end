@@ -68,6 +68,7 @@ module.exports = {
             const publicInfo = {
                 _id: user._id,
                 avatar: user.avatar,
+                bannerImg: user.bannerImg,
                 friendStatus: friendStatus,
                 privacySettings: user.privacySettings,
                 username: user.username
@@ -76,6 +77,7 @@ module.exports = {
                 _id: user._id,
                 achievements: [], // user.achievements,
                 avatar: user.avatar,
+                bannerImg: user.bannerImg,
                 bio: user.bio,
                 creatorPoints: user.creatorPoints,
                 friendStatus: friendStatus,

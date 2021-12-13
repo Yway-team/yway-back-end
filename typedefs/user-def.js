@@ -5,6 +5,7 @@ const typeDefs = gql`
         _id: ID!
         achievements: [Achievement]!
         avatar: String!
+        bannerImg: String
         bio: String
         creatorPoints: Int!
         drafts: [Draft]!
@@ -69,6 +70,7 @@ const typeDefs = gql`
     type UserInfo {
         _id: ID
         avatar: String
+        bannerImg: String
         privacySettings: String
         username: String
         bio: String
