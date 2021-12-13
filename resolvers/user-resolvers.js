@@ -542,16 +542,17 @@ module.exports = {
             user.username = username;
             user.bio = bio;
             if (bannerImgData) {
-                // todo
+                user.bannerImg = await uploadBannerImg({ bannerImgData: bannerImgData }, _id, 'user');
             }
             if (avatarData) {
                 user.avatar = await uploadAvatar(avatarData, _id);
             }
             await user.save();
             return {
-                username: user.username,
+                avatar: user.avatar,
+                bannerImg: user.bannerImg,
                 bio: user.bio,
-                avatar: user.avatar
+                username: user.username
             };
         },
         addNotification: async (_, { userId, notification }) => {

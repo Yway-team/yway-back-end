@@ -18,6 +18,9 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    bannerImg: {
+        type: String,
+    },
     privacySettings: {
         type: String,
         required: true
