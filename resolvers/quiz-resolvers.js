@@ -223,14 +223,17 @@ module.exports = {
                 // no platform by that name found
                 return null;
             }
-            quiz.platform = platform._id;
-            delete quiz.platformName;  // platform name is not saved in quiz; its _id is
-
             const user = await User.findById(_id);
             if (!user) {
                 // shouldn't happen
                 return null;
             }
+            if (platform.onlyModSubmissions && !user._id.equals(platform.owner) && !platform.moderators.find(id => id.equals(user._id))) return null;
+            if (user.creatorPoints < platform.minCreatorPoints) return null;
+
+            quiz.platform = platform._id;
+            delete quiz.platformName;  // platform name is not saved in quiz; its _id is
+
             // Handle questions
             for (let i = 0; i < quiz.questions.length; i++) {
                 const { answerOptions, correctAnswerIndex, description } = quiz.questions[i];
