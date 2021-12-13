@@ -75,7 +75,6 @@ module.exports = {
             };
             const privateInfo = {
                 _id: user._id,
-                achievements: [], // user.achievements,
                 avatar: user.avatar,
                 bannerImg: user.bannerImg,
                 bio: user.bio,

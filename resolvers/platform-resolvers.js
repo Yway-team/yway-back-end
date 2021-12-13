@@ -272,7 +272,7 @@ module.exports = {
             if (!_id) return false;
             const userId = new ObjectId(_id);
             const platform = await Platform.findOne({ title: title });
-            if (!platform.owner.equals(userId)) return false;
+            if (!platform?.owner.equals(userId)) return false;
             
             // begin the deletion process
             // delete references
