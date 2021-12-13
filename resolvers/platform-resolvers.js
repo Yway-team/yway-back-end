@@ -4,7 +4,7 @@ const User = require('../models/user-model');
 const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
 const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL, CREATE_PLATFORM_REWARD } = require('../constants');
-const { uploadBannerImg, uploadThumbnailImg } = require('../s3');
+const { uploadBannerImg, uploadThumbnailImg, deleteObject } = require('../s3');
 
 module.exports = {
     Query: {
@@ -257,7 +257,63 @@ module.exports = {
                 platformId: platform._id.toString()
             };
         },
-        deletePlatform: async (_, {_id}) => {
+        deletePlatform: async (_, { title }, { _id }) => {
+            // verify that logged in user is owner of platform
+            // find users who have favorited
+            // remove platform from their favorites
+            // find moderators
+            // remove platform from their moderator array
+            // find quizzes
+            // find quiz owners
+            // remove quizzes from their quizzes
+            // delete quizzes
+            // remove platform from platform owner's platforms
+            // delete platform
+            if (!_id) return false;
+            const userId = new ObjectId(_id);
+            const platform = await Platform.findOne({ title: title });
+            if (!platform.owner.equals(userId)) return false;
+            
+            // begin the deletion process
+            // delete references
+            await User.updateMany({}, { $pull: { favorites: platform._id } });  // remove from users' favorites
+            await User.updateMany({ _id: { $in: platform.moderators } }, { $pull: { moderator: platform._id } });  // remove from moderators' moderator array
+
+            const quizzes = await Quiz.find({ _id: { $in: platform.quizzes } });
+            await User.updateMany({ _id: { $in: quizzes.map(quiz => quiz.owner) } }, { $pull: { quizzes: { $in: platform.quizzes } } });
+            await Question.deleteMany({ quiz: { $in: platform.quizzes } });
+            await User.updateOne({ _id: userId }, { $pull: { platforms: platform._id } });
+
+            // /* todo: delete platform, delete images from quizzes and platform */
+            // delete images
+            quizzes.forEach(async quiz => {
+                if (quiz.bannerImg) {
+                    const urlComponents = quiz.bannerImg.split('/');
+                    const key = urlComponents.slice(urlComponents.findIndex(s => s === 'img')).join('/');
+                    await deleteObject(key);
+                }
+                if (quiz.thumbnailImg) {
+                    const urlComponents = quiz.thumbnailImg.split('/');
+                    const key = urlComponents.slice(urlComponents.findIndex(s => s === 'img')).join('/');
+                    await deleteObject(key);
+                }
+            });
+            if (platform.bannerImg) {
+                const urlComponents = platform.bannerImg.split('/');
+                const key = urlComponents.slice(urlComponents.findIndex(s => s === 'img')).join('/');
+                await deleteObject(key);
+            }
+            if (platform.thumbnailImg) {
+                const urlComponents = platform.thumbnailImg.split('/');
+                const key = urlComponents.slice(urlComponents.findIndex(s => s === 'img')).join('/');
+                await deleteObject(key);
+            }
+            // delete quizzes
+            await Quiz.deleteMany({ _id: { $in: platform.quizzes } });
+            // delete platform
+            await Platform.deleteOne({ _id: platform._id });
+            return true;
+            // done
         },
         updatePlatformSettings: async (_, {platformSettings}, {_id}) => {
             const platform = await Platform.findById(platformSettings.platformId);

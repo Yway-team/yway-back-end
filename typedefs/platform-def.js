@@ -73,7 +73,7 @@ const typeDefs = gql`
     }
     extend type Mutation {
         createPlatform(platform: PlatformInput!): CreatePlatformOutput
-        deletePlatform(_id: ID!): Boolean
+        deletePlatform(title: String!): Boolean
         updatePlatformSettings(platformSettings: PlatformSettingsInput!): PlatformSettings
         removeQuizFromPlatform(platformId: ID!, quizId: ID!): Boolean
     }

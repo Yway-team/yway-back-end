@@ -380,12 +380,12 @@ module.exports = {
             await Question.deleteMany({ quiz: quizId });
             if (quiz.bannerImg) {
                 const urlComponents = quiz.bannerImg.split('/');
-                const key = urlComponents.slice(urlComponents.findIndex('img')).join('/');
+                const key = urlComponents.slice(urlComponents.findIndex(s => s === 'img')).join('/');
                 await deleteObject(key);
             }
             if (quiz.thumbnailImg) {
                 const urlComponents = quiz.thumbnailImg.split('/');
-                const key = urlComponents.slice(urlComponents.findIndex('img')).join('/');
+                const key = urlComponents.slice(urlComponents.findIndex(s => s === 'img')).join('/');
                 await deleteObject(key);
             }
             return true;
