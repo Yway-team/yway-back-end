@@ -388,6 +388,17 @@ module.exports = {
                 friendsInfo: friendsInfo || null,
                 friendRequestsInfo: friendRequestsInfo || null
             };
+        },
+        getUserAchievements: async (_, { userId }, { _id }) => {
+            userId = new ObjectId(userId);
+            if (_id) _id = new ObjectId(_id);
+            const user = await User.findById(userId);
+            let achievements;
+            if ((_id && _id.equals(userId)) || user.privacySettings === 'public' || (user.privacySettings === 'friends' && user.friends.find(id => id.equals(_id)))) {
+                // logged in user is authorized according to the user's privacy settings
+                achievements = Object.values(user.achievements).sort((a1, a2) => a2.lastEarned.valueOf() - a1.lastEarned.valueOf()).map(achievement => { return { ...achievement, lastEarned: achievement.lastEarned.toISOString() } });
+            }
+            return achievements;
         }
         /*getFavorites: async (_, __, { _id }) => {
             if (!id) {
