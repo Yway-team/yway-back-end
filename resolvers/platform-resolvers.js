@@ -3,7 +3,7 @@ const Platform = require('../models/platform-model');
 const User = require('../models/user-model');
 const Quiz = require('../models/quiz-model');
 const Question = require('../models/question-model');
-const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL, CREATE_PLATFORM_REWARD } = require('../constants');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_THUMBNAIL, CREATE_PLATFORM_REWARD, ACHIEVEMENTS } = require('../constants');
 const { uploadBannerImg, uploadThumbnailImg, deleteObject } = require('../s3');
 
 module.exports = {

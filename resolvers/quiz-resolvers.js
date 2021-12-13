@@ -121,7 +121,7 @@ module.exports = {
             return quizInfos;
         },
         getTopQuizzes: async (_, { howMany }) => {
-            const quizzes = await Quiz.find().sort({ attempts: 'descending' }).limit(howMany);
+            const quizzes = await Quiz.find().sort({ rating: 'descending' }).limit(howMany);
             const quizInfos = [];
             for (let i = 0; i < quizzes.length; i++) {
                 const quiz = quizzes[i];
