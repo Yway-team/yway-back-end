@@ -153,14 +153,15 @@ module.exports = {
                     username: friend.username
                 };
             });
-            const achievements = user.achievements.slice(-6);
-            const history = user.history.slice(-6);
+            
+            const achievements = Object.values(user.achievements).sort((a1, a2) => a2.lastEarned.valueOf() - a1.lastEarned.valueOf()).slice(0, 6).map(achievement => { return { ...achievement, lastEarned: achievement.lastEarned.toISOString() } });
+            // const history = user.history.slice(-6);
             const overview = {
                 playPoints: user.playPoints,
                 creatorPoints: user.creatorPoints,
-                achievements: [], // todo achievements,
+                achievements: achievements, // todo achievements,
                 friendsInfo: friendsInfo,
-                history: history,
+                // history: history,
                 quizzesInfo: quizzesInfo,
                 platformsInfo: platformsInfo
             };
