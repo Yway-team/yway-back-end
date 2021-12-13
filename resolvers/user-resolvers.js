@@ -7,7 +7,7 @@ const { CLIENT_ID } = process.env;
 const client = new OAuth2Client(CLIENT_ID);
 const { MAX_NOTIFICATIONS, MAX_HISTORY } = require('../constants');
 const { generateAccessToken } = require('../auth');
-const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, DEFAULT_PROFILE_BANNER, ACHIEVEMENTS } = require('../constants');
+const { DEFAULT_BANNER_IMAGE, DEFAULT_AVATAR, DEFAULT_THUMBNAIL, ACHIEVEMENTS, CORRECT_ANSWER_REWARD } = require('../constants');
 const { deleteObject, uploadAvatar } = require('../s3');
 const { getImageDataFromURL } = require('../utils');
 
@@ -753,6 +753,68 @@ module.exports = {
             await user.save();
             return user.notifications.map(notification => { return { ...notification, createdAt: notification.createdAt.toISOString() }; });
         },
+        incrementStreak: async (_, __, { _id }) => {
+            if (!_id) return null;
+            const user = await User.findById(_id);
+            
+            user.playPoints += CORRECT_ANSWER_REWARD;
+
+            user.currentStreak += 1;
+            let achievement;
+            if ([5, 10, 15, 20, 25, 50, 100].includes(user.currentStreak)) {
+                // give streak achievement
+                const code = `streak${user.currentStreak}`;
+                if (user.achievements[code]) {
+                    // this achievement has been earned before
+                    achievement = user.achievements[code]
+                    achievement.count += 1;
+                } else {
+                    achievement = user.achievements[code] = ACHIEVEMENTS[code];
+                }
+                achievement.lastEarned = new Date();
+                user.playPoints += achievement.playPointValue;
+                user.markModified('achievement');
+            }
+            await user.save();
+
+            if (achievement) achievement.lastEarned = achievement.lastEarned.toISOString();
+            return {
+                achievement: achievement,
+                playPoints: user.playPoints,
+                streak: user.currentStreak
+            };
+        },
+        resetStreak: async (_, __, { _id }) => {
+            if (!_id) return false;
+            const user = await User.findById(_id);
+
+            user.currentStreak = 0;
+            await user.save();
+            return true;
+        },
+        incrementNumQuizzesPlayed: async (_, __, { _id }) => {
+            if (!_id) return null;
+            const user = await User.findById(_id);
+            
+            let achievement;
+            user.numQuizzesPlayed += 1;
+            if ([1, 5, 20, 50, 100, 1000].includes(user.numQuizzesPlayed)) {
+                // give playquiz achievement
+                const code = `playquiz${user.numQuizzesPlayed}`;
+                achievement = user.achievements[code] = ACHIEVEMENTS[code];
+                achievement.lastEarned = new Date();
+                user.markModified('achievements');
+                user.playPoints += achievement.playPointValue;
+            }
+
+            await user.save();
+
+            if (achievement) achievement.lastEarned = achievement.lastEarned.toISOString();
+            return {
+                achievement: achievement,
+                playPoints: user.playPoints
+            };
+        }
         // earnAchievement: async (_, { achievement }, { _id }) => {
         //     // achievement types: createquiz#, createplatform#, quizzesonplatform#, playquiz#, streak#
         //     // #'s

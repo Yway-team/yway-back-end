@@ -283,7 +283,7 @@ module.exports = {
                 achievement = user.achievements[code] = ACHIEVEMENTS[code];
                 achievement.lastEarned = new Date();
                 user.markModified('achievements');
-                if (achievement.creatorPointValue) user.creatorPoints += achievement.creatorPointValue;
+                user.creatorPoints += achievement.creatorPointValue;
             }
             await Quiz.create(quiz);
             await user.save();

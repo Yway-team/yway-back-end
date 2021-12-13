@@ -91,7 +91,7 @@ const userSchema = new Schema({
         required: true,
         default: 0
     },
-    numQuizzesTaken: {
+    numQuizzesPlayed: {
         type: Number,
         required: true,
         default: 0

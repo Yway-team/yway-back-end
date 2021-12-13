@@ -53,6 +53,18 @@ const typeDefs = gql`
         editProfile(username: String!, bio: String, bannerImgData: String, avatarData: String): UserInfo
         addNotification(userId: ID!, notification: NotificationInput!): Boolean
         addHistory(history: HistoryInput!): Boolean
+        incrementStreak: StreakOutput
+        resetStreak: Boolean
+        incrementNumQuizzesPlayed: Achievement
+    }
+    type StreakOutput {
+        achievement: Achievement
+        playPoints: Int!
+        streak: Int!
+    }
+    type IncrementQuizzesOutput {
+        achievement: Achievement
+        playPoints: Int!
     }
     type UserInfo {
         _id: ID
@@ -129,10 +141,10 @@ const typeDefs = gql`
     }
     type Achievement {
         count: Int
-        lastEarned: String
         creatorPointValue: Int
         description: String!
         icon: String!
+        lastEarned: String
         name: String!
         playPointValue: Int
     }
